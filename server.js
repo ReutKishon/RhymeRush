@@ -1,4 +1,6 @@
 const dotenv = require("dotenv");
+const redis = require("redis");
+
 dotenv.config();
 
 process.on("uncaughtException", (err) => {
@@ -21,6 +23,16 @@ mongoose.connect(DB).then((con) => {
   console.log("connection successful!");
 });
 
+const redisClient = redis.createClient({
+  url: "redis://redis:6379",
+});
+
+
+redisClient.on('connect', function () {
+    console.log('Connected to Redis');
+  });
+
+ 
 
 const port = process.env.PORT || 3000;
 // @ts-ignore
