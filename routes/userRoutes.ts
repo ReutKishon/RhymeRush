@@ -1,11 +1,11 @@
 // @ts-ignore
 const express = require("express");
-const authController = require("../controllers/authController");
+import { signUp, login } from "../controllers/authController";
 
 const router = express.Router();
 
-router.post("/signup", authController.signUp);
-router.post("/login", authController.login);
+router.post("/signup", signUp);
+router.post("/login", login);
 // router.get("/logout", authController.logout);
 
 // router.post("/forgotPassword", authController.forgotPassword);
@@ -27,4 +27,4 @@ router.post("/login", authController.login);
 // router.route("/").get(authController.protect, userController.getAllUsers);
 // router.route("/:id").patch(userController.updateUser);
 
-module.exports = router;
+export default router;

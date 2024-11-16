@@ -1,0 +1,37 @@
+export interface Game {
+  gameCode: string;
+  topic: String;
+  maxPlayers: number;
+  players: Player[];
+  isStarted: boolean;
+  currentTurn: number; // index of the player whose turn it is
+  turnTimer: number; // time in seconds for each turn
+  song: Sentence[];
+}
+
+export interface Player {
+  id: string;
+}
+
+export interface Sentence {
+  content: string;
+  wordsCount: number;
+  player: Player;
+  timestamp: Date;
+}
+
+export interface User {
+  _id: string;
+  username: string;
+  score: number;
+  email: string;
+  password: string;
+  passwordConfirm: string;
+}
+
+type UserInput = Omit<User, "_id">;
+
+export interface UserCreation extends Document, UserInput {}
+export interface UserDocument extends Document, User {}
+
+

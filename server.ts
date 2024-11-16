@@ -1,5 +1,4 @@
 const dotenv = require("dotenv");
-const redis = require("redis");
 
 dotenv.config();
 
@@ -19,18 +18,11 @@ const DB = process.env.DATABASE.replace(
 );
 
 // @ts-ignore
-mongoose.connect(DB).then((con) => {
+mongoose.connect(DB).then(() => {
   console.log("connection successful!");
 });
 
-const redisClient = redis.createClient({
-  url: "redis://redis:6379",
-});
 
-
-redisClient.on('connect', function () {
-    console.log('Connected to Redis');
-  });
 
  
 

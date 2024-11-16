@@ -7,7 +7,10 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 RUN npm install
 
-RUN npm install -g nodemon
+
+# Install global dependencies (ts-node and nodemon)
+RUN npm install -g typescript nodemon ts-node
+
 
 # Copy the rest of the application code
 COPY . .

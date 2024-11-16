@@ -1,17 +1,23 @@
 const crypto = require("crypto");
 const { promisify } = require("util");
+import { Request, Response, NextFunction } from "express";
 const jwt = require("jsonwebtoken");
-const User = require("../models/userModel");
+import { UserDocument } from "../types/gameTypes";
+import userModel from "../models/userModel";
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 
-const signToken = (id) => {
+const signToken = (id: string) => {
   // @ts-ignore
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRES_IN,
   });
 };
-const createSendToken = (user, statusCode, res) => {
+const createSendToken = (
+  user: UserDocument,
+  statusCode: number,
+  res: Response
+) => {
   const token = signToken(user._id);
   const cookieOptions = {
     expires: new Date(
@@ -22,7 +28,7 @@ const createSendToken = (user, statusCode, res) => {
     httpOnly: true,
   };
   res.cookie("jwt", token, cookieOptions);
-  user.password = undefined;
+  // user.password = undefined;
   res.status(statusCode).json({
     status: "success",
     token,
@@ -31,32 +37,36 @@ const createSendToken = (user, statusCode, res) => {
 };
 
 // @ts-ignore
-exports.signUp = catchAsync(async (req, res, next) => {
-  const newUser = await User.create(req.body);
-  createSendToken(newUser, 201, res);
-});
-
-exports.login = catchAsync(async (req, res, next) => {
-  const { email, password } = req.body;
-  //1) Check if email and password exist
-
-  if (!email || !password) {
-    return next(new AppError("please provide email and password!", 400));
+export const signUp = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const newUser: UserDocument = await userModel.create(req.body);
+    createSendToken(newUser, 201, res);
   }
+);
 
-  console.log(email,password)
+export const login = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { email, password } = req.body;
+    //1) Check if email and password exist
 
-  //2) Check if user exists and password is correct
-  const user = await User.findOne({ email }).select("+password");
-  console.log(user);
-  // @ts-ignore
-  if (!user || !(await user.correctPassword(password, user.password))) {
-    return next(new AppError("Incorrect email or password"), 401);
+    if (!email || !password) {
+      return next(new AppError("please provide email and password!", 400));
+    }
+
+    console.log(email, password);
+
+    //2) Check if user exists and password is correct
+    const user = await userModel.findOne({ email }).select("+password");
+    console.log(user);
+    // @ts-ignore
+    if (!user || !(await user.correctPassword(password, user.password))) {
+      return next(new AppError("Incorrect email or password", 401));
+    }
+    //3) If valid, generate a token and send it back to the client
+    // @ts-ignore
+    createSendToken(user, 200, res);
   }
-  //3) If valid, generate a token and send it back to the client
-  // @ts-ignore
-  createSendToken(user, 200, res);
-});
+);
 
 // @ts-ignore
 // exports.logout = (req, res) => {
