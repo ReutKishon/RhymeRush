@@ -8,7 +8,7 @@ process.on("uncaughtException", (err) => {
 });
 
 import app from "./app";
-import redisClient from "./redisClient";
+import "./redisClient";
 
 const { default: mongoose } = require("mongoose");
 const DB = process.env.DATABASE.replace(

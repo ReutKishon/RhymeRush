@@ -4,10 +4,9 @@
   "description": "",
   "main": "server.ts",
   "scripts": {
-    "start": "nodemon -r ts-node/register server.ts"
+    "start": "nodemon -r ts-node src/server.ts"
   },
   "keywords": [],
-  "type": "module",
   "author": "",
   "license": "ISC",
   "dependencies": {

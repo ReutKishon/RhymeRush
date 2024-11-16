@@ -1,13 +1,8 @@
 {
   "compilerOptions": {
-    "module": "Node16", // or "ESNext" depending on your setup
-    "target": "ES2022", // should be at least ES6
     "esModuleInterop": true, // enables default imports from CommonJS modules
     "allowSyntheticDefaultImports": true, // allows synthetic default imports
     "skipLibCheck": true, // skips type checking of declaration files
-    // "strict": true, // enables strict mode
     "forceConsistentCasingInFileNames": true, // ensures consistent casing in imports
-    "moduleResolution": "node16"
   },
-  "include": ["**/*.ts"]
 }

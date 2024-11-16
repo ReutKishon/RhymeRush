@@ -5,7 +5,7 @@ import mongoSanitize from "express-mongo-sanitize";
 // import xss from "xss-clean";
 import userRouter from "./routes/userRoutes";
 import gameRouter from "./routes/gameRoutes";
-import {MyError} from "./utils/appError";
+import { MyError } from "./utils/appError";
 import globalErrorHandler from "./controllers/errorController";
 
 const app = express();
