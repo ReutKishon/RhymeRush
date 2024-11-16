@@ -1,9 +1,7 @@
-import { Router } from "express";
-const express = require("express");
-const authController = require("../controllers/authController");
+import * as express from "express";
 import { createGame } from "../controllers/gameController";
 
-const router: Router = express.Router();
+const router = express.Router();
 
 router.route("/create-game").post(createGame);
 

@@ -1,13 +1,13 @@
-const bcrypt = require("bcryptjs");
+import bcrypt from "bcryptjs";
 import mongoose, { Model, Schema } from "mongoose";
 import { UserDocument } from "../types/gameTypes";
-const validator = require("validator");
+import validator from "validator";
 
 const userSchema: Schema<UserDocument> = new mongoose.Schema(
   {
     username: {
       type: String,
-      require: [true, "Please provide a user name"],
+      required: [true, "Please provide a user name"],
     },
     score: {
       type: Number,
@@ -15,14 +15,14 @@ const userSchema: Schema<UserDocument> = new mongoose.Schema(
     },
     email: {
       type: String,
-      require: [true, "Please provide your email"],
+      required: [true, "Please provide your email"],
       unique: true,
       lowercase: true,
       validate: [validator.isEmail, "Please provide a valid email address"],
     },
     password: {
       type: String,
-      require: [true, "Please provide a password"],
+      required: [true, "Please provide a password"],
       minlength: 8,
       select: false,
     },
@@ -48,16 +48,14 @@ const userSchema: Schema<UserDocument> = new mongoose.Schema(
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 12);
-  // @ts-ignore
-  this.passwordConfirm = undefined;
+  this.passwordConfirm = "";
   next();
 });
 
 userSchema.methods.correctPassword = async function (
   candidatePassword: string,
   userPassword: string
-) {
-  // console.log(candidatePassword, userPassword);
+): Promise<boolean> { // added return type Promise<boolean>
   return await bcrypt.compare(candidatePassword, userPassword);
 };
 

@@ -1,14 +1,15 @@
 import { Request, Response, NextFunction } from "express";
-const { v4: uuidv4 } = require("uuid");
-const catchAsync = require("../utils/catchAsync");
+import { v4 as uuidv4 } from "uuid";
+import catchAsync from "../utils/catchAsync";
 import { generateSongTopic } from "../utils/gameUtils";
-import AppError from "../utils/appError";
+import {MyError} from "../utils/appError";
 import { Game, Player } from "../types/gameTypes";
+import redisClient from "../redisClient";
 
 export const createGame = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     if (!req.body.gameCreatorId) {
-      return next(new AppError("a game must be created by a player!", 401));
+      return next(new MyError("a game must be created by a player!", 401));
     }
     const gameCreatorPlayer: Player = {
       id: req.body.gameCreatorId,
@@ -25,8 +26,7 @@ export const createGame = catchAsync(
       song: [],
       turnTimer: 40,
     };
-    // @ts-ignore
-    await req.redisClient.set(`game:${gameCode}`, JSON.stringify(gameData));
+    await redisClient.set(`game:${gameCode}`, JSON.stringify(gameData));
 
     res.status(201).json({
       status: "success",

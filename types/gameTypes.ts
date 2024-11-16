@@ -1,3 +1,5 @@
+import { ObjectId } from "mongoose";
+
 export interface Game {
   gameCode: string;
   topic: String;
@@ -20,8 +22,8 @@ export interface Sentence {
   timestamp: Date;
 }
 
-export interface User {
-  _id: string;
+interface User {
+  _id: ObjectId;
   username: string;
   score: number;
   email: string;
@@ -32,6 +34,9 @@ export interface User {
 type UserInput = Omit<User, "_id">;
 
 export interface UserCreation extends Document, UserInput {}
-export interface UserDocument extends Document, User {}
-
-
+export interface UserDocument extends User, Document {
+  correctPassword(
+    candidatePassword: string,
+    userPassword: string
+  ): Promise<boolean>;
+}
