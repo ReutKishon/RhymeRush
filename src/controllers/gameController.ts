@@ -19,9 +19,8 @@ const isPlayerInGame = (gameData: Game, playerId: string): number => {
 };
 
 const isSentenceValid = (gameData: Game, sentence: string): boolean => {
-  console.log(sentence.split(" ").length, gameData.sentenceLengthAllowed);
   return sentence.split(" ").length == gameData.sentenceLengthAllowed;
-  //TODO: check for topic relation and for time it took
+  //TODO: check if sentence is related to the topic
 };
 
 export const createGame = catchAsync(
@@ -211,6 +210,13 @@ export const startGame = catchAsync(
 
     const gameData = await getGameFromRedis(gameCode);
 
+    // Check if there are enough players to start the game
+    if (gameData.players.length < 2) {
+      return next(
+        new MyError("At least 2 players are required to start a game!", 400)
+      );
+    }
+
     // Check if the game has already started
     if (gameData.isStarted) {
       return next(new MyError("The game has already started!", 400));
@@ -226,3 +232,18 @@ export const startGame = catchAsync(
     });
   }
 );
+
+export const checkGameStarted = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const { gameCode } = req.params;
+
+  const gameData = await getGameFromRedis(gameCode);
+
+  if (!gameData.isStarted) {
+    return next(new MyError("The game has not started yet!", 400));
+  }
+  next();
+};
