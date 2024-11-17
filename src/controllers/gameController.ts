@@ -5,7 +5,6 @@ import { generateSongTopic } from "../utils/gameUtils";
 import { MyError } from "../utils/appError";
 import { Game, Player, Sentence } from "../types/gameTypes";
 import redisClient from "../redisClient";
-import { ObjectId } from "mongoose";
 
 const getGameFromRedis = async (gameCode: string) => {
   const gameDataString = await redisClient.get(`game:${gameCode}`);
@@ -20,7 +19,7 @@ const isPlayerInGame = (gameData: Game, playerId: string): boolean => {
 };
 
 const isSentenceValid = (gameData: Game, sentence: string): boolean => {
-  console.log(sentence.split(" ").length,gameData.sentenceLengthAllowed)
+  console.log(sentence.split(" ").length, gameData.sentenceLengthAllowed);
   return sentence.split(" ").length == gameData.sentenceLengthAllowed;
   //TODO: check for topic relation and for time it took
 };
@@ -94,15 +93,20 @@ export const exitGame = catchAsync(
     }
     const gameData = await getGameFromRedis(gameCode);
 
-    if (isPlayerInGame(gameData, playerId)) {
+    if (!isPlayerInGame(gameData, playerId)) {
       return next(
-        new MyError(`Player with ID ${playerId} is already in the game!`, 400)
+        new MyError(`Player with ID ${playerId} is not in the game!`, 400)
       );
     }
+
     gameData.players = gameData.players.filter((p) => p.id !== playerId);
+    if (gameData.players.length === 0) {
+      await redisClient.del(`game:${gameCode}`); //delete game key from redis
+      return res.status(204).json({ status: "success", data: null });
+    }
     await redisClient.set(`game:${gameCode}`, JSON.stringify(gameData));
 
-    res.status(204).json({ status: "success", data: null });
+    res.status(200).json({ status: "success", data: gameData });
   }
 );
 
@@ -154,6 +158,7 @@ export const addSentenceToSong = catchAsync(
     const gameData = await getGameFromRedis(gameCode);
 
     if (!isSentenceValid(gameData, sentence)) {
+      await redisClient.del(`game:${gameCode}`); //delete game key from redis
       const rivalIdx = 1 - gameData.currentTurn;
       gameData.winner = gameData.players[rivalIdx];
       return res.status(200).json({
