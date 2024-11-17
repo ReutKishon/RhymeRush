@@ -7,7 +7,6 @@ export interface Game {
   players: Player[];
   isStarted: boolean;
   currentTurn: number; // index of the player whose turn it is
-  turnTimer: number; // time in seconds for each turn
   sentenceLengthAllowed: number; // number of words allowed for each turn
   song: Sentence[];
   winner: Player;
