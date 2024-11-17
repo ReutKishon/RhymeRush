@@ -7,9 +7,20 @@ import userRouter from "./routes/userRoutes";
 import gameRouter from "./routes/gameRoutes";
 import { MyError } from "./utils/appError";
 import globalErrorHandler from "./controllers/errorController";
+import http from "http";
+import { Server } from "socket.io";
 
 const app = express();
+const server = http.createServer(app);
 
+const io = new Server(server);
+
+io.on("connection", (socket) => {
+  console.log("a user connected");
+  socket.on("add sentence", (sentence) => {
+    io.emit("add sentence", sentence);
+  });
+});
 //set security HTTP headers
 app.use(helmet());
 
