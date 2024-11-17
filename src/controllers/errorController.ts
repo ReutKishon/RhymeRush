@@ -50,7 +50,7 @@ const sendErrorProd = (err: MyError, res: Response): void => {
 };
 
 // Type guard to check if the error is an instance of AppError
-// const isAppError = (err: any): err is AppError => err instanceof AppError;
+const isAppError = (err: any): err is MyError => err instanceof MyError;
 
 const globalErrorHandler = (
   err: any, // Set to any to allow type checks
@@ -58,10 +58,10 @@ const globalErrorHandler = (
   res: Response,
   next: NextFunction
 ): void => {
-  // if (!isAppError(err)) {
-  //   err.statusCode = 500;
-  //   err.status = "error";
-  // }
+  if (!isAppError(err)) {
+    err.statusCode = 500;
+    err.status = "error";
+  }
 
   if (process.env.NODE_ENV === "development") {
     sendErrorDev(err as MyError, res);

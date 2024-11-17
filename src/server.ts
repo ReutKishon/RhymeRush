@@ -10,7 +10,7 @@ process.on("uncaughtException", (err) => {
 import app from "./app";
 import "./redisClient";
 
-const { default: mongoose } = require("mongoose");
+import { default as mongoose } from "mongoose";
 const DB = process.env.DATABASE.replace(
   "<db_password>",
   process.env.DATABASE_PASSWORD

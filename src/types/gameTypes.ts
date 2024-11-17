@@ -8,7 +8,9 @@ export interface Game {
   isStarted: boolean;
   currentTurn: number; // index of the player whose turn it is
   turnTimer: number; // time in seconds for each turn
+  sentenceLengthAllowed: number; // number of words allowed for each turn
   song: Sentence[];
+  winner: Player;
 }
 
 export interface Player {
@@ -17,7 +19,6 @@ export interface Player {
 
 export interface Sentence {
   content: string;
-  wordsCount: number;
   player: Player;
   timestamp: Date;
 }
