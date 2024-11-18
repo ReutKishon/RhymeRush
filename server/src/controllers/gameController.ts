@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import { v4 as uuidv4 } from "uuid";
 import catchAsync from "../utils/catchAsync";
-import { generateSongTopic } from "../utils/gameUtils";
 import { MyError } from "../utils/appError";
 import { Game, Player, Sentence } from "../types/gameTypes";
 import redisClient from "../redisClient";
+import generateSongTopic from "../utils/generateTopic";
 
 const getGameFromRedis = async (gameCode: string) => {
   const gameDataString = await redisClient.get(`game:${gameCode}`);

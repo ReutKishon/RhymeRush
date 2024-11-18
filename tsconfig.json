@@ -1,8 +1,0 @@
-{
-  "compilerOptions": {
-    "esModuleInterop": true, // enables default imports from CommonJS modules
-    "allowSyntheticDefaultImports": true, // allows synthetic default imports
-    "skipLibCheck": true, // skips type checking of declaration files
-    "forceConsistentCasingInFileNames": true, // ensures consistent casing in imports
-  },
-}

@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true, // enables default imports from CommonJS modules
+    "allowSyntheticDefaultImports": true, // allows synthetic default imports
+    "skipLibCheck": true, // skips type checking of declaration files
+    "forceConsistentCasingInFileNames": true, // ensures consistent casing in imports,
+    // "target": "ES2023",
+    // "module": "NodeNext",
+    // "moduleResolution":"nodenext"
+
+  },
+  
+  "include": [
+    "src/**/*.ts"              // Include all .ts files in the src folder
+  ],
+  
+}
