@@ -8,7 +8,7 @@ export interface Game {
   isStarted: boolean;
   currentTurn: number; // index of the player whose turn it is
   sentenceLengthAllowed: number; // number of words allowed for each turn
-  song: Sentence[];
+  lyrics: Sentence[];
   winner: Player;
 }
 

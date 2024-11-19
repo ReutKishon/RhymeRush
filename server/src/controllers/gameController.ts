@@ -41,7 +41,7 @@ export const createGame = catchAsync(
       isStarted: false,
       currentTurn: 0,
       sentenceLengthAllowed: 5,
-      song: [],
+      lyrics: [],
       winner: null,
     };
     await redisClient.set(`game:${gameCode}`, JSON.stringify(gameData));
@@ -176,7 +176,7 @@ export const addSentenceToSong = catchAsync(
       timestamp: new Date(),
     };
 
-    gameData.song.push(sentenceData);
+    gameData.lyrics.push(sentenceData);
 
     await redisClient.set(`game:${gameCode}`, JSON.stringify(gameData));
 
