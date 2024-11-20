@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Game, Player } from "../../../../shared/types/gameTypes";
+import PlayerList from "./PlayerList.tsx";
+import { useParams } from "react-router-dom";
 
-interface GameBoardProps {
-  gameCode: string; // Accept gameCode as a prop
-}
-
-const GameBoard: React.FC<GameBoardProps> = ({ gameCode }) => {
+const GameBoard: React.FC = () => {
+  const { gameCode } = useParams<{ gameCode: string }>();
   const [game, setGame] = useState<Game | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -16,9 +15,9 @@ const GameBoard: React.FC<GameBoardProps> = ({ gameCode }) => {
         const response = await axios.get(
           `http://localhost:3000/api/v1/game/${gameCode}`
         );
-        console.log("response: ",response);
-        const gameData : Game = response.data.data.gameData
-        console.log("gameData: ",response);
+        console.log("response: ", response);
+        const gameData: Game = response.data.data.gameData;
+        console.log("gameData: ", response);
 
         setGame(gameData);
       } catch (err) {
@@ -45,11 +44,7 @@ const GameBoard: React.FC<GameBoardProps> = ({ gameCode }) => {
         <li key={2}>Game Started: {game.isStarted ? "Yes" : "No"}</li>
         <li key={3}>Topic: {game.topic}</li>
         <h3>Players</h3>
-        <ul>
-          {game.players.map((player) => (
-            <li key={player.id}>{player.id}</li>
-          ))}
-        </ul>
+        <PlayerList initialPlayers={game.players} />
       </ul>
     </div>
   );

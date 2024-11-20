@@ -5,6 +5,7 @@ import { MyError } from "../utils/appError";
 import { Game, Player, Sentence } from "../../../shared/types/gameTypes";
 import redisClient from "../redisClient";
 import generateSongTopic from "../utils/generateTopic";
+import { io } from "../app";
 
 const getGameFromRedis = async (gameCode: string) => {
   const gameDataString = await redisClient.get(`game:${gameCode}`);
@@ -72,11 +73,25 @@ export const joinGame = catchAsync(
 
     gameData.players.push({ id: playerId });
     await redisClient.set(`game:${gameCode}`, JSON.stringify(gameData));
-
+    io.to(gameCode).emit("joinGame", { id: playerId });
     res.status(200).json({
       status: "success",
       data: { gameData },
     });
+  }
+);
+
+export const deleteGame = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { gameCode } = req.params;
+
+    if (!gameCode) {
+      return next(
+        new MyError("a game must be deleted by providing its code!", 401)
+      );
+    }
+    await redisClient.del(`game:${gameCode}`);
+    res.status(204).json({ status: "success", data: null });
   }
 );
 
@@ -99,11 +114,12 @@ export const exitGame = catchAsync(
 
     gameData.players = gameData.players.filter((p) => p.id !== playerId);
     if (gameData.players.length === 0) {
-      await redisClient.del(`game:${gameCode}`); //delete game key from redis
+      await redisClient.del(`game:${gameCode}`);
       return res.status(204).json({ status: "success", data: null });
     }
-    await redisClient.set(`game:${gameCode}`, JSON.stringify(gameData));
 
+    await redisClient.set(`game:${gameCode}`, JSON.stringify(gameData));
+    io.to(gameCode).emit("playerLeft", playerId);
     res.status(200).json({ status: "success", data: gameData });
   }
 );
@@ -113,7 +129,10 @@ export const getGameInfo = catchAsync(
     const { gameCode } = req.params;
     if (!gameCode) {
       return next(
-        new MyError(`a game must be retrieved by providing its code! ${gameCode}`, 401)
+        new MyError(
+          `a game must be retrieved by providing its code! ${gameCode}`,
+          401
+        )
       );
     }
 

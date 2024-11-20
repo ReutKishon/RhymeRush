@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { socket } from "../../services/socket";
+import { socket } from "../../services/socket.ts";
 
 import { Player } from "../../../../shared/types/gameTypes";
 
@@ -16,9 +16,18 @@ const PlayerList: React.FC<PlayerListProps> = ({ initialPlayers }) => {
       setPlayers((prevPlayers) => [...prevPlayers, newPlayer]);
     });
 
+    // Listen for players leaving the game
+    socket.on("playerLeft", (leftPlayerId: string) => {
+      console.log("Player left");
+      setPlayers((prevPlayers) =>
+        prevPlayers.filter((player) => player.id !== leftPlayerId)
+      );
+    });
+
     // Clean up the socket listener on component unmount
     return () => {
       socket.off("playerJoined");
+      socket.off("playerLeft");
     };
   }, []);
 
