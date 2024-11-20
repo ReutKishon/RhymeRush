@@ -1,17 +1,19 @@
 {
   "compilerOptions": {
+    "baseUrl": "./src", // Base directory for module resolution within server's src
+    "paths": {
+      "shared/*": ["../shared/*"] // Resolves 'shared' from the root directory
+    },
     "esModuleInterop": true, // enables default imports from CommonJS modules
     "allowSyntheticDefaultImports": true, // allows synthetic default imports
     "skipLibCheck": true, // skips type checking of declaration files
-    "forceConsistentCasingInFileNames": true, // ensures consistent casing in imports,
-    // "target": "ES2023",
-    // "module": "NodeNext",
-    // "moduleResolution":"nodenext"
-
+    "forceConsistentCasingInFileNames": true // ensures consistent casing in imports,
   },
-  
   "include": [
-    "src/**/*.ts"              // Include all .ts files in the src folder
+    "src/**/*.ts", // Include all TypeScript files under src
+    "../shared/**/*.ts" // Include all TypeScript files under shared
   ],
-  
+  "exclude": [
+    "node_modules" // Exclude node_modules from compilation
+  ]
 }

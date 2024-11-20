@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { UserDocument } from "../types/gameTypes";
+import { UserDocument } from "../../../shared/types/gameTypes";
 import userModel from "../models/userModel";
+
 import catchAsync from "../utils/catchAsync";
 import { ObjectId } from "mongoose";
 

@@ -2,7 +2,7 @@
   "name": "real-time-song-game",
   "version": "1.0.0",
   "description": "",
-  "main": "server.ts",
+  "main": "./src/server.ts",
   "scripts": {
     "start": "ts-node src/server.ts",
     "test": "jest"
@@ -19,6 +19,7 @@
     "express": "^4.21.1",
     "express-mongo-sanitize": "^2.2.0",
     "helmet": "^8.0.0",
+    "inherits": "^2.0.4",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.10.0",
     "mongoose": "^8.8.1",

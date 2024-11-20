@@ -1,6 +1,6 @@
 import bcrypt from "bcryptjs";
 import mongoose, { Model, Schema } from "mongoose";
-import { UserDocument } from "../types/gameTypes";
+import { UserDocument } from "../../../shared/types/gameTypes";
 import validator from "validator";
 
 const userSchema: Schema<UserDocument> = new mongoose.Schema(

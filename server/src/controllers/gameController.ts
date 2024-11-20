@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { v4 as uuidv4 } from "uuid";
 import catchAsync from "../utils/catchAsync";
 import { MyError } from "../utils/appError";
-import { Game, Player, Sentence } from "../types/gameTypes";
+import { Game, Player, Sentence } from "../../../shared/types/gameTypes";
 import redisClient from "../redisClient";
 import generateSongTopic from "../utils/generateTopic";
 
@@ -232,6 +232,26 @@ export const startGame = catchAsync(
     });
   }
 );
+
+// export const finishGame = catchAsync(
+//   async (req: Request, res: Response, next: NextFunction) => {
+//     const { gameCode } = req.params;
+
+//     const gameData = await getGameFromRedis(gameCode);
+
+//     // Check if the game has already ended
+//     if (!gameData.isStarted) {
+//       return next(new MyError("The game has already ended!", 400));
+//     }
+//     await redisClient.del(`game:${gameCode}`); //delete game key from redis
+
+//     res.status(200).json({
+//       status: "success",
+//       message: "Game ended successfully!",
+//       data: { gameData },
+//     });
+//   }
+// );
 
 export const checkGameStarted = async (
   req: Request,

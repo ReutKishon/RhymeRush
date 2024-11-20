@@ -4,6 +4,7 @@ import { createClient } from "redis";
 // Create and configure the Redis client
 const redisClient = createClient({
   url: "redis://redis-server:6379", // Replace with your actual Redis URL
+  // "redis://redis-server:6379"
 });
 
 // Connect to Redis
