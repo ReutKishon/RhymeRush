@@ -111,10 +111,9 @@ export const exitGame = catchAsync(
 export const getGameInfo = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { gameCode } = req.params;
-
     if (!gameCode) {
       return next(
-        new MyError("a game must be retrieved by providing its code!", 401)
+        new MyError(`a game must be retrieved by providing its code! ${gameCode}`, 401)
       );
     }
 

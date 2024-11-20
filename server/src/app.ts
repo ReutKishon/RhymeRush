@@ -3,6 +3,7 @@ import morgan from "morgan";
 import helmet from "helmet";
 import mongoSanitize from "express-mongo-sanitize";
 // import xss from "xss-clean";
+import cors from 'cors';
 import userRouter from "./routes/userRoutes";
 import gameRouter from "./routes/gameRoutes";
 import { MyError } from "./utils/appError";
@@ -21,6 +22,13 @@ io.on("connection", (socket) => {
     io.emit("add sentence", sentence);
   });
 });
+
+app.use(cors({
+  origin: 'http://localhost:5000', // Frontend URL
+  methods: 'GET,POST,PATCH',            // Allow specific methods
+  allowedHeaders: 'Content-Type', // Allow specific headers
+}));
+
 //set security HTTP headers
 app.use(helmet());
 
