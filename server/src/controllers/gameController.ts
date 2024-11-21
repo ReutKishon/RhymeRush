@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { v4 as uuidv4 } from "uuid";
 import catchAsync from "../utils/catchAsync";
-import { MyError } from "../utils/appError";
+import { AppError } from "../../../shared/utils/appError";
 import { Game, Player, Sentence } from "../../../shared/types/gameTypes";
 import redisClient from "../redisClient";
 import generateSongTopic from "../utils/generateTopic";
@@ -9,7 +9,7 @@ import generateSongTopic from "../utils/generateTopic";
 const getGameFromRedis = async (gameCode: string) => {
   const gameDataString = await redisClient.get(`game:${gameCode}`);
   if (!gameDataString) {
-    throw new MyError(`Game with code ${gameCode} does not exist!`, 404);
+    throw new AppError(`Game with code ${gameCode} does not exist!`, 404);
   }
   return JSON.parse(gameDataString) as Game;
 };
@@ -26,7 +26,7 @@ const isSentenceValid = (gameData: Game, sentence: string): boolean => {
 export const createGame = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     if (!req.body.gameCreatorId) {
-      return next(new MyError("a game must be created by a player!", 401));
+      return next(new AppError("a game must be created by a player!", 401));
     }
     const gameCreatorPlayer: Player = {
       id: req.body.gameCreatorId,
@@ -59,14 +59,14 @@ export const joinGame = catchAsync(
 
     if (!playerId || !gameCode) {
       return next(
-        new MyError("a player must join a game and provide their ID!", 401)
+        new AppError("a player must join a game and provide their ID!", 401)
       );
     }
     const gameData = await getGameFromRedis(gameCode);
 
     if (isPlayerInGame(gameData, playerId) != -1) {
       return next(
-        new MyError(`Player with ID ${playerId} is already in the game!`, 400)
+        new AppError(`Player with ID ${playerId} is already in the game!`, 400)
       );
     }
 
@@ -85,7 +85,7 @@ export const deleteGame = catchAsync(
 
     if (!gameCode) {
       return next(
-        new MyError("a game must be deleted by providing its code!", 401)
+        new AppError("a game must be deleted by providing its code!", 401)
       );
     }
     await redisClient.del(`game:${gameCode}`);
@@ -99,14 +99,14 @@ export const exitGame = catchAsync(
 
     if (!req.params.playerId || !req.params.gameCode) {
       return next(
-        new MyError("a player must join a game and provide their ID!", 401)
+        new AppError("a player must join a game and provide their ID!", 401)
       );
     }
     const gameData = await getGameFromRedis(gameCode);
 
     if (isPlayerInGame(gameData, playerId) == -1) {
       return next(
-        new MyError(`Player with ID ${playerId} is not in the game!`, 400)
+        new AppError(`Player with ID ${playerId} is not in the game!`, 400)
       );
     }
 
@@ -126,7 +126,7 @@ export const getGameInfo = catchAsync(
     const { gameCode } = req.params;
     if (!gameCode) {
       return next(
-        new MyError(
+        new AppError(
           `a game must be retrieved by providing its code! ${gameCode}`,
           401
         )
@@ -168,12 +168,15 @@ export const addSentenceToSong = catchAsync(
 
     // Check if it's the player's turn
     const currPlayerIdx = isPlayerInGame(gameData, playerId);
+    console.log("hey1",currPlayerIdx,gameData.currentTurn)
+
     if (currPlayerIdx != gameData.currentTurn) {
-      return next(new MyError("It is not your turn!", 400));
+      return next(new AppError("It is not your turn!", 400));
     }
+
     // Check if a sentence has been provided
     if (!sentence) {
-      return next(new MyError("A sentence is required!", 400));
+      return next(new AppError("A sentence is required!", 400));
     }
     // Validate if the sentence meets the required criteria
     if (!isSentenceValid(gameData, sentence)) {
@@ -185,6 +188,8 @@ export const addSentenceToSong = catchAsync(
         data: { gameData },
       });
     }
+    console.log("hey4")
+
     const sentenceData: Sentence = {
       content: sentence,
       player: { id: playerId } as Player,
@@ -192,6 +197,7 @@ export const addSentenceToSong = catchAsync(
     };
 
     gameData.lyrics.push(sentenceData);
+    gameData.currentTurn = 1 - gameData.currentTurn; // switch turns
 
     await redisClient.set(`game:${gameCode}`, JSON.stringify(gameData));
 
@@ -228,13 +234,13 @@ export const startGame = catchAsync(
     // Check if there are enough players to start the game
     if (gameData.players.length < 2) {
       return next(
-        new MyError("At least 2 players are required to start a game!", 400)
+        new AppError("At least 2 players are required to start a game!", 400)
       );
     }
 
     // Check if the game has already started
     if (gameData.isStarted) {
-      return next(new MyError("The game has already started!", 400));
+      return next(new AppError("The game has already started!", 400));
     }
 
     gameData.isStarted = true;
@@ -278,7 +284,7 @@ export const checkGameStarted = async (
   const gameData = await getGameFromRedis(gameCode);
 
   if (!gameData.isStarted) {
-    return next(new MyError("The game has not started yet!", 400));
+    return next(new AppError("The game has not started yet!", 400));
   }
   next();
 };

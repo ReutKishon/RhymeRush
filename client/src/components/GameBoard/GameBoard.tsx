@@ -3,6 +3,8 @@ import axios from "axios";
 import { Game, Player } from "../../../../shared/types/gameTypes";
 import PlayerList from "./PlayerList.tsx";
 import { useParams } from "react-router-dom";
+import SentenceInput from "./SentenceInput.tsx";
+import SongLyrics from "./SongLyrics.tsx";
 
 const GameBoard: React.FC = () => {
   const { gameCode } = useParams<{ gameCode: string }>();
@@ -46,6 +48,8 @@ const GameBoard: React.FC = () => {
         <h3>Players</h3>
         <PlayerList initialPlayers={game.players} />
       </ul>
+      <SentenceInput gameCode={game.gameCode} />
+      <SongLyrics initialLyrics={game.lyrics}/>
     </div>
   );
 };

@@ -6,12 +6,12 @@ import mongoSanitize from "express-mongo-sanitize";
 import cors from "cors";
 import userRouter from "./routes/userRoutes";
 import gameRouter from "./routes/gameRoutes";
-import { MyError } from "./utils/appError";
 import globalErrorHandler from "./controllers/errorController";
 
 import http from "http";
 import { Server, Socket } from "socket.io";
-import { Player } from "../../shared/types/gameTypes";
+import { Player, Sentence } from "../../shared/types/gameTypes";
+import { AppError } from "../../shared/utils/appError";
 
 const app = express();
 const server = http.createServer(app);
@@ -39,7 +39,7 @@ io.on("connection", (socket: Socket) => {
   });
 
   socket.on("joinGame", (gameCode: string, playerId: string) => {
-    socket.join(gameCode); 
+    socket.join(gameCode);
     console.log(`Player ${playerId} joined the game ${gameCode}`);
     const newPlayer: Player = { id: playerId };
     io.to(gameCode).emit("playerJoined", newPlayer);
@@ -49,6 +49,10 @@ io.on("connection", (socket: Socket) => {
     socket.leave(gameCode); // Leave the game room
     io.to(gameCode).emit("playerLeft", playerId);
     console.log(`Player ${playerId} left the game ${gameCode}`);
+  });
+
+  socket.on("addSentence", (gameCode: string, updatedLyrics: Sentence[]) => {
+    io.to(gameCode).emit("updatedLyrics", updatedLyrics);
   });
 
   socket.on("disconnect", () => {
@@ -77,7 +81,7 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v1/game", gameRouter);
 
 app.all("*", (req: Request, res: Response, next: NextFunction) => {
-  next(new MyError(`Can't find ${req.originalUrl} on this server`, 404));
+  next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
 });
 app.use(globalErrorHandler);
 

@@ -4,14 +4,13 @@ import { useNavigate } from "react-router-dom";
 
 const Home: React.FC = ({}) => {
   const navigate = useNavigate();
-  const myId = "6739987bf9d3cb784cd0c600";
 
   const handleCreateGame = async () => {
-    navigate(`/create-game/${myId}`); 
+    navigate(`/create-game`); 
   };
 
   const handleJoinGame = async () => {
-    navigate(`/join-game/${myId}`);
+    navigate(`/join-game`);
   };
 
   return (

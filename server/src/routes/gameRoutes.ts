@@ -9,7 +9,7 @@ import {
   startNewTurn,
   startGame,
   checkGameStarted,
-  deleteGame
+  deleteGame,
 } from "../controllers/gameController";
 
 const router = express.Router();
@@ -19,8 +19,6 @@ router.route("/:gameCode").get(getGameInfo).delete(deleteGame);
 router.route("/:gameCode/start").patch(startGame);
 router.route("/:gameCode/new-turn").patch(startNewTurn);
 router.route("/:gameCode/:playerId").patch(joinGame).delete(exitGame);
-router
-  .route("/:gameCode/:playerId/sentence")
-  .post(checkGameStarted, addSentenceToSong);
+router.route("/:gameCode/:playerId/sentence").post(addSentenceToSong); //checkGameStarted,
 
 export default router;
