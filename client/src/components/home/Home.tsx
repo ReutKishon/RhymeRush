@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 const Home: React.FC = ({}) => {
   const navigate = useNavigate();
-  const myId = "6737ad05508b50d29a052db0";
+  const myId = "6739987bf9d3cb784cd0c600";
 
   const handleCreateGame = async () => {
     navigate(`/create-game/${myId}`); 

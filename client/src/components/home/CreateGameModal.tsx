@@ -1,6 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import socket from "../../services/socket.ts";
 
 // interface CreateGameModalProps {
 //   //   isOpen: boolean;
@@ -15,7 +16,6 @@ const CreateGameModal: React.FC = ({}) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("REUT");
     const createGame = async () => {
       try {
         const response = await axios.post(`http://localhost:3000/api/v1/game`, {
@@ -35,6 +35,7 @@ const CreateGameModal: React.FC = ({}) => {
     if (!gameCode) {
       return;
     }
+    socket.emit("createGame", gameCode, playerId );
     navigate(`/game/${gameCode}`); // Navigate to the BoardGame page with gameCode
   };
 

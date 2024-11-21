@@ -1,6 +1,15 @@
-import { io } from 'socket.io-client';
+import io from "socket.io-client";
 
-// "undefined" means the URL will be computed from the `window.location` object
-const URL = 'http://localhost:4000';
+const URL = "http://localhost:3000";
 
-export const socket = io(URL);
+const socket = io(URL);
+
+socket.on("connect", () => {
+  console.log("Connected to the server with ID:", socket.id);
+});
+
+socket.on("disconnect", () => {
+  console.log("Disconnected from the server");
+});
+
+export default socket.connect();

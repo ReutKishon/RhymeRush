@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { socket } from "../../services/socket.ts";
+import socket from "../../services/socket.ts";
 
 import { Player } from "../../../../shared/types/gameTypes";
 
 interface PlayerListProps {
-  initialPlayers: Player[]; // Receive initial player list as a prop
+  initialPlayers: Player[];
 }
 
 const PlayerList: React.FC<PlayerListProps> = ({ initialPlayers }) => {
@@ -13,6 +13,7 @@ const PlayerList: React.FC<PlayerListProps> = ({ initialPlayers }) => {
   useEffect(() => {
     // Listen for new players joining the game
     socket.on("playerJoined", (newPlayer: Player) => {
+      console.log("Player joined with id: " + newPlayer.id);
       setPlayers((prevPlayers) => [...prevPlayers, newPlayer]);
     });
 
@@ -24,7 +25,6 @@ const PlayerList: React.FC<PlayerListProps> = ({ initialPlayers }) => {
       );
     });
 
-    // Clean up the socket listener on component unmount
     return () => {
       socket.off("playerJoined");
       socket.off("playerLeft");

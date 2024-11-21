@@ -5,7 +5,6 @@ import { MyError } from "../utils/appError";
 import { Game, Player, Sentence } from "../../../shared/types/gameTypes";
 import redisClient from "../redisClient";
 import generateSongTopic from "../utils/generateTopic";
-import { io } from "../app";
 
 const getGameFromRedis = async (gameCode: string) => {
   const gameDataString = await redisClient.get(`game:${gameCode}`);
@@ -73,7 +72,6 @@ export const joinGame = catchAsync(
 
     gameData.players.push({ id: playerId });
     await redisClient.set(`game:${gameCode}`, JSON.stringify(gameData));
-    io.to(gameCode).emit("joinGame", { id: playerId });
     res.status(200).json({
       status: "success",
       data: { gameData },
@@ -119,7 +117,6 @@ export const exitGame = catchAsync(
     }
 
     await redisClient.set(`game:${gameCode}`, JSON.stringify(gameData));
-    io.to(gameCode).emit("playerLeft", playerId);
     res.status(200).json({ status: "success", data: gameData });
   }
 );

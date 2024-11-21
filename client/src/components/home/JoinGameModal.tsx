@@ -1,18 +1,17 @@
 import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import socket from "../../services/socket.ts";
 
 const JoinGameModal: React.FC = () => {
   const [gameCode, setGameCode] = useState("");
   const { playerId } = useParams<{ playerId: string }>();
-
+  console.log(playerId);
   const navigate = useNavigate();
 
   const handleEnterGame = () => {
-    console.log("elad: ",gameCode,playerId);
 
     if (gameCode.trim() === "") {
-
       return;
     }
     const joinPlayer = async () => {
@@ -21,7 +20,7 @@ const JoinGameModal: React.FC = () => {
           `http://localhost:3000/api/v1/game/${gameCode}/${playerId}`
         );
         console.log("response: ", response);
-
+        socket.emit("joinGame", gameCode, playerId );
         navigate(`/game/${gameCode}`);
       } catch (err) {
         console.log(err);

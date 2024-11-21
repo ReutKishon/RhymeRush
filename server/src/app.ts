@@ -11,18 +11,38 @@ import globalErrorHandler from "./controllers/errorController";
 
 import http from "http";
 import { Server, Socket } from "socket.io";
+import { Player } from "../../shared/types/gameTypes";
 
 const app = express();
 const server = http.createServer(app);
 
-const io = new Server(server);
+app.use(
+  cors({
+    origin: "http://localhost:5000", // Frontend URL
+    methods: "GET,POST,PATCH", // Allow specific methods
+    allowedHeaders: "Content-Type", // Allow specific headers
+  })
+);
+
+const io = new Server(server, {
+  cors: {
+    origin: "http://localhost:5000",
+    methods: ["GET", "POST"],
+  },
+});
 
 io.on("connection", (socket: Socket) => {
   console.log("New client connected");
 
+  socket.on("createGame", (gameCode: string) => {
+    socket.join(gameCode); // Player who creates the game should also join the room
+  });
+
   socket.on("joinGame", (gameCode: string, playerId: string) => {
-    socket.join(gameCode); // Join the game room based on gameCode
+    socket.join(gameCode); 
     console.log(`Player ${playerId} joined the game ${gameCode}`);
+    const newPlayer: Player = { id: playerId };
+    io.to(gameCode).emit("playerJoined", newPlayer);
   });
 
   socket.on("leaveGame", (gameCode: string, playerId: string) => {
@@ -35,14 +55,6 @@ io.on("connection", (socket: Socket) => {
     console.log("A client disconnected");
   });
 });
-
-app.use(
-  cors({
-    origin: "http://localhost:5000", // Frontend URL
-    methods: "GET,POST,PATCH", // Allow specific methods
-    allowedHeaders: "Content-Type", // Allow specific headers
-  })
-);
 
 //set security HTTP headers
 app.use(helmet());
@@ -69,6 +81,4 @@ app.all("*", (req: Request, res: Response, next: NextFunction) => {
 });
 app.use(globalErrorHandler);
 
-export { io };
-
-export default app;
+export { server, io };

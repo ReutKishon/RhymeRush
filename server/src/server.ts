@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
+import { default as mongoose } from "mongoose";
 
 process.on("uncaughtException", (err) => {
   // console.log(err.name, err.message);
@@ -7,10 +8,9 @@ process.on("uncaughtException", (err) => {
   process.exit(1);
 });
 
-import app from "./app";
+import { server } from "./app";
 import "./redisClient";
-// console.log(process.env.DATABASE,process.env.DATABASE_PASSWORD)
-import { default as mongoose } from "mongoose";
+
 const DB = process.env.DATABASE.replace(
   "<db_password>",
   process.env.DATABASE_PASSWORD
@@ -26,7 +26,7 @@ mongoose
   });
 
 const port = process.env.PORT || 3000;
-const server = app.listen(port, () => {
+server.listen(port, () => {
   console.log(`app running on port ${port} ...`);
 });
 
