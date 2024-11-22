@@ -6,13 +6,13 @@ import GameBoard from "./components/GameBoard/GameBoard.tsx";
 import Home from "./components/home/Home.tsx";
 import JoinGameModal from "./components/home/JoinGameModal.tsx";
 import socket from "./services/socket.ts";
-import useUserStore from "./store.ts";
-import { Player } from "../../shared/types/gameTypes.ts";
+import Welcome from "./components/auth/Welcome.tsx";
+import SignUp from "./components/auth/SignUp.tsx";
 
 function App() {
-  const setUser = useUserStore((state) => state.setUser);
-  const mePlayer: Player = { id: "67379a92656f6d31f408d32c" };
-  setUser(mePlayer);
+  // const setUser = useUserStore((state) => state.setUser);
+  // const mePlayer: Player = { id: "6739987bf9d3cb784cd0c600" };
+  // setUser(mePlayer);
 
   useEffect(() => {
     return () => {
@@ -24,7 +24,10 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Welcome />} />
+        <Route path="/signin" element={<SignUp />} />
+        <Route path="/signup" element={<SignUp />} />
+        <Route path="/home" element={<Home />} />
         <Route path="/create-game" element={<CreateGameModal />} />
         <Route path="/join-game" element={<JoinGameModal />} />
         <Route path="/game/:gameCode" element={<GameBoard />} />

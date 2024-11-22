@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react";
 import socket from "../../services/socket.ts";
 import useUserStore from "../../store.ts";
 import axios from "axios";
-import { Game, Sentence } from "../../../../shared/types/gameTypes.ts";
-import { AppError } from "../../../../shared/utils/appError.ts";
+import { Game } from "../../../../shared/types/gameTypes.ts";
 
 interface SentenceInputProps {
   gameCode: string;
@@ -12,7 +11,7 @@ interface SentenceInputProps {
 const SentenceInput: React.FC<SentenceInputProps> = ({ gameCode }) => {
   const [sentence, setSentence] = useState<string>("");
   const [error, setError] = useState<string>("");
-  const { user } = useUserStore((state) => state);
+  const { userId } = useUserStore((state) => state);
 
   // Handle sentence change in the input field
   const handleSentenceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -28,11 +27,12 @@ const SentenceInput: React.FC<SentenceInputProps> = ({ gameCode }) => {
     const addSentence = async () => {
       try {
         const response = await axios.post(
-          `http://localhost:3000/api/v1/game/${gameCode}/${user.id}/sentence`,
+          `http://localhost:3000/api/v1/game/${gameCode}/${userId}/sentence`,
           { sentence }
         );
-        const updatedLyrics: Sentence[] = response.data.data.gameData.lyrics;
-        socket.emit("addSentence", gameCode, updatedLyrics);
+        const gameData: Game = response.data.data.gameData;
+        socket.emit("addSentence", gameCode, gameData.lyrics);
+        socket.emit("updateTurn", gameCode, gameData.currentTurn);
       } catch (err) {
         setError(err.message);
       }

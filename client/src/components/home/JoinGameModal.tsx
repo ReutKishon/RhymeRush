@@ -1,12 +1,12 @@
 import axios from "axios";
 import React, { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import socket from "../../services/socket.ts";
 import useUserStore from "../../store.ts";
 
 const JoinGameModal: React.FC = () => {
   const [gameCode, setGameCode] = useState("");
-  const { user } = useUserStore((state) => state);
+  const { userId } = useUserStore((state) => state);
   const navigate = useNavigate();
 
   const handleEnterGame = () => {
@@ -17,10 +17,10 @@ const JoinGameModal: React.FC = () => {
     const joinPlayer = async () => {
       try {
         const response = await axios.patch(
-          `http://localhost:3000/api/v1/game/${gameCode}/${user.id}`
+          `http://localhost:3000/api/v1/game/${gameCode}/${userId}`
         );
         console.log("response: ", response);
-        socket.emit("joinGame", gameCode, user.id );
+        socket.emit("joinGame", gameCode, userId );
         navigate(`/game/${gameCode}`);
       } catch (err) {
         console.log(err);

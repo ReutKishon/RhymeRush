@@ -1,16 +1,17 @@
 import { create } from "zustand";
-import { Player } from "../../shared/types/gameTypes";
 
 interface UserState {
-  user: Player;
-  setUser: (user: Player) => void;
+  userId: string;
+  username: string;
+  setUserId: (id: string) => void;
+  setUsername: (username: string) => void;
 }
-const defaultPlayer: Player = {
-  id: "",
-};
+
 const useUserStore = create<UserState>((set) => ({
-  user: defaultPlayer,
-  setUser: (user: Player) => set({ user: user }),
+  userId: "",
+  username: "",
+  setUserId: (id: string) => set(() => ({ userId: id })),
+  setUsername: (username: string) => set(() => ({ username })),
 }));
 
 export default useUserStore;

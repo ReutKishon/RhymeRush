@@ -11,7 +11,7 @@ import useUserStore from "../../store.ts";
 // }
 
 const CreateGameModal: React.FC = ({}) => {
-  const { user } = useUserStore((state) => state);
+  const { userId } = useUserStore((state) => state);
   const [gameCode, setGameCode] = useState("");
 
   const navigate = useNavigate();
@@ -20,7 +20,7 @@ const CreateGameModal: React.FC = ({}) => {
     const createGame = async () => {
       try {
         const response = await axios.post(`http://localhost:3000/api/v1/game`, {
-          gameCreatorId: user.id,
+          gameCreatorId: userId,
         });
         console.log("response: ", response);
 
@@ -30,27 +30,17 @@ const CreateGameModal: React.FC = ({}) => {
       }
     };
     createGame();
-  }, [user.id]);
+  }, [userId]);
 
   const handleEnterGame = () => {
     if (!gameCode) {
       return;
     }
-    socket.emit("createGame", gameCode, user.id );
-    navigate(`/game/${gameCode}`); // Navigate to the BoardGame page with gameCode
+    socket.emit("createGame", gameCode, userId);
+    navigate(`/game/${gameCode}`); 
   };
 
-  //   if (!isOpen) {
-  //     const deleteGame = async () => {
-  //       try {
-  //         await axios.delete(`http://localhost:3000/api/v1/game/${gameCode}`);
-  //       } catch (err) {
-  //         console.log(err);
-  //       }
-  //     };
-  //     deleteGame();
-  //     return null;
-  //   }
+
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
