@@ -8,6 +8,7 @@ import JoinGameModal from "./components/home/JoinGameModal.tsx";
 import socket from "./services/socket.ts";
 import Welcome from "./components/auth/Welcome.tsx";
 import SignUp from "./components/auth/SignUp.tsx";
+import SignIn from "./components/auth/SignIn.tsx";
 
 function App() {
   // const setUser = useUserStore((state) => state.setUser);
@@ -25,7 +26,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Welcome />} />
-        <Route path="/signin" element={<SignUp />} />
+        <Route path="/signin" element={<SignIn />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/home" element={<Home />} />
         <Route path="/create-game" element={<CreateGameModal />} />

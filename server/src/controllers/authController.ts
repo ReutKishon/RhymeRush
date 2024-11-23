@@ -5,6 +5,7 @@ import userModel from "../models/userModel";
 
 import catchAsync from "../utils/catchAsync";
 import { ObjectId } from "mongoose";
+import { AppError } from "../../../shared/utils/appError";
 
 const signToken = (id: ObjectId) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -46,12 +47,6 @@ export const signUp = catchAsync(
 export const login = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { email, password } = req.body;
-    //1) Check if email and password exist
-
-    if (!email || !password) {
-      return;
-      // next(new AppError("please provide email and password!", 400));
-    }
 
     console.log(email, password);
 
@@ -61,10 +56,25 @@ export const login = catchAsync(
       .select("+password");
     console.log(user);
     if (!user || !(await user.correctPassword(password, user.password))) {
-      // return next(new AppError("Incorrect email or password", 401));
-      return;
+      return next(new AppError("Incorrect email or password", 401));
     }
     //3) If valid, generate a token and send it back to the client
     createSendToken(user, 200, res);
+  }
+);
+
+export const getUserInfo = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { id } = req.params;
+
+    const user: UserDocument = await userModel.findOne({ _id: id });
+    // console.log(user);
+    if (!user) {
+      return next(new AppError("No user found", 401));
+    }
+    res.status(200).json({
+      status: "success",
+      data: { user },
+    });
   }
 );

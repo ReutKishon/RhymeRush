@@ -1,20 +1,26 @@
 import { Request, Response, NextFunction } from "express";
 import { MongoError } from "mongodb";
 import { CastError, Error as MongooseError } from "mongoose";
-import {AppError} from "../../../shared/utils/appError";
+import { AppError } from "../../../shared/utils/appError";
 
 const handleCastErrorDB = (err: CastError): AppError => {
   const message = `Invalid ${err.path}: ${err.value}`;
   return new AppError(message, 400);
 };
 
-const handleDuplicateFieldsDB = (err: MongoError & { keyValue?: Record<string, any> }): AppError => {
-  const value = err.keyValue ? Object.values(err.keyValue)[0] : "unknown";
-  const message = `Duplicate field value: ${value}. Please use another value.`;
+const handleDuplicateFieldsDB = (
+  err: MongoError & { keyValue?: Record<string, any> }
+): AppError => {
+  const keyValue = err.keyValue || {};
+  const fieldName = Object.keys(keyValue)[0] || "field";
+  // const value = keyValue[fieldName] || "unknown value";
+  const message = `${fieldName} is already taken. Please use another ${fieldName}.`;
   return new AppError(message, 400);
 };
 
-const handleValidationErrorDB = (err: MongooseError.ValidationError): AppError => {
+const handleValidationErrorDB = (
+  err: MongooseError.ValidationError
+): AppError => {
   const errors = Object.values(err.errors).map((el) => el.message);
   const message = `Invalid input data. ${errors.join(". ")}`;
   return new AppError(message, 400);
@@ -39,6 +45,7 @@ const sendErrorDev = (err: AppError, res: Response): void => {
 
 const sendErrorProd = (err: AppError, res: Response): void => {
   if (err.isOperational) {
+    console.log("mess ", err.message);
     res.status(err.statusCode).json({
       status: err.status,
       message: err.message,
@@ -49,28 +56,24 @@ const sendErrorProd = (err: AppError, res: Response): void => {
   }
 };
 
-// Type guard to check if the error is an instance of AppError
-const isAppError = (err: any): err is AppError => err instanceof AppError;
+
 
 const globalErrorHandler = (
-  err: any, // Set to any to allow type checks
+  err: Error | AppError, // Set to any to allow type checks
   req: Request,
   res: Response,
   next: NextFunction
 ): void => {
-  if (!isAppError(err)) {
-    err.statusCode = 500;
-    err.status = "error";
-  }
-
+  console.log("namr ", err.constructor.name);
   if (process.env.NODE_ENV === "development") {
     sendErrorDev(err as AppError, res);
   } else if (process.env.NODE_ENV === "production") {
-    let error = { ...err };
-
+    let error = { ...err, message: err.message };
     if (err.name === "CastError") error = handleCastErrorDB(err as CastError);
-    if ((err as MongoError).code === 11000) error = handleDuplicateFieldsDB(err as MongoError);
-    if (err.name === "ValidationError") error = handleValidationErrorDB(err as MongooseError.ValidationError);
+    if ((err as MongoError).code === 11000)
+      error = handleDuplicateFieldsDB(err as MongoError);
+    if (err.name === "ValidationError")
+      error = handleValidationErrorDB(err as MongooseError.ValidationError);
     if (err.name === "JsonWebTokenError") error = handleJWTError();
     if (err.name === "TokenExpiredError") error = handleJWTExpiredError();
 

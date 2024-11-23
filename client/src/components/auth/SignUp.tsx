@@ -25,19 +25,23 @@ const SignUp: React.FC = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:3000/api/v1/users/signup", {
-        username: username,
-        email: email,
-        password: password,
-        passwordConfirm: passwordConfirm,
-      });
-
+      const response = await axios.post(
+        "http://localhost:3000/api/v1/users/signup",
+        {
+          username: username,
+          email: email,
+          password: password,
+          passwordConfirm: passwordConfirm,
+        }
+      );
+      console.log(response);
       setUsernameGlobal(username);
       setUserIdGlobal(response.data.data.user._id);
 
       navigate("/home");
     } catch (err: any) {
-      setError(err.message || "Something went wrong!");
+      // console.log(err);
+      setError(err.response.data.message || "Something went wrong!");
     }
   };
 
