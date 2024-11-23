@@ -55,9 +55,10 @@ io.on("connection", (socket: Socket) => {
     io.to(gameCode).emit("updatedLyrics", updatedLyrics);
   });
 
-  socket.on("updateTurn", (gameCode: string, turn: number) => {
-    io.to(gameCode).emit("updatedTurn", turn);
+  socket.on("updateTurn", (gameCode: string, currentTurnPlayer: Player) => {
+    io.to(gameCode).emit("updatedTurn", currentTurnPlayer);
   });
+
 
   socket.on("disconnect", () => {
     console.log("A client disconnected");

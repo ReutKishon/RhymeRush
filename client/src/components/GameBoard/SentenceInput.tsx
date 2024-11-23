@@ -30,15 +30,24 @@ const SentenceInput: React.FC<SentenceInputProps> = ({ gameCode }) => {
           `http://localhost:3000/api/v1/game/${gameCode}/${userId}/sentence`,
           { sentence }
         );
+
+        if (!response.data.data.sentenceIsValid) {
+          setError("Invalid sentence."); //TODO: open a modal for loosing the game
+          return;
+        }
+
         const gameData: Game = response.data.data.gameData;
         socket.emit("addSentence", gameCode, gameData.lyrics);
-        socket.emit("updateTurn", gameCode, gameData.currentTurn);
+        socket.emit(
+          "updateTurn",
+          gameCode,
+          gameData.players[gameData.currentTurn]
+        );
       } catch (err) {
-        setError(err.message);
+        setError(err.response.data.message);
       }
     };
     addSentence();
-
     setSentence("");
     setError("");
   };

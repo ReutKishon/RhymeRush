@@ -10,7 +10,7 @@ import socket from "../../services/socket.ts";
 const GameBoard: React.FC = () => {
   const { gameCode } = useParams<{ gameCode: string }>();
   const [game, setGame] = useState<Game | null>(null);
-  const [turn, setTurn] = useState<number>(0);
+  const [turn, setTurn] = useState<Player>();
 
   const [error, setError] = useState<string | null>(null);
 
@@ -24,19 +24,26 @@ const GameBoard: React.FC = () => {
         // console.log("gameData: ", response);
 
         setGame(gameData);
-        setTurn(gameData.currentTurn);
+        setTurn(gameData.players[gameData.currentTurn]);
       } catch (err) {
         setError(`Failed to fetch game details: ${err.message}`);
       }
     };
 
     fetchGame();
-    socket.on("updatedTurn", (updatedTurn: number) => {
-      setTurn(updatedTurn);
+    socket.on("updatedTurn", (currentTurnPlayer: Player) => {
+      setTurn(currentTurnPlayer);
     });
-
+    socket.on("gameEnd", (winner: Player) => {
+      setError(`game over. The winner is ${winner.id}`);
+    });
+    socket.on("playerLost", (lostPlayer: Player) => {
+      setError(`${lostPlayer.id} lost and left the game. continue the game`);
+    });
     return () => {
       socket.off("updatedTurn");
+      socket.off("gameEnd");
+
     };
   }, [gameCode]);
 
@@ -55,7 +62,7 @@ const GameBoard: React.FC = () => {
         <li key={1}>Game Code: {game.gameCode}</li>
         <li key={2}>Game Started: {game.isStarted ? "Yes" : "No"}</li>
         <li key={3}>Topic: {game.topic}</li>
-        <li key={3}>Current Turn: {turn}</li>
+        <li key={3}>Current Turn: {turn?.id}</li>
 
         <h3>Players</h3>
         <PlayerList initialPlayers={game.players} />
