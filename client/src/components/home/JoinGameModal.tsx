@@ -20,8 +20,8 @@ const JoinGameModal: React.FC = () => {
           `http://localhost:3000/api/v1/game/${gameCode}/${userId}`
         );
         // console.log("response: ", response);
-
-        socket.emit("joinGame", gameCode, response.data.joinedPlayer);
+        const joinedPlayer: Player = response.data.joinedPlayer;
+        socket.emit("joinGame", gameCode, joinedPlayer);
         navigate(`/game/${gameCode}`);
       } catch (err) {
         console.log(err);

@@ -2,12 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { v4 as uuidv4 } from "uuid";
 import catchAsync from "../utils/catchAsync";
 import { AppError } from "../../../shared/utils/appError";
-import {
-  Game,
-  Player,
-  Sentence,
-  UserDocument,
-} from "../../../shared/types/gameTypes";
+import { Game, Player, Sentence } from "../../../shared/types/gameTypes";
 import redisClient from "../redisClient";
 import generateSongTopic from "../utils/generateTopic";
 import { io } from "../app";

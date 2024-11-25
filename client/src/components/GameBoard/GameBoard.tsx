@@ -24,7 +24,7 @@ const GameBoard: React.FC = () => {
         console.log("gameData: ", response);
 
         setGame(gameData);
-        console.log("turn: ",gameData.currentTurn)
+        console.log("turn: ", gameData.currentTurn);
         setTurn(gameData.players[gameData.currentTurn]);
       } catch (err) {
         setError(`Failed to fetch game details: ${err.message}`);
@@ -58,21 +58,19 @@ const GameBoard: React.FC = () => {
   }
 
   return (
-    <div className="player-list">
-      <h2>Game Info</h2>
-      <h2>{modalMessage}</h2>
-      <ul>
-        <li key={1}>Game Code: {game.gameCode}</li>
-        <li key={2}>Game Started: {game.isStarted ? "Yes" : "No"}</li>
-        <li key={3}>Topic: {game.topic}</li>
-        <li key={4}>Current Turn: {turn?.username}</li>
-
-        <h3>Players</h3>
-        <PlayerList initialPlayers={game.players} />
-      </ul>
-      <SentenceInput gameCode={game.gameCode} />
-      <SongLyrics initialLyrics={game.lyrics} />
-    </div>
+    <div className="relative h-screen p-4">
+    <h2>Game Info</h2>
+    <h2>{modalMessage}</h2>
+    <ul>
+      <li key={1}>Game Code: {game.gameCode}</li>
+      <li key={2}>Game Started: {game.isStarted ? "Yes" : "No"}</li>
+      <li key={3}>Topic: {game.topic}</li>
+      <li key={4}>Current Turn: {turn?.username}</li>
+    </ul>
+    <PlayerList initialPlayers={game.players} />
+    {/* <SentenceInput gameCode={game.gameCode} />
+    <SongLyrics initialLyrics={game.lyrics} /> */}
+  </div>
   );
 };
 

@@ -1,0 +1,12 @@
+{
+    "compilerOptions": {
+      "strict": true,
+      "baseUrl": "./",
+      "paths": {
+        "@/*": ["src/*"]
+      }
+    },
+    "include": ["src/*/*.tsx", "global.d.ts"],
+    "exclude": ["node_modules"]
+  }
+  

@@ -9,6 +9,7 @@ import socket from "./services/socket.ts";
 import Welcome from "./components/auth/Welcome.tsx";
 import SignUp from "./components/auth/SignUp.tsx";
 import SignIn from "./components/auth/SignIn.tsx";
+import "./index.css";
 
 function App() {
   // const setUser = useUserStore((state) => state.setUser);

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import socket from "../../services/socket.ts";
 
 import { Player } from "../../../../shared/types/gameTypes";
+import PlayerAvatar from "./PlayerAvatar.tsx";
 
 interface PlayerListProps {
   initialPlayers: Player[];
@@ -31,14 +32,11 @@ const PlayerList: React.FC<PlayerListProps> = ({ initialPlayers }) => {
   }, []);
 
   return (
-    <div className="player-list">
-      <h2>Players in the Game</h2>
-      <ul>
-        {players.map((player) => (
-          <li key={player.id}>{player.id}</li>
-        ))}
-      </ul>
-    </div>
+    <div className="absolute right-0 top-0 flex flex-col space-y-4 p-4">
+    {players.map((player, index) => (
+      <PlayerAvatar key={index} username={player.username} />
+    ))}
+  </div>
   );
 };
 

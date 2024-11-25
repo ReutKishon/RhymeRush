@@ -30,24 +30,29 @@ const io = new Server(server, {
     methods: ["GET", "POST"],
   },
 });
+const playerSocketMap: Record<string, { playerId: string; gameCode: string }> =
+  {};
 
 io.on("connection", (socket: Socket) => {
   console.log("New client connected");
 
-  socket.on("createGame", (gameCode: string) => {
-    socket.join(gameCode); // Player who creates the game should also join the room
+  socket.on("createGame", (gameCode: string, playerId: string) => {
+    socket.join(gameCode);
+    playerSocketMap[socket.id] = { playerId: playerId, gameCode };
   });
 
   socket.on("joinGame", (gameCode: string, player: Player) => {
     socket.join(gameCode);
-    console.log(`Player ${player.username} joined the game ${gameCode}`);
+    playerSocketMap[socket.id] = { playerId: player.id, gameCode };
+    // console.log(`Player ${player.username} joined the game ${gameCode}`);
     io.to(gameCode).emit("playerJoined", player);
   });
 
   socket.on("leaveGame", (gameCode: string, playerId: string) => {
     socket.leave(gameCode); // Leave the game room
     io.to(gameCode).emit("playerLeft", playerId);
-    console.log(`Player ${playerId} left the game ${gameCode}`);
+    delete playerSocketMap[socket.id];
+    // console.log(`Player ${playerId} left the game ${gameCode}`);
   });
 
   socket.on("addSentence", (gameCode: string, updatedLyrics: Sentence[]) => {
@@ -58,8 +63,13 @@ io.on("connection", (socket: Socket) => {
     io.to(gameCode).emit("updatedTurn", currentTurnPlayer);
   });
 
-
   socket.on("disconnect", () => {
+    const playerInfo = playerSocketMap[socket.id];
+    if (playerInfo) {
+      // Emit that the player left the game
+      io.to(playerInfo.gameCode).emit("playerLeft", playerInfo.playerId);
+      delete playerSocketMap[socket.id];
+    }
     console.log("A client disconnected");
   });
 });
