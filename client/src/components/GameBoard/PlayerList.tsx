@@ -13,7 +13,6 @@ const PlayerList: React.FC<PlayerListProps> = ({ initialPlayers }) => {
   useEffect(() => {
     // Listen for new players joining the game
     socket.on("playerJoined", (newPlayer: Player) => {
-      console.log("Player joined with id: " + newPlayer.id);
       setPlayers((prevPlayers) => [...prevPlayers, newPlayer]);
     });
 

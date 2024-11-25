@@ -54,7 +54,6 @@ export const login = catchAsync(
     const user: UserDocument = await userModel
       .findOne({ email })
       .select("+password");
-    console.log(user);
     if (!user || !(await user.correctPassword(password, user.password))) {
       return next(new AppError("Incorrect email or password", 401));
     }
@@ -63,18 +62,24 @@ export const login = catchAsync(
   }
 );
 
-export const getUserInfo = catchAsync(
+export const getUserHandler = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
 
-    const user: UserDocument = await userModel.findOne({ _id: id });
+    const user: UserDocument = await getUserInfo(id);
     // console.log(user);
-    if (!user) {
-      return next(new AppError("No user found", 401));
-    }
+
     res.status(200).json({
       status: "success",
       data: { user },
     });
   }
 );
+
+export const getUserInfo = async (userId: string) => {
+  const user: UserDocument = await userModel.findOne({ _id: userId });
+  if (!user) {
+    throw new AppError("No user found", 401);
+  }
+  return user;
+};

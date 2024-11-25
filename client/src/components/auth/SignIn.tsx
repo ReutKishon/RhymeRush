@@ -29,9 +29,10 @@ const SignIn: React.FC = () => {
         }
       );
       console.log(response);
-      setUsernameGlobal(response.data.data.user.username);
       const id = String(response.data.data.user._id);
       setUserIdGlobal(id);
+      setUsernameGlobal(response.data.data.user.username);
+
 
       navigate("/home");
     } catch (err: any) {

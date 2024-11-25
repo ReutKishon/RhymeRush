@@ -2,11 +2,16 @@ import { Request, Response, NextFunction } from "express";
 import { v4 as uuidv4 } from "uuid";
 import catchAsync from "../utils/catchAsync";
 import { AppError } from "../../../shared/utils/appError";
-import { Game, Player, Sentence } from "../../../shared/types/gameTypes";
+import {
+  Game,
+  Player,
+  Sentence,
+  UserDocument,
+} from "../../../shared/types/gameTypes";
 import redisClient from "../redisClient";
 import generateSongTopic from "../utils/generateTopic";
 import { io } from "../app";
-
+import { getUserInfo } from "./authController";
 const getGameFromRedis = async (gameCode: string) => {
   const gameDataString = await redisClient.get(`game:${gameCode}`);
   if (!gameDataString) {
@@ -15,12 +20,12 @@ const getGameFromRedis = async (gameCode: string) => {
   return JSON.parse(gameDataString) as Game;
 };
 
-const getPlayerIndex = (gameData: Game, playerId: string): number => {
-  return gameData.players.findIndex((player) => player.id === playerId);
+const getPlayerIndex = (players: Player[], playerId: string): number => {
+  return players.findIndex((player) => player.id === playerId);
 };
 
-const isPlayerInGame = (gameData: Game, playerId: string): boolean => {
-  return getPlayerIndex(gameData, playerId) != -1;
+const isPlayerInGame = (players: Player[], playerId: string): boolean => {
+  return getPlayerIndex(players, playerId) != -1;
 };
 
 const isSentenceValid = (gameData: Game, sentence: string): boolean => {
@@ -28,21 +33,30 @@ const isSentenceValid = (gameData: Game, sentence: string): boolean => {
   //TODO: check if sentence is related to the topic
 };
 
+export const getPlayerData = async (playerId: string) => {
+  const user = await getUserInfo(playerId);
+  console.log("1: ", user);
+  const playerData: Player = { id: playerId, username: user.username };
+  console.log("2: ", playerData);
+  return playerData;
+};
+
 export const createGame = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    if (!req.body.gameCreatorId) {
+    const { gameCreatorId } = req.body;
+
+    if (!gameCreatorId) {
       return next(new AppError("a game must be created by a player!", 401));
     }
-    const gameCreatorPlayer: Player = {
-      id: req.body.gameCreatorId,
-    };
+
+    const gameCreator = await getPlayerData(req.body.gameCreatorId);
     const gameCode = uuidv4().slice(0, 12); // Generate a 6-char unique code
 
     const gameData: Game = {
       gameCode: gameCode,
       topic: generateSongTopic(),
       maxPlayers: 2,
-      players: [gameCreatorPlayer],
+      players: [gameCreator],
       isStarted: false,
       currentTurn: 0,
       sentenceLengthAllowed: 5,
@@ -68,18 +82,19 @@ export const joinGame = catchAsync(
       );
     }
     const gameData = await getGameFromRedis(gameCode);
-
-    if (isPlayerInGame(gameData, playerId)) {
+    const playerData = await getPlayerData(playerId);
+    console.log("joined player: ", playerData);
+    if (isPlayerInGame(gameData.players, playerId)) {
       return next(
         new AppError(`Player with ID ${playerId} is already in the game!`, 400)
       );
     }
 
-    gameData.players.push({ id: playerId });
+    gameData.players.push(playerData);
     await redisClient.set(`game:${gameCode}`, JSON.stringify(gameData));
     res.status(200).json({
       status: "success",
-      data: { gameData },
+      joinedPlayer: playerData,
     });
   }
 );
@@ -118,7 +133,7 @@ export const leaveGameHandler = catchAsync(
     }
     const gameData = await getGameFromRedis(gameCode);
 
-    if (!isPlayerInGame(gameData, playerId)) {
+    if (!isPlayerInGame(gameData.players, playerId)) {
       return next(
         new AppError(`Player with ID ${playerId} is not in the game!`, 400)
       );
@@ -168,12 +183,12 @@ export const getAllGames = catchAsync(
 
 const addSentenceToSong = async (
   gameData: Game,
-  playerId: string,
+  player: Player,
   sentence: string
 ) => {
   const sentenceData: Sentence = {
     content: sentence,
-    player: { id: playerId } as Player,
+    player,
     timestamp: new Date(),
   };
 
@@ -194,7 +209,7 @@ export const addSentenceHandler = catchAsync(
     const gameData = await getGameFromRedis(gameCode);
 
     // Check if it's the player's turn
-    const playerIndex = getPlayerIndex(gameData, playerId);
+    const playerIndex = getPlayerIndex(gameData.players, playerId);
     if (playerIndex != gameData.currentTurn) {
       return next(new AppError("It is not your turn!", 400));
     }
@@ -217,7 +232,7 @@ export const addSentenceHandler = catchAsync(
       });
     }
 
-    await addSentenceToSong(gameData, playerId, sentence);
+    await addSentenceToSong(gameData, playerData, sentence);
 
     res.status(200).json({
       status: "success",

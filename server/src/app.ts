@@ -38,11 +38,10 @@ io.on("connection", (socket: Socket) => {
     socket.join(gameCode); // Player who creates the game should also join the room
   });
 
-  socket.on("joinGame", (gameCode: string, playerId: string) => {
+  socket.on("joinGame", (gameCode: string, player: Player) => {
     socket.join(gameCode);
-    console.log(`Player ${playerId} joined the game ${gameCode}`);
-    const newPlayer: Player = { id: playerId };
-    io.to(gameCode).emit("playerJoined", newPlayer);
+    console.log(`Player ${player.username} joined the game ${gameCode}`);
+    io.to(gameCode).emit("playerJoined", player);
   });
 
   socket.on("leaveGame", (gameCode: string, playerId: string) => {

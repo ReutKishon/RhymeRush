@@ -4,13 +4,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import socket from "../../services/socket.ts";
 import useUserStore from "../../store.ts";
 
-// interface CreateGameModalProps {
-//   //   isOpen: boolean;
-//   //   onClose: () => void;
-//   gameCode: string;
-// }
 
-const CreateGameModal: React.FC = ({}) => {
+const CreateGameModal: React.FC = () => {
   const { userId } = useUserStore((state) => state);
   const [gameCode, setGameCode] = useState("");
 
@@ -30,17 +25,15 @@ const CreateGameModal: React.FC = ({}) => {
       }
     };
     createGame();
-  }, [userId]);
+  }, []);
 
   const handleEnterGame = () => {
     if (!gameCode) {
       return;
     }
     socket.emit("createGame", gameCode, userId);
-    navigate(`/game/${gameCode}`); 
+    navigate(`/game/${gameCode}`);
   };
-
-
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">

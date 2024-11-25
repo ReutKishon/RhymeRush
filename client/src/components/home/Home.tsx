@@ -5,11 +5,11 @@ import { useNavigate } from "react-router-dom";
 const Home: React.FC = ({}) => {
   const navigate = useNavigate();
 
-  const handleCreateGame = async () => {
-    navigate(`/create-game`); 
+  const handleCreateGame = () => {
+    navigate(`/create-game`);
   };
 
-  const handleJoinGame = async () => {
+  const handleJoinGame = () => {
     navigate(`/join-game`);
   };
 

@@ -24,7 +24,7 @@ const SongLyrics: React.FC<SongLyricsProps> = ({ initialLyrics }) => {
       <div>
         {lyrics.map((sentence, index) => (
           <p key={index}>
-            {sentence.player.id}: {sentence.content}
+            {sentence.player.username}: {sentence.content}
           </p>
         ))}
       </div>

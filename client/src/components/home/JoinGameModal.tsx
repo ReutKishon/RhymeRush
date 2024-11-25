@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import socket from "../../services/socket.ts";
 import useUserStore from "../../store.ts";
+import { Player } from "../../../../shared/types/gameTypes.ts";
 
 const JoinGameModal: React.FC = () => {
   const [gameCode, setGameCode] = useState("");
@@ -10,7 +11,6 @@ const JoinGameModal: React.FC = () => {
   const navigate = useNavigate();
 
   const handleEnterGame = () => {
-
     if (gameCode.trim() === "") {
       return;
     }
@@ -19,8 +19,9 @@ const JoinGameModal: React.FC = () => {
         const response = await axios.patch(
           `http://localhost:3000/api/v1/game/${gameCode}/${userId}`
         );
-        console.log("response: ", response);
-        socket.emit("joinGame", gameCode, userId );
+        // console.log("response: ", response);
+
+        socket.emit("joinGame", gameCode, response.data.joinedPlayer);
         navigate(`/game/${gameCode}`);
       } catch (err) {
         console.log(err);

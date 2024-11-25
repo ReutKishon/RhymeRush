@@ -1,5 +1,21 @@
 import { ObjectId } from "mongoose";
 
+interface User {
+  _id: ObjectId;
+  username: string;
+  score: number;
+  email: string;
+  password: string;
+  passwordConfirm: string;
+}
+
+export interface Player
+  extends Omit<
+    User,
+    "_id" | "password" | "passwordConfirm" | "email" | "score"
+  > {
+  id: string;
+}
 export interface Game {
   gameCode: string;
   topic: String;
@@ -12,23 +28,10 @@ export interface Game {
   winner: Player;
 }
 
-export interface Player {
-  id: string;
-}
-
 export interface Sentence {
   content: string;
   player: Player;
   timestamp: Date;
-}
-
-interface User {
-  _id: ObjectId;
-  username: string;
-  score: number;
-  email: string;
-  password: string;
-  passwordConfirm: string;
 }
 
 type UserInput = Omit<User, "_id">;
