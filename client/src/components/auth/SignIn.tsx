@@ -5,7 +5,7 @@ import useUserStore from "../../store.ts";
 
 const SignIn: React.FC = () => {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState("test1234");
   const [error, setError] = useState<string | null>(null);
 
   const setUserIdGlobal = useUserStore((state) => state.setUserId);

@@ -109,10 +109,20 @@ export const deleteGame = catchAsync(
 );
 
 const leaveGame = async (gameData: Game, playerId: string) => {
+  
+  if (gameData.currentTurn == gameData.players.length - 1) {
+    gameData.currentTurn = 0;
+  }
   gameData.players = gameData.players.filter((p) => p.id !== playerId);
+
   if (gameData.players.length === 0) {
     await redisClient.del(`game:${gameData.gameCode}`);
   }
+
+  console.log(
+    "turnIndex: " + gameData.currentTurn,
+    " play4ers: " + gameData.players
+  );
 
   await redisClient.set(`game:${gameData.gameCode}`, JSON.stringify(gameData));
 };
@@ -217,14 +227,19 @@ export const addSentenceHandler = catchAsync(
         gameOver(gameData, playerId);
       } else {
         leaveGame(gameData, playerId);
-        io.emit("leaveGame", gameCode, playerId);
         io.to(gameCode).emit("playerLost", playerData);
+        console.log("CurrentTurn: ", gameData.players[gameData.currentTurn]);
+        io.to(gameCode).emit(
+          "updatedTurn",
+          gameData.players[gameData.currentTurn]
+        );
       }
 
       res.status(200).json({
         status: "success",
         data: { sentenceIsValid: false },
       });
+      return;
     }
 
     await addSentenceToSong(gameData, playerData, sentence);

@@ -46,6 +46,7 @@ const GameBoard: React.FC = () => {
     return () => {
       socket.off("updatedTurn");
       socket.off("gameEnd");
+      socket.off("playerLost");
     };
   }, [gameCode]);
 
@@ -59,18 +60,22 @@ const GameBoard: React.FC = () => {
 
   return (
     <div className="relative h-screen p-4">
-    <h2>Game Info</h2>
-    <h2>{modalMessage}</h2>
-    <ul>
-      <li key={1}>Game Code: {game.gameCode}</li>
-      <li key={2}>Game Started: {game.isStarted ? "Yes" : "No"}</li>
-      <li key={3}>Topic: {game.topic}</li>
-      <li key={4}>Current Turn: {turn?.username}</li>
-    </ul>
-    <PlayerList initialPlayers={game.players} />
-    {/* <SentenceInput gameCode={game.gameCode} />
-    <SongLyrics initialLyrics={game.lyrics} /> */}
-  </div>
+      <div className="absolute top-10 inset-x-0 flex items-center justify-center">
+        <h2 className="text-2xl font-bold">Topic: {game.topic}</h2>
+      </div>
+
+      <div className="absolute inset-0 flex flex-col items-center justify-center -mt-14">
+        <SongLyrics initialLyrics={game.lyrics} />
+      </div>
+
+      <div className="absolute right-20 top-20">
+        <PlayerList initialPlayers={game.players} />
+      </div>
+
+      <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 mb-4">
+        <SentenceInput gameCode={game.gameCode} />
+      </div>
+    </div>
   );
 };
 

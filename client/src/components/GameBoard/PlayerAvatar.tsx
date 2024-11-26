@@ -10,9 +10,9 @@ const PlayerAvatar: React.FC<PlayerProps> = ({ username }) => {
       <img
         src={userAvatar}
         alt={`${username}'s avatar`}
-        className="w-20 h-20 rounded-full object-cover"       
+        className="w-28 h-28 rounded-full object-cover"       
       />
-      <div className="absolute bottom-0 text-black px-2 py-1 text-xs font-bold rounded-t-lg">
+      <div className="absolute bottom-1 text-black px-2 py-1 text-s font-bold rounded-t-lg">
         {username}
       </div>
     </div>

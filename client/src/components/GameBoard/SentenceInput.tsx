@@ -33,6 +33,7 @@ const SentenceInput: React.FC<SentenceInputProps> = ({ gameCode }) => {
 
         if (!response.data.data.sentenceIsValid) {
           setError("Invalid sentence."); //TODO: open a modal for loosing the game
+          socket.emit("leaveGame", gameCode, userId);
           return;
         }
 
@@ -53,19 +54,18 @@ const SentenceInput: React.FC<SentenceInputProps> = ({ gameCode }) => {
   };
 
   return (
-    <div className="sentence-input-container">
-      <h2 className="text-xl font-bold mb-4">Enter Your Sentence</h2>
+    <div className="flex items-center gap-2">
       <input
         type="text"
         value={sentence}
         onChange={handleSentenceChange}
         className="w-full border border-gray-300 rounded px-4 py-2 mb-2"
-        placeholder="Type your sentence here..."
+        placeholder="Type your sentence here"
       />
       {error && <p className="text-red-500 text-sm">{error}</p>}
       <button
         onClick={handleSentenceSubmit}
-        className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 mt-2"
+        className="w-60 px-4 py-2 mb-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition"
       >
         Submit Sentence
       </button>
