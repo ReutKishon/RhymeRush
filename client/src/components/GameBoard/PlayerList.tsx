@@ -34,7 +34,11 @@ const PlayerList: React.FC<PlayerListProps> = ({ initialPlayers }) => {
   return (
     <div className="flex flex-col space-y-8 p-4">
       {players.map((player, index) => (
-        <PlayerAvatar key={index} username={player.username} />
+        <PlayerAvatar
+          key={index}
+          username={player.username}
+          playerColor={player.color}
+        />
       ))}
     </div>
   );

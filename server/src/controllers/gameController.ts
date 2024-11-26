@@ -7,6 +7,8 @@ import redisClient from "../redisClient";
 import generateSongTopic from "../utils/generateTopic";
 import { io } from "../app";
 import { getUserInfo } from "./authController";
+import { getRandomColor } from "../utils/colorGenerator";
+
 const getGameFromRedis = async (gameCode: string) => {
   const gameDataString = await redisClient.get(`game:${gameCode}`);
   if (!gameDataString) {
@@ -30,9 +32,11 @@ const isSentenceValid = (gameData: Game, sentence: string): boolean => {
 
 export const getPlayerData = async (playerId: string) => {
   const user = await getUserInfo(playerId);
-  console.log("1: ", user);
-  const playerData: Player = { id: playerId, username: user.username };
-  console.log("2: ", playerData);
+  const playerData: Player = {
+    id: playerId,
+    username: user.username,
+    color: getRandomColor(),
+  };
   return playerData;
 };
 
@@ -109,7 +113,6 @@ export const deleteGame = catchAsync(
 );
 
 const leaveGame = async (gameData: Game, playerId: string) => {
-  
   if (gameData.currentTurn == gameData.players.length - 1) {
     gameData.currentTurn = 0;
   }

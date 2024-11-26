@@ -15,6 +15,7 @@ export interface Player
     "_id" | "password" | "passwordConfirm" | "email" | "score"
   > {
   id: string;
+  color: string;
 }
 export interface Game {
   gameCode: string;
