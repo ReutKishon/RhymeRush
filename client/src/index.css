@@ -6,3 +6,31 @@
 .scrollbar-hidden::-webkit-scrollbar {
     display: none;
   }
+
+  @keyframes spin-border {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+  .animate-spin-slow {
+    animation: spin-border linear infinite;
+  }
+
+  @keyframes shrink-grow {
+    0%, 100% {
+      transform: scale(1); /* Original size */
+    }
+    50% {
+      transform: scale(1.2); /* Grow slightly larger */
+    }
+  }
+  
+  .shrink-grow-animation {
+    animation: shrink-grow 2s infinite ease-in-out;
+  }
+  
+ 

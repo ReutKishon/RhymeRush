@@ -12,7 +12,6 @@ import http from "http";
 import { Server, Socket } from "socket.io";
 import { Player, Sentence } from "../../shared/types/gameTypes";
 import { AppError } from "../../shared/utils/appError";
-import { getRandomColor } from "./utils/colorGenerator";
 
 const app = express();
 const server = http.createServer(app);

@@ -27,6 +27,7 @@ export interface Game {
   sentenceLengthAllowed: number; // number of words allowed for each turn
   lyrics: Sentence[];
   winner: Player;
+  gameCreatorId: string; // id of the player who created the game
 }
 
 export interface Sentence {

@@ -6,9 +6,13 @@ import { Game } from "../../../../shared/types/gameTypes.ts";
 
 interface SentenceInputProps {
   gameCode: string;
+  isPlayerTurn: boolean;
 }
 
-const SentenceInput: React.FC<SentenceInputProps> = ({ gameCode }) => {
+const SentenceInput: React.FC<SentenceInputProps> = ({
+  gameCode,
+  isPlayerTurn,
+}) => {
   const [sentence, setSentence] = useState<string>("");
   const [error, setError] = useState<string>("");
   const { userId } = useUserStore((state) => state);
@@ -20,6 +24,7 @@ const SentenceInput: React.FC<SentenceInputProps> = ({ gameCode }) => {
 
   // Handle the submission of the sentence
   const handleSentenceSubmit = () => {
+    if (!isPlayerTurn) return;
     if (sentence.trim() === "") {
       setError("Sentence cannot be empty.");
       return;
@@ -61,6 +66,7 @@ const SentenceInput: React.FC<SentenceInputProps> = ({ gameCode }) => {
         onChange={handleSentenceChange}
         className="w-full border border-gray-300 rounded px-4 py-2 mb-2"
         placeholder="Type your sentence here"
+        disabled={!isPlayerTurn}
       />
       {error && <p className="text-red-500 text-sm">{error}</p>}
       <button

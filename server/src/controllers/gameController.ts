@@ -1,13 +1,13 @@
 import { Request, Response, NextFunction } from "express";
 import { v4 as uuidv4 } from "uuid";
 import catchAsync from "../utils/catchAsync";
-import { AppError } from "../../../shared/utils/appError";
 import { Game, Player, Sentence } from "../../../shared/types/gameTypes";
 import redisClient from "../redisClient";
 import generateSongTopic from "../utils/generateTopic";
 import { io } from "../app";
 import { getUserInfo } from "./authController";
 import { getRandomColor } from "../utils/colorGenerator";
+import { AppError } from "../../../shared/utils/appError";
 
 const getGameFromRedis = async (gameCode: string) => {
   const gameDataString = await redisClient.get(`game:${gameCode}`);
@@ -57,10 +57,11 @@ export const createGame = catchAsync(
       maxPlayers: 2,
       players: [gameCreator],
       isStarted: false,
-      currentTurn: 0,
+      currentTurn: -1,
       sentenceLengthAllowed: 5,
       lyrics: [],
       winner: null,
+      gameCreatorId: gameCreator.id,
     };
     await redisClient.set(`game:${gameCode}`, JSON.stringify(gameData));
 
@@ -257,23 +258,17 @@ export const addSentenceHandler = catchAsync(
 export const startGame = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { gameCode } = req.params;
-
+    console.log("startGame", gameCode);
     const gameData = await getGameFromRedis(gameCode);
 
-    // Check if there are enough players to start the game
-    if (gameData.players.length < 2) {
-      return next(
-        new AppError("At least 2 players are required to start a game!", 400)
-      );
-    }
-
     gameData.isStarted = true;
+    gameData.currentTurn = 0
     await redisClient.set(`game:${gameCode}`, JSON.stringify(gameData));
 
     res.status(200).json({
       status: "success",
       message: "Game started successfully!",
-      data: { gameData },
+      startTurn: gameData.currentTurn,
     });
   }
 );

@@ -6,11 +6,16 @@ import PlayerAvatar from "./PlayerAvatar.tsx";
 
 interface PlayerListProps {
   initialPlayers: Player[];
+  currentTurn: Player | null;
+  // gameIsStarted: boolean;
 }
 
-const PlayerList: React.FC<PlayerListProps> = ({ initialPlayers }) => {
+const PlayerList: React.FC<PlayerListProps> = ({
+  initialPlayers,
+  currentTurn,
+  // gameIsStarted,
+}) => {
   const [players, setPlayers] = useState<Player[]>(initialPlayers);
-
   useEffect(() => {
     // Listen for new players joining the game
     socket.on("playerJoined", (newPlayer: Player) => {
@@ -38,6 +43,7 @@ const PlayerList: React.FC<PlayerListProps> = ({ initialPlayers }) => {
           key={index}
           username={player.username}
           playerColor={player.color}
+          showAnimation={currentTurn?.id === player.id}
         />
       ))}
     </div>
