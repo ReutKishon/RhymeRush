@@ -2,8 +2,8 @@ import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import socket from "../../services/socket.ts";
-import useUserStore from "../../store.ts";
 import { Player } from "../../../../shared/types/gameTypes.ts";
+import useUserStore from "../../store/userStore.ts";
 
 const JoinGameModal: React.FC = () => {
   const [gameCode, setGameCode] = useState("");

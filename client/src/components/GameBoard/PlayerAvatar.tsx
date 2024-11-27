@@ -5,12 +5,14 @@ interface PlayerProps {
   username: string;
   playerColor: string;
   showAnimation: boolean;
+  setIsGameOver: (end: boolean) => void
 }
 
 const PlayerAvatar: React.FC<PlayerProps> = ({
   username,
   playerColor,
   showAnimation,
+  setIsGameOver,
 }) => {
   const [timer, setTimer] = useState<number>(30); // 30-second timer
   const [intervalId, setIntervalId] = useState<number | null>(null);
@@ -23,6 +25,9 @@ const PlayerAvatar: React.FC<PlayerProps> = ({
         setTimer((prevTime) => {
           if (prevTime <= 1) {
             clearInterval(newIntervalId); // Stop the timer when it reaches 0
+            if (prevTime === 0) {
+              setIsGameOver(true);
+            }
             return 0;
           }
           return prevTime - 1; // Decrement timer
@@ -30,7 +35,6 @@ const PlayerAvatar: React.FC<PlayerProps> = ({
       }, 1000);
 
       setIntervalId(newIntervalId);
-    
     } else {
       // If it's not this player's turn, stop the timer
       if (intervalId) {
@@ -42,7 +46,6 @@ const PlayerAvatar: React.FC<PlayerProps> = ({
       if (intervalId) {
         clearInterval(intervalId); // Cleanup timer on unmount
       }
-
     };
   }, [showAnimation]);
 
@@ -59,17 +62,17 @@ const PlayerAvatar: React.FC<PlayerProps> = ({
     <div
       className={`relative w-28 h-28 transition-all duration-1000 ${
         showAnimation && timer > 0 ? "shrink-grow-animation" : ""
-      }`} 
+      }`}
     >
       {showAnimation ? (
         <CircularProgressbar
           value={(timer / 30) * 100}
           styles={buildStyles({
-            pathColor: adjustColorTone(playerColor, 0.7), 
-            trailColor: playerColor, 
-            backgroundColor: playerColor, 
+            pathColor: adjustColorTone(playerColor, 0.7),
+            trailColor: playerColor,
+            backgroundColor: playerColor,
             strokeLinecap: "round",
-            textColor: "white", 
+            textColor: "white",
             textSize: "0px",
           })}
           background // Enables the filled background effect

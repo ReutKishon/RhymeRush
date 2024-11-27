@@ -1,19 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import socket from "../../services/socket.ts";
-import useUserStore from "../../store.ts";
 import axios from "axios";
 import { Game } from "../../../../shared/types/gameTypes.ts";
+import useUserStore from "../../store/userStore.ts";
 
 interface SentenceInputProps {
   gameCode: string;
   isPlayerTurn: boolean;
-  setIsGameOver:React.Dispatch<React.SetStateAction<boolean>>
+  setIsGameEnd: (end: boolean) => void;
 }
 
 const SentenceInput: React.FC<SentenceInputProps> = ({
   gameCode,
   isPlayerTurn,
-  setIsGameOver
+  setIsGameEnd,
 }) => {
   const [sentence, setSentence] = useState<string>("");
   const [error, setError] = useState<string>("");
@@ -41,7 +41,7 @@ const SentenceInput: React.FC<SentenceInputProps> = ({
         if (!response.data.data.sentenceIsValid) {
           setError("Invalid sentence."); //TODO: open a modal for loosing the game
           socket.emit("leaveGame", gameCode, userId);
-          setIsGameOver(true)
+          // setIsGameOver(true);
           return;
         }
 

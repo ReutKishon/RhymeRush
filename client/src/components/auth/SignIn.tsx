@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import useUserStore from "../../store.ts";
+import useUserStore from "../../store/userStore";
 
 const SignIn: React.FC = () => {
   const [email, setEmail] = useState("");

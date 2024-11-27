@@ -1,40 +1,33 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import socket from "../../services/socket.ts";
 
 import { Player } from "../../../../shared/types/gameTypes";
 import PlayerAvatar from "./PlayerAvatar.tsx";
+import useGameStore from "../../store/gameStore.ts";
 
-interface PlayerListProps {
-  initialPlayers: Player[];
-  currentTurn: Player | null;
-  // gameIsStarted: boolean;
-}
+// interface PlayerListProps {
+//   initialPlayers: Player[];
+// }
+const PlayerList: React.FC = () => {
+  const { players, addPlayer, removePlayer, currentTurn, setGameEnd } =
+    useGameStore();
 
-const PlayerList: React.FC<PlayerListProps> = ({
-  initialPlayers,
-  currentTurn,
-  // gameIsStarted,
-}) => {
-  const [players, setPlayers] = useState<Player[]>(initialPlayers);
   useEffect(() => {
     // Listen for new players joining the game
     socket.on("playerJoined", (newPlayer: Player) => {
-      setPlayers((prevPlayers) => [...prevPlayers, newPlayer]);
+      addPlayer(newPlayer);
     });
 
     // Listen for players leaving the game
     socket.on("playerLeft", (leftPlayerId: string) => {
-      console.log("Player left");
-      setPlayers((prevPlayers) =>
-        prevPlayers.filter((player) => player.id !== leftPlayerId)
-      );
+      removePlayer(leftPlayerId);
     });
 
     return () => {
       socket.off("playerJoined");
       socket.off("playerLeft");
     };
-  }, []);
+  }, [addPlayer, removePlayer]);
 
   return (
     <div className="flex flex-col space-y-8 p-4">
@@ -44,6 +37,7 @@ const PlayerList: React.FC<PlayerListProps> = ({
           username={player.username}
           playerColor={player.color}
           showAnimation={currentTurn?.id === player.id}
+          setIsGameOver={setGameEnd}
         />
       ))}
     </div>

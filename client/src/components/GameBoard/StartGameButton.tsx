@@ -1,32 +1,28 @@
 import React from "react";
 import socket from "../../services/socket.ts";
-import useUserStore from "../../store.ts";
 import axios from "axios";
 import { Game } from "../../../../shared/types/gameTypes.ts";
+import useUserStore from "../../store/userStore.ts";
+import useGameStore from "../../store/gameStore.ts";
 
-interface StartGameButtonProps {
-  gameData: Game;
-}
-
-const StartGameButton: React.FC<StartGameButtonProps> = ({ gameData }) => {
+const StartGameButton: React.FC = () => {
   const { userId } = useUserStore((state) => state);
+  const { gameCreatorId, isGameStarted, gameCode, players, setGameStarted } =
+    useGameStore();
 
   const handleStartGame = () => {
-    if (gameData.gameCreatorId !== userId || gameData.isStarted) {
+    if (gameCreatorId !== userId || isGameStarted) {
       return;
     }
 
     const startGame = async () => {
       try {
         const response = await axios.patch(
-          `http://localhost:3000/api/v1/game/${gameData.gameCode}/start`
+          `http://localhost:3000/api/v1/game/${gameCode}/start`
         );
 
-        socket.emit(
-          "updateTurn",
-          gameData.gameCode,
-          gameData.players[response.data.startTurn]
-        );
+        socket.emit("updateTurn", gameCode, players[response.data.startTurn]);
+        setGameStarted(true);
       } catch (err) {
         // setError(err.response.data.message);
       }

@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Player, Sentence } from "../../../../shared/types/gameTypes";
+import {  Sentence } from "../../../../shared/types/gameTypes";
 import socket from "../../services/socket.ts";
 
-interface SongLyricsProps {
-  initialLyrics: Sentence[];
-}
-const SongLyrics: React.FC<SongLyricsProps> = ({ initialLyrics }) => {
-  const [lyrics, setLyrics] = useState<Sentence[]>(initialLyrics);
+
+const SongLyrics: React.FC = () => {
+  const [lyrics, setLyrics] = useState<Sentence[]>();
 
   useEffect(() => {
     socket.on("updatedLyrics", (updatedLyrics: Sentence[]) => {
@@ -20,7 +18,7 @@ const SongLyrics: React.FC<SongLyricsProps> = ({ initialLyrics }) => {
 
   return (
     <div className="h-96 w-100 max-w-4xl overflow-y-auto scrollbar-hidden space-y-6 px-4">
-      {lyrics.map((sentence, index) => (
+      {lyrics?.map((sentence, index) => (
         <p className="text-black font-bold text-xl" key={index}>
           {sentence.player.username}: {sentence.content}
         </p>

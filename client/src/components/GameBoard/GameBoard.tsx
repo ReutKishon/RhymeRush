@@ -1,64 +1,57 @@
-import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { Game, Player, Sentence } from "../../../../shared/types/gameTypes";
+import React, { useEffect } from "react";
+import { Player, Sentence } from "../../../../shared/types/gameTypes";
 import PlayerList from "./PlayerList.tsx";
 import { useParams } from "react-router-dom";
 import SentenceInput from "./SentenceInput.tsx";
 import SongLyrics from "./SongLyrics.tsx";
 import socket from "../../services/socket.ts";
-import useUserStore from "../../store.ts";
 import StartGameButton from "./StartGameButton.tsx";
 import GameOverModal from "./GameOverModal.tsx";
+import useUserStore from "../../store/userStore.ts";
+import useFetchGame from "../../hooks/useFetchGame.ts";
+import useGameStore from "../../store/gameStore.ts";
 
 const GameBoard: React.FC = () => {
   const { gameCode } = useParams<{ gameCode: string }>();
-  const [game, setGame] = useState<Game | null>(null);
-  const [turn, setTurn] = useState<Player>();
-  const [isGameEnd, setIsGameEnd] = useState(false);
-  const [winner, setWinner] = useState<Player | null>(null);
-  const [modalMessage, setModalMessage] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { game, error } = useFetchGame(gameCode);
+  const {
+    setGameCode,
+    currentTurn,
+    isGameEnd,
+    winner,
+    setCurrentTurn,
+    setGameEnd,
+    setWinner,
+    setPlayers,
+    players,
+    setGameCreatorId,
+  } = useGameStore();
+
   const { userId } = useUserStore((state) => state);
 
   useEffect(() => {
-    const fetchGame = async () => {
-      try {
-        const response = await axios.get(
-          `http://localhost:3000/api/v1/game/${gameCode}`
-        );
-        const gameData: Game = response.data.data.gameData;
-        console.log("gameData: ", response);
+    if (!game) {
+      return;
+    }
+    setGameCode(game.gameCode);
+    setPlayers(game.players);
+    setGameCreatorId(game.gameCreatorId);
 
-        setGame(gameData);
-        if (gameData.currentTurn != -1) {
-          setTurn(gameData.players[gameData.currentTurn]);
-        }
-        // setGameIsStarted(gameData.isStarted);
-      } catch (err) {
-        setError(`Failed to fetch game details: ${err.message}`);
-      }
-    };
-
-    fetchGame();
     socket.on("updatedTurn", (currentTurnPlayer: Player) => {
-      setTurn(currentTurnPlayer);
+      setCurrentTurn(currentTurnPlayer);
     });
     socket.on("gameEnd", (winner: Player, finalSongLyrics: Sentence[]) => {
-      setIsGameEnd(true);
+      setGameEnd(true);
       setWinner(winner);
     });
 
-    socket.on("playerLost", (lostPlayer: Player) => {
-      setModalMessage(
-        `${lostPlayer.username} lost and left the game. continue the game`
-      );
-    });
+    socket.on("playerLost", (lostPlayer: Player) => {});
     return () => {
       socket.off("updatedTurn");
       socket.off("gameEnd");
       socket.off("playerLost");
     };
-  }, [gameCode]);
+  }, [game, setGameEnd, setWinner, setCurrentTurn]);
 
   const handleSaveSong = () => {
     console.log("saveSong");
@@ -75,29 +68,26 @@ const GameBoard: React.FC = () => {
   return (
     <div className="relative h-screen p-4">
       <div className="absolute top-10 inset-x-0 flex items-center justify-between px-4">
-        {/* <div className="absolute left-9">
-        </div> */}
-
         {/* Topic */}
         <h2 className="text-2xl font-bold text-center w-full">
           Topic: {game.topic}
         </h2>
       </div>
       <div className="absolute inset-0 flex flex-col items-center justify-center -mt-14">
-        <SongLyrics initialLyrics={game.lyrics} />
+        <SongLyrics />
       </div>
 
       <div className="absolute right-20 top-20">
-        <PlayerList initialPlayers={game.players} currentTurn={turn || null} />
+        <PlayerList />
       </div>
 
       <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 mb-4">
         <SentenceInput
           gameCode={game.gameCode}
-          isPlayerTurn={turn?.id === userId}
-          setIsGameOver={setIsGameEnd}
+          isPlayerTurn={currentTurn?.id === userId}
+          setIsGameEnd={setGameEnd}
         />
-        <StartGameButton gameData={game} />
+        <StartGameButton />
       </div>
       <GameOverModal
         isVisible={isGameEnd}

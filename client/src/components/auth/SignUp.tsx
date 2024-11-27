@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useUserStore from "../../store.ts"; // Assuming Zustand store for user data
 import axios from "axios";
+import useUserStore from "../../store/userStore";
 
 const SignUp: React.FC = () => {
   const [username, setUsername] = useState("");
