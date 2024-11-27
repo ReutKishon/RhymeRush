@@ -123,11 +123,6 @@ const leaveGame = async (gameData: Game, playerId: string) => {
     await redisClient.del(`game:${gameData.gameCode}`);
   }
 
-  console.log(
-    "turnIndex: " + gameData.currentTurn,
-    " play4ers: " + gameData.players
-  );
-
   await redisClient.set(`game:${gameData.gameCode}`, JSON.stringify(gameData));
 };
 
@@ -232,7 +227,6 @@ export const addSentenceHandler = catchAsync(
       } else {
         leaveGame(gameData, playerId);
         io.to(gameCode).emit("playerLost", playerData);
-        console.log("CurrentTurn: ", gameData.players[gameData.currentTurn]);
         io.to(gameCode).emit(
           "updatedTurn",
           gameData.players[gameData.currentTurn]
@@ -262,7 +256,7 @@ export const startGame = catchAsync(
     const gameData = await getGameFromRedis(gameCode);
 
     gameData.isStarted = true;
-    gameData.currentTurn = 0
+    gameData.currentTurn = 0;
     await redisClient.set(`game:${gameCode}`, JSON.stringify(gameData));
 
     res.status(200).json({
@@ -276,7 +270,7 @@ export const startGame = catchAsync(
 const gameOver = (gameData: Game, lostPlayerId: string) => {
   const winner = gameData.players.find((player) => player.id !== lostPlayerId);
 
-  io.to(gameData.gameCode).emit("gameEnd", winner);
+  io.to(gameData.gameCode).emit("gameEnd", winner, gameData.lyrics);
 };
 
 export const checkGameStarted = async (

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { Game, Player } from "../../../../shared/types/gameTypes";
+import { Game, Player, Sentence } from "../../../../shared/types/gameTypes";
 import PlayerList from "./PlayerList.tsx";
 import { useParams } from "react-router-dom";
 import SentenceInput from "./SentenceInput.tsx";
@@ -8,13 +8,14 @@ import SongLyrics from "./SongLyrics.tsx";
 import socket from "../../services/socket.ts";
 import useUserStore from "../../store.ts";
 import StartGameButton from "./StartGameButton.tsx";
+import GameOverModal from "./GameOverModal.tsx";
 
 const GameBoard: React.FC = () => {
   const { gameCode } = useParams<{ gameCode: string }>();
   const [game, setGame] = useState<Game | null>(null);
   const [turn, setTurn] = useState<Player>();
-  // const [gameIsStarted, setGameIsStarted] = useState<boolean>();
-
+  const [isGameEnd, setIsGameEnd] = useState(false);
+  const [winner, setWinner] = useState<Player | null>(null);
   const [modalMessage, setModalMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const { userId } = useUserStore((state) => state);
@@ -42,9 +43,11 @@ const GameBoard: React.FC = () => {
     socket.on("updatedTurn", (currentTurnPlayer: Player) => {
       setTurn(currentTurnPlayer);
     });
-    socket.on("gameEnd", (winner: Player) => {
-      setModalMessage(`game over. The winner is ${winner.username}`);
+    socket.on("gameEnd", (winner: Player, finalSongLyrics: Sentence[]) => {
+      setIsGameEnd(true);
+      setWinner(winner);
     });
+
     socket.on("playerLost", (lostPlayer: Player) => {
       setModalMessage(
         `${lostPlayer.username} lost and left the game. continue the game`
@@ -56,6 +59,10 @@ const GameBoard: React.FC = () => {
       socket.off("playerLost");
     };
   }, [gameCode]);
+
+  const handleSaveSong = () => {
+    console.log("saveSong");
+  };
 
   if (error) {
     return <div>Error: {error}</div>; // Display an error message if fetching fails
@@ -81,19 +88,22 @@ const GameBoard: React.FC = () => {
       </div>
 
       <div className="absolute right-20 top-20">
-        <PlayerList
-          initialPlayers={game.players}
-          currentTurn={turn || null}
-        />
+        <PlayerList initialPlayers={game.players} currentTurn={turn || null} />
       </div>
 
       <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 mb-4">
         <SentenceInput
           gameCode={game.gameCode}
           isPlayerTurn={turn?.id === userId}
+          setIsGameOver={setIsGameEnd}
         />
         <StartGameButton gameData={game} />
       </div>
+      <GameOverModal
+        isVisible={isGameEnd}
+        winnerName={winner?.username}
+        handleSaveSong={handleSaveSong}
+      />
     </div>
   );
 };

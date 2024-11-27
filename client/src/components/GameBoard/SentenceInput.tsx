@@ -7,11 +7,13 @@ import { Game } from "../../../../shared/types/gameTypes.ts";
 interface SentenceInputProps {
   gameCode: string;
   isPlayerTurn: boolean;
+  setIsGameOver:React.Dispatch<React.SetStateAction<boolean>>
 }
 
 const SentenceInput: React.FC<SentenceInputProps> = ({
   gameCode,
   isPlayerTurn,
+  setIsGameOver
 }) => {
   const [sentence, setSentence] = useState<string>("");
   const [error, setError] = useState<string>("");
@@ -39,6 +41,7 @@ const SentenceInput: React.FC<SentenceInputProps> = ({
         if (!response.data.data.sentenceIsValid) {
           setError("Invalid sentence."); //TODO: open a modal for loosing the game
           socket.emit("leaveGame", gameCode, userId);
+          setIsGameOver(true)
           return;
         }
 
