@@ -1,21 +1,22 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import useGameStore from "../../../store/useStore";
 
 interface GameOverModalProps {
   isVisible: boolean;
-  winnerName: string | undefined;
-  handleSaveSong: () => void;
 }
 
-const GameOverModal: React.FC<GameOverModalProps> = ({
-  isVisible,
-  winnerName,
-  handleSaveSong
-}) => {
+const GameEndModal: React.FC<GameOverModalProps> = ({ isVisible }) => {
+  const { winner } = useGameStore();
+
   const navigate = useNavigate();
 
   if (!isVisible) return null;
 
+  const handleSaveSong = () => {
+    // Save the game and song data to the database
+   
+  };
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
       <div className="bg-white rounded-lg p-8 relative text-center">
@@ -30,7 +31,7 @@ const GameOverModal: React.FC<GameOverModalProps> = ({
 
         {/* Modal Content */}
         <h2 className="text-2xl font-bold mb-4">Game Over</h2>
-        <p className="text-gray-700 mb-6">The Winner Is {winnerName}</p>
+        <p className="text-gray-700 mb-6">The Winner Is {winner?.username}</p>
 
         <button
           onClick={handleSaveSong}
@@ -43,4 +44,4 @@ const GameOverModal: React.FC<GameOverModalProps> = ({
   );
 };
 
-export default GameOverModal;
+export default GameEndModal;

@@ -1,62 +1,42 @@
-import React, { useState } from "react";
-import socket from "../../services/socket.ts";
-import axios from "axios";
-import { Game } from "../../../../shared/types/gameTypes.ts";
+import React, { useEffect, useState } from "react";
 import useUserStore from "../../store/userStore.ts";
+import useStore from "../../store/useStore.ts";
+import socket from "../../services/socket.ts";
+import { useQueryClient } from "react-query";
+import { addSentence } from "../../services/api.ts";
+import { Game, Sentence } from "../../../../shared/types/gameTypes.ts";
 
-interface SentenceInputProps {
-  gameCode: string;
-  isPlayerTurn: boolean;
-  setIsGameEnd: (end: boolean) => void;
-}
-
-const SentenceInput: React.FC<SentenceInputProps> = ({
-  gameCode,
-  isPlayerTurn,
-  setIsGameEnd,
-}) => {
+const SentenceInput: React.FC<{ isUserTurn: boolean }> = ({ isUserTurn }) => {
   const [sentence, setSentence] = useState<string>("");
   const [error, setError] = useState<string>("");
   const { userId } = useUserStore((state) => state);
+  const gameCode = useStore((state) => state.gameCode);
+  const queryClient = useQueryClient();
 
-  // Handle sentence change in the input field
   const handleSentenceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSentence(e.target.value);
   };
 
-  // Handle the submission of the sentence
-  const handleSentenceSubmit = () => {
-    if (!isPlayerTurn) return;
+  const handleSentenceSubmit = async () => {
     if (sentence.trim() === "") {
       setError("Sentence cannot be empty.");
       return;
     }
-    const addSentence = async () => {
-      try {
-        const response = await axios.post(
-          `http://localhost:3000/api/v1/game/${gameCode}/${userId}/sentence`,
-          { sentence }
-        );
+    try {
+      const response = await addSentence(gameCode!, sentence, userId);
 
-        if (!response.data.data.sentenceIsValid) {
-          setError("Invalid sentence."); //TODO: open a modal for loosing the game
-          socket.emit("leaveGame", gameCode, userId);
-          // setIsGameOver(true);
-          return;
-        }
-
-        const gameData: Game = response.data.data.gameData;
-        socket.emit("addSentence", gameCode, gameData.lyrics);
-        socket.emit(
-          "updateTurn",
-          gameCode,
-          gameData.players[gameData.currentTurn]
-        );
-      } catch (err) {
-        setError(err.response.data.message);
+      if (!response.sentenceIsValid) {
+        socket.emit("leaveGame", gameCode, userId);
+      } else {
+        const addedSentence: Sentence = response.gameData.lyrics[-1]!;
+        console.log("HIIII",addedSentence);
+        socket.emit("addSentence", gameCode, addedSentence);
       }
-    };
-    addSentence();
+
+      socket.emit("updateTurn", gameCode, response.gameData.currentTurn);
+    } catch (err) {
+      setError(err);
+    }
     setSentence("");
     setError("");
   };
@@ -69,7 +49,7 @@ const SentenceInput: React.FC<SentenceInputProps> = ({
         onChange={handleSentenceChange}
         className="w-full border border-gray-300 rounded px-4 py-2 mb-2"
         placeholder="Type your sentence here"
-        disabled={!isPlayerTurn}
+        disabled={!isUserTurn}
       />
       {error && <p className="text-red-500 text-sm">{error}</p>}
       <button

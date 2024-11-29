@@ -9,14 +9,13 @@ const CreateGameModal: React.FC = () => {
   const [gameCode, setGameCode] = useState("");
 
   const navigate = useNavigate();
-
   useEffect(() => {
     const createGame = async () => {
       try {
         const response = await axios.post(`http://localhost:3000/api/v1/game`, {
           gameCreatorId: userId,
         });
-        console.log("response: ", response);
+        console.log("createGame: ", response);
 
         setGameCode(response.data.data.gameData.gameCode);
       } catch (err) {

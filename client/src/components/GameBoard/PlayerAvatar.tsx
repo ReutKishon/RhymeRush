@@ -1,22 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+
 // import userAvatar from "../../assets/images/user_profile.jpg";
 interface PlayerProps {
   username: string;
   playerColor: string;
   showAnimation: boolean;
-  setIsGameOver: (end: boolean) => void
+  // setIsGameOver: (end: boolean) => void;
 }
 
 const PlayerAvatar: React.FC<PlayerProps> = ({
   username,
   playerColor,
   showAnimation,
-  setIsGameOver,
 }) => {
   const [timer, setTimer] = useState<number>(30); // 30-second timer
   const [intervalId, setIntervalId] = useState<number | null>(null);
 
+  // currentTurn?.id === player.id
   useEffect(() => {
     if (showAnimation) {
       setTimer(30); // Reset timer when it's this player's turn
@@ -25,9 +26,6 @@ const PlayerAvatar: React.FC<PlayerProps> = ({
         setTimer((prevTime) => {
           if (prevTime <= 1) {
             clearInterval(newIntervalId); // Stop the timer when it reaches 0
-            if (prevTime === 0) {
-              setIsGameOver(true);
-            }
             return 0;
           }
           return prevTime - 1; // Decrement timer
@@ -94,3 +92,7 @@ const PlayerAvatar: React.FC<PlayerProps> = ({
 };
 
 export default PlayerAvatar;
+
+// if (prevTime === 0) {
+//   setIsGameOver(true);
+// }

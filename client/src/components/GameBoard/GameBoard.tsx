@@ -1,99 +1,65 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Player, Sentence } from "../../../../shared/types/gameTypes";
 import PlayerList from "./PlayerList.tsx";
 import { useParams } from "react-router-dom";
 import SentenceInput from "./SentenceInput.tsx";
 import SongLyrics from "./SongLyrics.tsx";
-import socket from "../../services/socket.ts";
 import StartGameButton from "./StartGameButton.tsx";
-import GameOverModal from "./GameOverModal.tsx";
+import { useGameData } from "../../services/queries.ts";
+import useStore from "../../store/useStore.ts";
+import useSocketEvents from "../../hooks/useSocketEvents.ts";
 import useUserStore from "../../store/userStore.ts";
-import useFetchGame from "../../hooks/useFetchGame.ts";
-import useGameStore from "../../store/gameStore.ts";
 
 const GameBoard: React.FC = () => {
   const { gameCode } = useParams<{ gameCode: string }>();
-  const { game, error } = useFetchGame(gameCode);
-  const {
-    setGameCode,
-    currentTurn,
-    isGameEnd,
-    winner,
-    setCurrentTurn,
-    setGameEnd,
-    setWinner,
-    setPlayers,
-    players,
-    setGameCreatorId,
-  } = useGameStore();
-
   const { userId } = useUserStore((state) => state);
+  const setGameCode = useStore((state) => state.setGameCode);
 
   useEffect(() => {
-    if (!game) {
-      return;
+    if (gameCode) {
+      setGameCode(gameCode); // Set gameCode in the store
     }
-    setGameCode(game.gameCode);
-    setPlayers(game.players);
-    setGameCreatorId(game.gameCreatorId);
+  }, [gameCode]);
 
-    socket.on("updatedTurn", (currentTurnPlayer: Player) => {
-      setCurrentTurn(currentTurnPlayer);
-    });
-    socket.on("gameEnd", (winner: Player, finalSongLyrics: Sentence[]) => {
-      setGameEnd(true);
-      setWinner(winner);
-    });
-
-    socket.on("playerLost", (lostPlayer: Player) => {});
-    return () => {
-      socket.off("updatedTurn");
-      socket.off("gameEnd");
-      socket.off("playerLost");
-    };
-  }, [game, setGameEnd, setWinner, setCurrentTurn]);
-
-  const handleSaveSong = () => {
-    console.log("saveSong");
-  };
+  useSocketEvents(gameCode!);
+  console.log("gameBoard");
+  const { data: game, error, isLoading } = useGameData();
 
   if (error) {
-    return <div>Error: {error}</div>; // Display an error message if fetching fails
+    return <div>`Error</div>; // Display an error message if fetching fails
   }
 
-  if (!game) {
+  if (isLoading) {
     return <div>Loading...</div>; // Display a loading message until the game data is available
   }
 
   return (
     <div className="relative h-screen p-4">
       <div className="absolute top-10 inset-x-0 flex items-center justify-between px-4">
-        {/* Topic */}
         <h2 className="text-2xl font-bold text-center w-full">
-          Topic: {game.topic}
+          Topic: {game?.topic}
         </h2>
       </div>
       <div className="absolute inset-0 flex flex-col items-center justify-center -mt-14">
-        <SongLyrics />
+        <SongLyrics lyrics={game?.lyrics} />
       </div>
-
       <div className="absolute right-20 top-20">
-        <PlayerList />
+        <PlayerList players={game?.players!} currentTurn={game?.currentTurn!} />
       </div>
-
       <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 mb-4">
         <SentenceInput
-          gameCode={game.gameCode}
-          isPlayerTurn={currentTurn?.id === userId}
-          setIsGameEnd={setGameEnd}
+          isUserTurn={
+            game?.currentTurn != -1 &&
+            game?.players[game.currentTurn]?.id === userId
+          }
         />
-        <StartGameButton />
+        <StartGameButton
+          gameCreatorId={game?.gameCreatorId!}
+          isStarted={game?.isStarted!}
+        />
       </div>
-      <GameOverModal
-        isVisible={isGameEnd}
-        winnerName={winner?.username}
-        handleSaveSong={handleSaveSong}
-      />
+      {/* <GameEndModal isVisible={isGameEnd} /> */}
+      {/* <PlayerLeftModal isVisible={isPlayerLeft} leftPlayer={leftPlayerId!} /> */}
     </div>
   );
 };

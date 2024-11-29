@@ -2,32 +2,27 @@ import axios from "axios";
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import socket from "../../services/socket.ts";
-import { Player } from "../../../../shared/types/gameTypes.ts";
 import useUserStore from "../../store/userStore.ts";
+import { addPlayer } from "../../services/api.ts";
+import { Player } from "../../../../shared/types/gameTypes.ts";
 
 const JoinGameModal: React.FC = () => {
   const [gameCode, setGameCode] = useState("");
   const { userId } = useUserStore((state) => state);
   const navigate = useNavigate();
 
-  const handleEnterGame = () => {
+  const handleEnterGame = async () => {
     if (gameCode.trim() === "") {
       return;
     }
-    const joinPlayer = async () => {
-      try {
-        const response = await axios.patch(
-          `http://localhost:3000/api/v1/game/${gameCode}/${userId}`
-        );
-        // console.log("response: ", response);
-        const joinedPlayer: Player = response.data.joinedPlayer;
-        socket.emit("joinGame", gameCode, joinedPlayer);
-        navigate(`/game/${gameCode}`);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    joinPlayer();
+    try {
+      const joinedPlayer = await addPlayer(gameCode!, userId);
+
+      socket.emit("joinGame", gameCode, joinedPlayer);
+      navigate(`/game/${gameCode}`);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const handleGameCodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {

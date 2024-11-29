@@ -10,7 +10,7 @@ import globalErrorHandler from "./controllers/errorController";
 
 import http from "http";
 import { Server, Socket } from "socket.io";
-import { Player, Sentence } from "../../shared/types/gameTypes";
+import { Game, Player, Sentence } from "../../shared/types/gameTypes";
 import { AppError } from "../../shared/utils/appError";
 
 const app = express();
@@ -41,11 +41,10 @@ io.on("connection", (socket: Socket) => {
     playerSocketMap[socket.id] = { playerId: playerId, gameCode };
   });
 
-  socket.on("joinGame", (gameCode: string, player: Player) => {
+  socket.on("joinGame", (gameCode: string, joinedPlayer: Player) => {
     socket.join(gameCode);
-    playerSocketMap[socket.id] = { playerId: player.id, gameCode };
-    // console.log(`Player ${player.username} joined the game ${gameCode}`);
-    io.to(gameCode).emit("playerJoined", player);
+    playerSocketMap[socket.id] = { playerId: joinedPlayer.id, gameCode };
+    io.to(gameCode).emit("playerJoined", joinedPlayer);
   });
 
   socket.on("leaveGame", (gameCode: string, playerId: string) => {
@@ -55,12 +54,13 @@ io.on("connection", (socket: Socket) => {
     // console.log(`Player ${playerId} left the game ${gameCode}`);
   });
 
-  socket.on("addSentence", (gameCode: string, updatedLyrics: Sentence[]) => {
-    io.to(gameCode).emit("updatedLyrics", updatedLyrics);
+  socket.on("addSentence", (gameCode: string, newSentence: Sentence) => {
+    io.to(gameCode).emit("updatedLyrics", newSentence);
+
   });
 
-  socket.on("updateTurn", (gameCode: string, currentTurnPlayer: Player) => {
-    io.to(gameCode).emit("updatedTurn", currentTurnPlayer);
+  socket.on("updateTurn", (gameCode: string, turn: number) => {
+    io.to(gameCode).emit("updatedTurn", turn);
   });
 
   socket.on("disconnect", () => {

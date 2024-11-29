@@ -61,7 +61,7 @@ export const createGame = catchAsync(
       sentenceLengthAllowed: 5,
       lyrics: [],
       winner: null,
-      gameCreatorId: gameCreator.id,
+      gameCreatorId: gameCreatorId,
     };
     await redisClient.set(`game:${gameCode}`, JSON.stringify(gameData));
 
@@ -82,19 +82,18 @@ export const joinGame = catchAsync(
       );
     }
     const gameData = await getGameFromRedis(gameCode);
-    const playerData = await getPlayerData(playerId);
-    console.log("joined player: ", playerData);
     if (isPlayerInGame(gameData.players, playerId)) {
       return next(
         new AppError(`Player with ID ${playerId} is already in the game!`, 400)
       );
     }
+    const playerData = await getPlayerData(playerId);
 
     gameData.players.push(playerData);
     await redisClient.set(`game:${gameCode}`, JSON.stringify(gameData));
     res.status(200).json({
       status: "success",
-      joinedPlayer: playerData,
+      data: { joinedPlayer: playerData },
     });
   }
 );
@@ -226,16 +225,12 @@ export const addSentenceHandler = catchAsync(
         gameOver(gameData, playerId);
       } else {
         leaveGame(gameData, playerId);
-        io.to(gameCode).emit("playerLost", playerData);
-        io.to(gameCode).emit(
-          "updatedTurn",
-          gameData.players[gameData.currentTurn]
-        );
+        // io.to(gameCode).emit("playerLost", playerData);
       }
 
       res.status(200).json({
         status: "success",
-        data: { sentenceIsValid: false },
+        data: { sentenceIsValid: false, gameData },
       });
       return;
     }
@@ -262,7 +257,7 @@ export const startGame = catchAsync(
     res.status(200).json({
       status: "success",
       message: "Game started successfully!",
-      startTurn: gameData.currentTurn,
+      data: { startTurn: gameData.currentTurn },
     });
   }
 );

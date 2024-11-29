@@ -2,6 +2,8 @@ import { create } from "zustand";
 import { Player, Sentence } from "../../../shared/types/gameTypes";
 
 type GameState = {
+  // user: User;
+
   gameCode: string | null;
   gameCreatorId: string | null;
   currentTurn: Player | null;
@@ -22,7 +24,7 @@ type GameState = {
   setGameStarted: (started: boolean) => void;
 };
 
-const useGameStore = create<GameState>((set) => ({
+const useStore = create<GameState>((set) => ({
   gameCode: null,
   gameCreatorId: null,
   currentTurn: null,
@@ -49,4 +51,4 @@ const useGameStore = create<GameState>((set) => ({
   setGameStarted: (started) => set({ isGameStarted: started }),
 }));
 
-export default useGameStore;
+export default useStore;
