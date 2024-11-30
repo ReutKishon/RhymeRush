@@ -22,7 +22,7 @@ export interface Game {
   topic: String;
   maxPlayers: number;
   players: Player[];
-  isStarted: boolean;
+  isActive: boolean;
   currentTurn: number; // index of the player whose turn it is
   sentenceLengthAllowed: number; // number of words allowed for each turn
   lyrics: Sentence[];

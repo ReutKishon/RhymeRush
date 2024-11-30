@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Player, Sentence } from "../../../../shared/types/gameTypes";
 import PlayerList from "./PlayerList.tsx";
 import { useParams } from "react-router-dom";
 import SentenceInput from "./SentenceInput.tsx";
@@ -9,6 +8,7 @@ import { useGameData } from "../../services/queries.ts";
 import useStore from "../../store/useStore.ts";
 import useSocketEvents from "../../hooks/useSocketEvents.ts";
 import useUserStore from "../../store/userStore.ts";
+import GameEndModal from "./modals/GameEndModal.tsx";
 
 const GameBoard: React.FC = () => {
   const { gameCode } = useParams<{ gameCode: string }>();
@@ -22,8 +22,9 @@ const GameBoard: React.FC = () => {
   }, [gameCode]);
 
   useSocketEvents(gameCode!);
-  console.log("gameBoard");
   const { data: game, error, isLoading } = useGameData();
+
+  console.log("Game winner: ", game?.winner);
 
   if (error) {
     return <div>`Error</div>; // Display an error message if fetching fails
@@ -50,15 +51,15 @@ const GameBoard: React.FC = () => {
         <SentenceInput
           isUserTurn={
             game?.currentTurn != -1 &&
-            game?.players[game.currentTurn]?.id === userId
+            game?.players![game.currentTurn!]?.id === userId
           }
         />
         <StartGameButton
           gameCreatorId={game?.gameCreatorId!}
-          isStarted={game?.isStarted!}
+          isStarted={game?.isActive!}
         />
       </div>
-      {/* <GameEndModal isVisible={isGameEnd} /> */}
+      {game?.winner && <GameEndModal winner={game.winner} />}
       {/* <PlayerLeftModal isVisible={isPlayerLeft} leftPlayer={leftPlayerId!} /> */}
     </div>
   );

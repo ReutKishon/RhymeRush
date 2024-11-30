@@ -56,7 +56,7 @@ export const createGame = catchAsync(
       topic: generateSongTopic(),
       maxPlayers: 2,
       players: [gameCreator],
-      isStarted: false,
+      isActive: false,
       currentTurn: -1,
       sentenceLengthAllowed: 5,
       lyrics: [],
@@ -222,7 +222,9 @@ export const addSentenceHandler = catchAsync(
     // Validate if the sentence meets the required criteria
     if (!isSentenceValid(gameData, sentence)) {
       if (gameData.players.length === 2) {
-        gameOver(gameData, playerId);
+        gameData.winner = gameData.players.find(
+          (player) => player.id !== playerId
+        );
       } else {
         leaveGame(gameData, playerId);
         // io.to(gameCode).emit("playerLost", playerData);
@@ -250,7 +252,7 @@ export const startGame = catchAsync(
     console.log("startGame", gameCode);
     const gameData = await getGameFromRedis(gameCode);
 
-    gameData.isStarted = true;
+    gameData.isActive = true;
     gameData.currentTurn = 0;
     await redisClient.set(`game:${gameCode}`, JSON.stringify(gameData));
 
@@ -262,11 +264,11 @@ export const startGame = catchAsync(
   }
 );
 
-const gameOver = (gameData: Game, lostPlayerId: string) => {
-  const winner = gameData.players.find((player) => player.id !== lostPlayerId);
+// const gameOver = (gameData: Game, lostPlayerId: string) => {
+//   const winner = gameData.players.find((player) => player.id !== lostPlayerId);
 
-  io.to(gameData.gameCode).emit("gameEnd", winner, gameData.lyrics);
-};
+//   io.to(gameData.gameCode).emit("gameEnd", winner, gameData.lyrics);
+// };
 
 export const checkGameStarted = async (
   req: Request,
@@ -277,7 +279,7 @@ export const checkGameStarted = async (
 
   const gameData = await getGameFromRedis(gameCode);
 
-  if (!gameData.isStarted) {
+  if (!gameData.isActive) {
     return next(new AppError("The game has not started yet!", 400));
   }
   next();

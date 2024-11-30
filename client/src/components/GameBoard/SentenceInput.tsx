@@ -1,11 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import useUserStore from "../../store/userStore.ts";
 import useStore from "../../store/useStore.ts";
 import socket from "../../services/socket.ts";
 import { addSentence } from "../../services/api.ts";
-import {  Sentence } from "../../../../shared/types/gameTypes.ts";
+import { Player, Sentence } from "../../../../shared/types/gameTypes.ts";
 
-const SentenceInput: React.FC<{ isUserTurn: boolean }> = ({ isUserTurn }) => {
+interface SentenceInputProps {
+  isUserTurn: boolean;
+}
+const SentenceInput: React.FC<SentenceInputProps> = ({ isUserTurn }) => {
   const [sentence, setSentence] = useState<string>("");
   const [error, setError] = useState<string>("");
   const { userId } = useUserStore((state) => state);
@@ -15,28 +18,43 @@ const SentenceInput: React.FC<{ isUserTurn: boolean }> = ({ isUserTurn }) => {
     setSentence(e.target.value);
   };
 
-  const handleSentenceSubmit = async () => {
+  const handleSentenceSubmit = () => {
     if (sentence.trim() === "") {
       setError("Sentence cannot be empty.");
       return;
     }
-    try {
-      const response = await addSentence(gameCode!, sentence, userId);
 
-      if (!response.sentenceIsValid) {
-        socket.emit("leaveGame", gameCode, userId);
-      } else {
-        const lyrics: Sentence[] = response.gameData.lyrics;
-        const addedSentence: Sentence = lyrics[lyrics.length-1];
-
-        socket.emit("addSentence", gameCode, addedSentence);
-        // updatedLyrics(gameCode!, addedSentence);
-      }
-
-      socket.emit("updateTurn", gameCode, response.gameData.currentTurn);
-    } catch (err) {
-      setError(err);
+    if (!isUserTurn) {
+      console.log("not userTurn");
+      return;
     }
+    const addSentenceToLyrics = async () => {
+      try {
+        const response = await addSentence(gameCode!, sentence, userId);
+
+        if (!response.sentenceIsValid) {
+          if (response.gameData.winner != null) {
+            const winner: Player = response.gameData.winner;
+
+            socket.emit("gameOver", gameCode, winner);
+          }
+          socket.emit("updateTurn", gameCode, response.gameData.currentTurn);
+
+          socket.emit("leaveGame", gameCode, userId);
+        } else {
+          const lyrics: Sentence[] = response.gameData.lyrics;
+          const addedSentence: Sentence = lyrics[lyrics.length - 1];
+
+          socket.emit("addSentence", gameCode, addedSentence);
+          socket.emit("updateTurn", gameCode, response.gameData.currentTurn);
+
+          // updatedLyrics(gameCode!, addedSentence);
+        }
+      } catch (err) {
+        setError(err);
+      }
+    };
+    addSentenceToLyrics();
     setSentence("");
     setError("");
   };

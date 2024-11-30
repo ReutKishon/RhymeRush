@@ -15,7 +15,9 @@ const useSocketEvents = (gameCode: string) => {
       );
     });
 
-    socket.on("playerLeft", (playerId) => {
+    socket.on("playerLeft", (playerId: string) => {
+      console.log("playerLeft", playerId);
+
       queryClient.setQueryData<Game | undefined>(
         ["gameData", gameCode],
         (oldData: Game | undefined) => {
@@ -32,6 +34,8 @@ const useSocketEvents = (gameCode: string) => {
     });
 
     socket.on("updatedTurn", (newTurn: number) => {
+      console.log("updatedTurn", newTurn);
+
       queryClient.setQueryData<Game | undefined>(
         ["gameData", gameCode],
         (oldData: Game | undefined) => {
@@ -43,6 +47,7 @@ const useSocketEvents = (gameCode: string) => {
     });
 
     socket.on("updatedLyrics", (newSentence: Sentence) => {
+
       queryClient.setQueryData<Game | undefined>(
         ["gameData", gameCode],
         (oldData: Game | undefined) => {
@@ -53,12 +58,27 @@ const useSocketEvents = (gameCode: string) => {
       );
     });
 
+    socket.on("gameEnd", (winner: Player) => {
+      console.log("gameEnd", winner);
+
+      queryClient.setQueryData<Game | undefined>(
+        ["gameData", gameCode],
+        (oldData: Game | undefined) => {
+          if (!oldData) return undefined;
+
+          return { ...oldData, winner };
+        }
+      );
+    });
+
     return () => {
       socket.off("playerJoined");
       socket.off("updatedTurn");
       socket.off("updatedLyrics");
+      socket.off("gameEnd");
+      socket.off("playerLeft");
     };
-  }, [gameCode, queryClient]);
+  }, [gameCode]);
 };
 
 export default useSocketEvents;

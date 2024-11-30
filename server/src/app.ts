@@ -48,17 +48,26 @@ io.on("connection", (socket: Socket) => {
   });
 
   socket.on("leaveGame", (gameCode: string, playerId: string) => {
+    console.log("leaveGame", gameCode, playerId);
+
     socket.leave(gameCode); // Leave the game room
-    io.to(gameCode).emit("playerLeft", playerId);
     delete playerSocketMap[socket.id];
+    io.to(gameCode).emit("playerLeft", playerId);
+
     // console.log(`Player ${playerId} left the game ${gameCode}`);
   });
 
   socket.on("addSentence", (gameCode: string, newSentence: Sentence) => {
-    io.to(gameCode).emit("updatedLyrics", newSentence);
+    console.log("AddSentence",gameCode,newSentence);
 
+    io.to(gameCode).emit("updatedLyrics", newSentence);
   });
 
+  socket.on("gameOver", (gameCode: string, winner: Player) => {
+    console.log("gameOver", gameCode, winner);
+
+    io.to(gameCode).emit("gameEnd", winner);
+  });
   socket.on("updateTurn", (gameCode: string, turn: number) => {
     io.to(gameCode).emit("updatedTurn", turn);
   });

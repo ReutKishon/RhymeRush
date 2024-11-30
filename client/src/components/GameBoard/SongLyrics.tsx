@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Game, Sentence } from "../../../../shared/types/gameTypes";
-import socket from "../../services/socket.ts";
-import { useQueryClient } from "react-query";
-import { useGameData } from "../../services/queries.ts";
+import { Sentence } from "../../../../shared/types/gameTypes";
 
 const SongLyrics: React.FC<{ lyrics: Sentence[] }> = ({ lyrics }) => {
   if (lyrics === undefined) return null;

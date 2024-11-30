@@ -1,21 +1,29 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useGameStore from "../../../store/useStore";
+import { Player } from "../../../../../shared/types/gameTypes";
+import useUserStore from "../../../store/userStore";
 
 interface GameOverModalProps {
-  isVisible: boolean;
+  winner: Player;
 }
 
-const GameEndModal: React.FC<GameOverModalProps> = ({ isVisible }) => {
-  const { winner } = useGameStore();
-
+const GameEndModal: React.FC<GameOverModalProps> = ({ winner }) => {
+  const { userId } = useUserStore((state) => state);
+  const [content, setContent] = useState<string>("");
+  console.log("GameEndModal: ", winner, userId);
+  useEffect(() => {
+    if (winner.id === userId) {
+      setContent("You Win!");
+    } else {
+      setContent("You Lose the Game");
+    }
+  }, []);
   const navigate = useNavigate();
 
-  if (!isVisible) return null;
+  if (!winner) return null;
 
   const handleSaveSong = () => {
     // Save the game and song data to the database
-   
   };
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -30,8 +38,7 @@ const GameEndModal: React.FC<GameOverModalProps> = ({ isVisible }) => {
         </button>
 
         {/* Modal Content */}
-        <h2 className="text-2xl font-bold mb-4">Game Over</h2>
-        <p className="text-gray-700 mb-6">The Winner Is {winner?.username}</p>
+        <h2 className="text-2xl font-bold mb-4">{content}</h2>
 
         <button
           onClick={handleSaveSong}
