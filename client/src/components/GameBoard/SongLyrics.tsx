@@ -4,9 +4,7 @@ import socket from "../../services/socket.ts";
 import { useQueryClient } from "react-query";
 import { useGameData } from "../../services/queries.ts";
 
-const SongLyrics: React.FC<{ lyrics: Sentence[] | undefined }> = ({
-  lyrics,
-}) => {
+const SongLyrics: React.FC<{ lyrics: Sentence[] }> = ({ lyrics }) => {
   if (lyrics === undefined) return null;
   console.log("lyrics: ", lyrics);
   return (

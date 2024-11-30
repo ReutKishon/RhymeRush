@@ -2,9 +2,9 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
-import { QueryClient, QueryClientProvider } from "react-query";
+import {  QueryClientProvider } from "react-query";
+import queryClient from "./services/queryClient.ts";
 
-const queryClient = new QueryClient();
 
 const rootElement = document.getElementById("root") as HTMLElement;
 const root = ReactDOM.createRoot(rootElement);

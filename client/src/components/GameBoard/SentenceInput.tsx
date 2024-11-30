@@ -2,16 +2,14 @@ import React, { useEffect, useState } from "react";
 import useUserStore from "../../store/userStore.ts";
 import useStore from "../../store/useStore.ts";
 import socket from "../../services/socket.ts";
-import { useQueryClient } from "react-query";
 import { addSentence } from "../../services/api.ts";
-import { Game, Sentence } from "../../../../shared/types/gameTypes.ts";
+import {  Sentence } from "../../../../shared/types/gameTypes.ts";
 
 const SentenceInput: React.FC<{ isUserTurn: boolean }> = ({ isUserTurn }) => {
   const [sentence, setSentence] = useState<string>("");
   const [error, setError] = useState<string>("");
   const { userId } = useUserStore((state) => state);
   const gameCode = useStore((state) => state.gameCode);
-  const queryClient = useQueryClient();
 
   const handleSentenceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSentence(e.target.value);
@@ -28,9 +26,11 @@ const SentenceInput: React.FC<{ isUserTurn: boolean }> = ({ isUserTurn }) => {
       if (!response.sentenceIsValid) {
         socket.emit("leaveGame", gameCode, userId);
       } else {
-        const addedSentence: Sentence = response.gameData.lyrics[-1]!;
-        console.log("HIIII",addedSentence);
+        const lyrics: Sentence[] = response.gameData.lyrics;
+        const addedSentence: Sentence = lyrics[lyrics.length-1];
+
         socket.emit("addSentence", gameCode, addedSentence);
+        // updatedLyrics(gameCode!, addedSentence);
       }
 
       socket.emit("updateTurn", gameCode, response.gameData.currentTurn);

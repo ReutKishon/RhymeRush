@@ -41,7 +41,7 @@ const GameBoard: React.FC = () => {
         </h2>
       </div>
       <div className="absolute inset-0 flex flex-col items-center justify-center -mt-14">
-        <SongLyrics lyrics={game?.lyrics} />
+        <SongLyrics lyrics={game?.lyrics!} />
       </div>
       <div className="absolute right-20 top-20">
         <PlayerList players={game?.players!} currentTurn={game?.currentTurn!} />

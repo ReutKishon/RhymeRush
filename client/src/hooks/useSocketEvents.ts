@@ -1,11 +1,8 @@
 import { useEffect } from "react";
-import { useQueryClient } from "react-query";
 import socket from "../services/socket";
 import { Game, Player, Sentence } from "../../../shared/types/gameTypes";
-
+import queryClient from "../services/queryClient";
 const useSocketEvents = (gameCode: string) => {
-  const queryClient = useQueryClient();
-
   useEffect(() => {
     socket.on("playerJoined", (player: Player) => {
       queryClient.setQueryData<Game | undefined>(
