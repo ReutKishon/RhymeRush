@@ -6,12 +6,11 @@ import { useGameData } from "../../../services/queries";
 
 const GameEndModal = () => {
   const { data: game } = useGameData();
-  const { userId } = useUserStore((state) => state);
+  const { userId, userTurnExpired } = useUserStore((state) => state);
   const [content, setContent] = useState<string>("");
 
   // console.log("GameEndModal: ", game.winner, userId);
   useEffect(() => {
-
     if (!game?.winner) return;
     if (game.winner.id === userId) {
       setContent("You Win!");

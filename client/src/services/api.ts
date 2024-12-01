@@ -32,14 +32,6 @@ export const getGameData = async (gameCode: string): Promise<Game> => {
   }
 };
 
-export const getPlayers = async (gameCode: string): Promise<Player[]> => {
-  try {
-    return (await getGameData(gameCode)).players;
-  } catch (err) {
-    throw err;
-  }
-};
-
 export const addPlayer = async (
   gameCode: string,
   joinedPlayerId: string
@@ -65,27 +57,10 @@ export const removePlayer = async (
   }
 };
 
-export const getLyrics = async (gameCode: string): Promise<Sentence[]> => {
-  try {
-    return (await getGameData(gameCode)).lyrics;
-  } catch (err) {
-    throw err;
-  }
-};
-
-export const getCurrentTurn = async (gameCode: string): Promise<Player> => {
-  try {
-    const gameData: Game = await getGameData(gameCode);
-    return gameData.players[gameData.currentTurn];
-  } catch (err) {
-    throw err;
-  }
-};
-
 export const addSentence = async (
   gameCode: string,
-  sentence: string,
-  playerId: string
+  playerId: string,
+  sentence: string
 ) => {
   try {
     const response = await axios.post(
@@ -93,6 +68,17 @@ export const addSentence = async (
       {
         sentence,
       }
+    );
+    return response.data.data;
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const userTurnExpired = async (gameCode: string, playerId: string) => {
+  try {
+    const response = await axios.post(
+      `${PATH}/game/${gameCode}/${playerId}/turnExpired`
     );
     return response.data.data;
   } catch (err) {

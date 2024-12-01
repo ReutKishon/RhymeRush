@@ -202,13 +202,7 @@ export const addSentenceHandler = catchAsync(
 
     // Validate if the sentence meets the required criteria
     if (!isSentenceValid(gameData, sentence)) {
-      if (gameData.players.length === 2) {
-        gameData.winner = gameData.players.find(
-          (player) => player.id !== playerId
-        );
-      } else {
-        removePlayer(gameData, playerId);
-      }
+      handleLoosing(playerId, gameData);
     } else {
       await addSentenceToSong(gameData, playerData, sentence);
     }
@@ -225,6 +219,14 @@ export const addSentenceHandler = catchAsync(
   }
 );
 
+const handleLoosing = (playerId: string, gameData: Game) => {
+  if (gameData.players.length === 2) {
+    gameData.winner = gameData.players.find((player) => player.id !== playerId);
+  } else {
+    removePlayer(gameData, playerId);
+  }
+};
+
 export const startGame = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { gameCode } = req.params;
@@ -238,6 +240,24 @@ export const startGame = catchAsync(
     res.status(200).json({
       status: "success",
       message: "Game started successfully!",
+    });
+  }
+);
+
+export const userTurnExpired = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { gameCode, playerId } = req.params;
+    const gameData = await getGameFromRedis(gameCode);
+    handleLoosing(playerId, gameData);
+
+    await redisClient.set(
+      `game:${gameData.gameCode}`,
+      JSON.stringify(gameData)
+    );
+
+    res.status(200).json({
+      status: "success",
+      data: { gameData },
     });
   }
 );

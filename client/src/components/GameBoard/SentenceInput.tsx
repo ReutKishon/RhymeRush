@@ -11,6 +11,7 @@ const SentenceInput = () => {
   const [error, setError] = useState<string>("");
   const { userId } = useUserStore((state) => state);
   const { data: game } = useGameData();
+  const { userTurnExpired } = useUserStore((state) => state);
 
   const isUserTurn = game?.players[game.currentTurn]?.id === userId;
 
@@ -30,34 +31,8 @@ const SentenceInput = () => {
     }
     const addSentenceToLyrics = async () => {
       try {
-        await addSentence(game.gameCode, sentence, userId);
+        await addSentence(game.gameCode,userId, sentence);
         socket.emit("updateGame", game?.gameCode);
-
-        // if (!response.sentenceIsValid) {
-        //   if (response.gameData.winner) {
-        //     const winner = response.gameData.winner;
-        //     socket.emit("gameOver", game.gameCode, winner);
-        //   }
-        //   socket.emit(
-        //     "updateTurn",
-        //     game.gameCode,
-        //     response.gameData.currentTurn
-        //   );
-
-        //   socket.emit("leaveGame", game.gameCode, userId);
-        // } else {
-        //   const lyrics: Sentence[] = response.gameData.lyrics;
-        //   const addedSentence: Sentence = lyrics[lyrics.length - 1];
-
-        //   socket.emit("addSentence", game.gameCode, addedSentence);
-        //   socket.emit(
-        //     "updateTurn",
-        //     game.gameCode,
-        //     response.gameData.currentTurn
-        //   );
-
-        //   // updatedLyrics(gameCode!, addedSentence);
-        // }
       } catch (err) {
         setError(err);
       }
@@ -75,7 +50,7 @@ const SentenceInput = () => {
         onChange={handleSentenceChange}
         className="w-full border border-gray-300 rounded px-4 py-2 mb-2"
         placeholder="Type your sentence here"
-        disabled={!isUserTurn}
+        disabled={!game?.isActive || !isUserTurn}
       />
       {error && <p className="text-red-500 text-sm">{error}</p>}
       <button

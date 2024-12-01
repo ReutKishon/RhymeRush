@@ -1,7 +1,8 @@
-import React, { useEffect } from "react";
+import React from "react";
 
 import PlayerAvatar from "./PlayerAvatar.tsx";
 import { useGameData } from "../../services/queries.ts";
+import useUserStore from "../../store/useStore.ts";
 
 // interface PlayerListProps {
 //   players: Player[];
@@ -9,6 +10,7 @@ import { useGameData } from "../../services/queries.ts";
 // }
 const PlayerList = () => {
   const { data: game } = useGameData();
+  const { userId } = useUserStore((state) => state);
 
   return (
     <div className="flex flex-col space-y-8 p-4">
@@ -20,6 +22,7 @@ const PlayerList = () => {
           showAnimation={
             game?.isActive && game.players[game.currentTurn]?.id === player.id
           }
+          isUserTurn={player.id === userId}
         />
       ))}
     </div>

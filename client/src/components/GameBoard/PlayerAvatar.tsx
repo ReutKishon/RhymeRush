@@ -1,21 +1,25 @@
 import React, { useEffect, useState } from "react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
+import useUserStore from "../../store/useStore";
+import { userTurnExpired } from "../../services/api";
+import socket from "../../services/socket.ts";
 
-// import userAvatar from "../../assets/images/user_profile.jpg";
 interface PlayerProps {
   username: string;
   playerColor: string;
   showAnimation: boolean;
-  // setIsGameOver: (end: boolean) => void;
+  isUserTurn: boolean;
 }
 
-const PlayerAvatar: React.FC<PlayerProps> = ({
+const PlayerAvatar = ({
   username,
   playerColor,
   showAnimation,
-}) => {
+  isUserTurn,
+}: PlayerProps) => {
   const [timer, setTimer] = useState<number>(30); // 30-second timer
   const [intervalId, setIntervalId] = useState<number | null>(null);
+  const { gameCode, userId } = useUserStore((state) => state);
 
   // currentTurn?.id === player.id
   useEffect(() => {
@@ -26,6 +30,10 @@ const PlayerAvatar: React.FC<PlayerProps> = ({
         setTimer((prevTime) => {
           if (prevTime <= 1) {
             clearInterval(newIntervalId); // Stop the timer when it reaches 0
+            if (isUserTurn) {
+              userTurnExpired(gameCode, userId);
+              socket.emit("updateGame", gameCode);
+            }
             return 0;
           }
           return prevTime - 1; // Decrement timer
