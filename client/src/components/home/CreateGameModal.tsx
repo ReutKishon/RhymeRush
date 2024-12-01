@@ -2,7 +2,7 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import socket from "../../services/socket.ts";
-import useUserStore from "../../store/userStore.ts";
+import useUserStore from "../../store/useStore.ts";
 
 const CreateGameModal: React.FC = () => {
   const { userId } = useUserStore((state) => state);

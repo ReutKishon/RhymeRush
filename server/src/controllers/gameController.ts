@@ -4,7 +4,6 @@ import catchAsync from "../utils/catchAsync";
 import { Game, Player, Sentence } from "../../../shared/types/gameTypes";
 import redisClient from "../redisClient";
 import generateSongTopic from "../utils/generateTopic";
-import { io } from "../app";
 import { getUserInfo } from "./authController";
 import { getRandomColor } from "../utils/colorGenerator";
 import { AppError } from "../../../shared/utils/appError";
@@ -57,7 +56,7 @@ export const createGame = catchAsync(
       maxPlayers: 2,
       players: [gameCreator],
       isActive: false,
-      currentTurn: -1,
+      currentTurn: 0,
       sentenceLengthAllowed: 5,
       lyrics: [],
       winner: null,
@@ -91,6 +90,7 @@ export const joinGame = catchAsync(
 
     gameData.players.push(playerData);
     await redisClient.set(`game:${gameCode}`, JSON.stringify(gameData));
+
     res.status(200).json({
       status: "success",
       data: { joinedPlayer: playerData },
@@ -112,20 +112,20 @@ export const deleteGame = catchAsync(
   }
 );
 
-const leaveGame = async (gameData: Game, playerId: string) => {
+const removePlayer = async (gameData: Game, playerId: string) => {
   if (gameData.currentTurn == gameData.players.length - 1) {
     gameData.currentTurn = 0;
   }
   gameData.players = gameData.players.filter((p) => p.id !== playerId);
 
-  if (gameData.players.length === 0) {
-    await redisClient.del(`game:${gameData.gameCode}`);
-  }
+  // if (gameData.players.length === 0) {
+  //   await redisClient.del(`game:${gameData.gameCode}`);
+  // }
 
-  await redisClient.set(`game:${gameData.gameCode}`, JSON.stringify(gameData));
+  // await redisClient.set(`game:${gameData.gameCode}`, JSON.stringify(gameData));
 };
 
-export const leaveGameHandler = catchAsync(
+export const leaveGame = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { playerId, gameCode } = req.params;
 
@@ -141,7 +141,7 @@ export const leaveGameHandler = catchAsync(
         new AppError(`Player with ID ${playerId} is not in the game!`, 400)
       );
     }
-    leaveGame(gameData, playerId);
+    removePlayer(gameData, playerId);
     res.status(200).json({ status: "success", data: gameData });
   }
 );
@@ -167,23 +167,6 @@ export const getGameInfo = catchAsync(
   }
 );
 
-export const getAllGames = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const gamesDataString = await redisClient.keys("game:*");
-    const games: Game[] = [];
-
-    for (const gameDataString of gamesDataString) {
-      const gameData: Game = JSON.parse(await redisClient.get(gameDataString));
-      games.push(gameData);
-    }
-
-    res.status(200).json({
-      status: "success",
-      data: { games },
-    });
-  }
-);
-
 const addSentenceToSong = async (
   gameData: Game,
   player: Player,
@@ -200,8 +183,6 @@ const addSentenceToSong = async (
     gameData.currentTurn == gameData.players.length - 1
       ? 0
       : (gameData.currentTurn += 1);
-
-  await redisClient.set(`game:${gameData.gameCode}`, JSON.stringify(gameData));
 };
 
 export const addSentenceHandler = catchAsync(
@@ -226,22 +207,20 @@ export const addSentenceHandler = catchAsync(
           (player) => player.id !== playerId
         );
       } else {
-        leaveGame(gameData, playerId);
-        // io.to(gameCode).emit("playerLost", playerData);
+        removePlayer(gameData, playerId);
       }
-
-      res.status(200).json({
-        status: "success",
-        data: { sentenceIsValid: false, gameData },
-      });
-      return;
+    } else {
+      await addSentenceToSong(gameData, playerData, sentence);
     }
 
-    await addSentenceToSong(gameData, playerData, sentence);
+    await redisClient.set(
+      `game:${gameData.gameCode}`,
+      JSON.stringify(gameData)
+    );
 
     res.status(200).json({
       status: "success",
-      data: { sentenceIsValid: true, gameData },
+      data: { gameData },
     });
   }
 );
@@ -249,38 +228,33 @@ export const addSentenceHandler = catchAsync(
 export const startGame = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { gameCode } = req.params;
-    console.log("startGame", gameCode);
+    const io = req.app.get("socketio");
+
     const gameData = await getGameFromRedis(gameCode);
 
     gameData.isActive = true;
-    gameData.currentTurn = 0;
     await redisClient.set(`game:${gameCode}`, JSON.stringify(gameData));
 
     res.status(200).json({
       status: "success",
       message: "Game started successfully!",
-      data: { startTurn: gameData.currentTurn },
     });
   }
 );
 
-// const gameOver = (gameData: Game, lostPlayerId: string) => {
-//   const winner = gameData.players.find((player) => player.id !== lostPlayerId);
+export const getAllGames = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const gamesDataString = await redisClient.keys("game:*");
+    const games: Game[] = [];
 
-//   io.to(gameData.gameCode).emit("gameEnd", winner, gameData.lyrics);
-// };
+    for (const gameDataString of gamesDataString) {
+      const gameData: Game = JSON.parse(await redisClient.get(gameDataString));
+      games.push(gameData);
+    }
 
-export const checkGameStarted = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const { gameCode } = req.params;
-
-  const gameData = await getGameFromRedis(gameCode);
-
-  if (!gameData.isActive) {
-    return next(new AppError("The game has not started yet!", 400));
+    res.status(200).json({
+      status: "success",
+      data: { games },
+    });
   }
-  next();
-};
+);

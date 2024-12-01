@@ -33,6 +33,8 @@ const io = new Server(server, {
 const playerSocketMap: Record<string, { playerId: string; gameCode: string }> =
   {};
 
+app.set("socketio", io);
+
 io.on("connection", (socket: Socket) => {
   console.log("New client connected");
 
@@ -47,30 +49,33 @@ io.on("connection", (socket: Socket) => {
     io.to(gameCode).emit("playerJoined", joinedPlayer);
   });
 
-  socket.on("leaveGame", (gameCode: string, playerId: string) => {
-    console.log("leaveGame", gameCode, playerId);
-
-    socket.leave(gameCode); // Leave the game room
-    delete playerSocketMap[socket.id];
-    io.to(gameCode).emit("playerLeft", playerId);
-
-    // console.log(`Player ${playerId} left the game ${gameCode}`);
+  socket.on("updateGame", (gameCode: string) => {
+    io.to(gameCode).emit("gameUpdated");
   });
+  // socket.on("leaveGame", (gameCode: string, playerId: string) => {
+  //   console.log("leaveGame", gameCode, playerId);
 
-  socket.on("addSentence", (gameCode: string, newSentence: Sentence) => {
-    console.log("AddSentence",gameCode,newSentence);
+  //   socket.leave(gameCode); // Leave the game room
+  //   delete playerSocketMap[socket.id];
+  //   io.to(gameCode).emit("playerLeft", playerId);
 
-    io.to(gameCode).emit("updatedLyrics", newSentence);
-  });
+  //   // console.log(`Player ${playerId} left the game ${gameCode}`);
+  // });
 
-  socket.on("gameOver", (gameCode: string, winner: Player) => {
-    console.log("gameOver", gameCode, winner);
+  // socket.on("addSentence", (gameCode: string, newSentence: Sentence) => {
+  //   console.log("AddSentence", gameCode, newSentence);
 
-    io.to(gameCode).emit("gameEnd", winner);
-  });
-  socket.on("updateTurn", (gameCode: string, turn: number) => {
-    io.to(gameCode).emit("updatedTurn", turn);
-  });
+  //   io.to(gameCode).emit("updatedLyrics", newSentence);
+  // });
+
+  // socket.on("gameOver", (gameCode: string, winner: Player) => {
+  //   console.log("gameOver", gameCode, winner);
+
+  //   io.to(gameCode).emit("gameEnd", winner);
+  // });
+  // socket.on("updateTurn", (gameCode: string, turn: number) => {
+  //   io.to(gameCode).emit("updatedTurn", turn);
+  // });
 
   socket.on("disconnect", () => {
     const playerInfo = playerSocketMap[socket.id];

@@ -1,18 +1,18 @@
 import React, { useState } from "react";
-import useUserStore from "../../store/userStore.ts";
-import useStore from "../../store/useStore.ts";
+import useUserStore from "../../store/useStore.ts";
 import socket from "../../services/socket.ts";
 import { addSentence } from "../../services/api.ts";
 import { Player, Sentence } from "../../../../shared/types/gameTypes.ts";
+import { useGameData } from "../../services/queries.ts";
 
-interface SentenceInputProps {
-  isUserTurn: boolean;
-}
-const SentenceInput: React.FC<SentenceInputProps> = ({ isUserTurn }) => {
+//
+const SentenceInput = () => {
   const [sentence, setSentence] = useState<string>("");
   const [error, setError] = useState<string>("");
   const { userId } = useUserStore((state) => state);
-  const gameCode = useStore((state) => state.gameCode);
+  const { data: game } = useGameData();
+
+  const isUserTurn = game?.players[game.currentTurn]?.id === userId;
 
   const handleSentenceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSentence(e.target.value);
@@ -30,26 +30,34 @@ const SentenceInput: React.FC<SentenceInputProps> = ({ isUserTurn }) => {
     }
     const addSentenceToLyrics = async () => {
       try {
-        const response = await addSentence(gameCode!, sentence, userId);
+        await addSentence(game.gameCode, sentence, userId);
+        socket.emit("updateGame", game?.gameCode);
 
-        if (!response.sentenceIsValid) {
-          if (response.gameData.winner != null) {
-            const winner: Player = response.gameData.winner;
+        // if (!response.sentenceIsValid) {
+        //   if (response.gameData.winner) {
+        //     const winner = response.gameData.winner;
+        //     socket.emit("gameOver", game.gameCode, winner);
+        //   }
+        //   socket.emit(
+        //     "updateTurn",
+        //     game.gameCode,
+        //     response.gameData.currentTurn
+        //   );
 
-            socket.emit("gameOver", gameCode, winner);
-          }
-          socket.emit("updateTurn", gameCode, response.gameData.currentTurn);
+        //   socket.emit("leaveGame", game.gameCode, userId);
+        // } else {
+        //   const lyrics: Sentence[] = response.gameData.lyrics;
+        //   const addedSentence: Sentence = lyrics[lyrics.length - 1];
 
-          socket.emit("leaveGame", gameCode, userId);
-        } else {
-          const lyrics: Sentence[] = response.gameData.lyrics;
-          const addedSentence: Sentence = lyrics[lyrics.length - 1];
+        //   socket.emit("addSentence", game.gameCode, addedSentence);
+        //   socket.emit(
+        //     "updateTurn",
+        //     game.gameCode,
+        //     response.gameData.currentTurn
+        //   );
 
-          socket.emit("addSentence", gameCode, addedSentence);
-          socket.emit("updateTurn", gameCode, response.gameData.currentTurn);
-
-          // updatedLyrics(gameCode!, addedSentence);
-        }
+        //   // updatedLyrics(gameCode!, addedSentence);
+        // }
       } catch (err) {
         setError(err);
       }

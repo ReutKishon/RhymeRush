@@ -1,15 +1,14 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import useUserStore from "../../store/userStore";
+import useStore from "../../store/useStore";
 
 const SignIn: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("test1234");
   const [error, setError] = useState<string | null>(null);
 
-  const setUserIdGlobal = useUserStore((state) => state.setUserId);
-  const setUsernameGlobal = useUserStore((state) => state.setUsername);
+  const setUserId = useStore((state) => state.setUserId);
 
   const navigate = useNavigate();
 
@@ -30,9 +29,8 @@ const SignIn: React.FC = () => {
       );
       console.log(response);
       const id = String(response.data.data.user._id);
-      setUserIdGlobal(id);
-      setUsernameGlobal(response.data.data.user.username);
-
+      setUserId(id);
+      // setUsernameGlobal(response.data.data.user.username);
 
       navigate("/home");
     } catch (err: any) {

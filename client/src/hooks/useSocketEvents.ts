@@ -15,68 +15,42 @@ const useSocketEvents = (gameCode: string) => {
       );
     });
 
-    socket.on("playerLeft", (playerId: string) => {
-      console.log("playerLeft", playerId);
-
-      queryClient.setQueryData<Game | undefined>(
-        ["gameData", gameCode],
-        (oldData: Game | undefined) => {
-          if (!oldData) return undefined;
-
-          return {
-            ...oldData,
-            players: oldData.players.filter(
-              (player: Player) => player.id !== playerId
-            ),
-          };
-        }
-      );
+    socket.on("gameUpdated", () => {
+      queryClient.invalidateQueries(["gameData", gameCode]);
     });
 
-    socket.on("updatedTurn", (newTurn: number) => {
-      console.log("updatedTurn", newTurn);
+    // socket.on("updatedLyrics", (newSentence: Sentence) => {
+    //   queryClient.setQueryData<Game | undefined>(
+    //     ["gameData", gameCode],
+    //     (oldData: Game | undefined) => {
+    //       if (!oldData) return undefined;
 
-      queryClient.setQueryData<Game | undefined>(
-        ["gameData", gameCode],
-        (oldData: Game | undefined) => {
-          if (!oldData) return undefined;
+    //       return { ...oldData, lyrics: [...oldData.lyrics, newSentence] };
+    //     }
+    //   );
+    // });
 
-          return { ...oldData, currentTurn: newTurn };
-        }
-      );
-    });
+    // socket.on("gameEnd", (winner: Player) => {
+    //   console.log("gameEnd", winner);
 
-    socket.on("updatedLyrics", (newSentence: Sentence) => {
+    //   queryClient.setQueryData<Game | undefined>(
+    //     ["gameData", gameCode],
+    //     (oldData: Game | undefined) => {
+    //       if (!oldData) return undefined;
 
-      queryClient.setQueryData<Game | undefined>(
-        ["gameData", gameCode],
-        (oldData: Game | undefined) => {
-          if (!oldData) return undefined;
-
-          return { ...oldData, lyrics: [...oldData.lyrics, newSentence] };
-        }
-      );
-    });
-
-    socket.on("gameEnd", (winner: Player) => {
-      console.log("gameEnd", winner);
-
-      queryClient.setQueryData<Game | undefined>(
-        ["gameData", gameCode],
-        (oldData: Game | undefined) => {
-          if (!oldData) return undefined;
-
-          return { ...oldData, winner };
-        }
-      );
-    });
+    //       return { ...oldData, winner };
+    //     }
+    // //   );
+    // });
 
     return () => {
       socket.off("playerJoined");
-      socket.off("updatedTurn");
-      socket.off("updatedLyrics");
-      socket.off("gameEnd");
-      socket.off("playerLeft");
+      socket.off("gameUpdated");
+
+      // socket.off("updatedTurn");
+      // socket.off("updatedLyrics");
+      // socket.off("gameEnd");
+      // socket.off("playerLeft");
     };
   }, [gameCode]);
 };

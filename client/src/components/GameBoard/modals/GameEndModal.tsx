@@ -1,18 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Player } from "../../../../../shared/types/gameTypes";
-import useUserStore from "../../../store/userStore";
+import useUserStore from "../../../store/useStore";
+import { useGameData } from "../../../services/queries";
 
-interface GameOverModalProps {
-  winner: Player;
-}
-
-const GameEndModal: React.FC<GameOverModalProps> = ({ winner }) => {
+const GameEndModal = () => {
+  const { data: game } = useGameData();
   const { userId } = useUserStore((state) => state);
   const [content, setContent] = useState<string>("");
-  console.log("GameEndModal: ", winner, userId);
+
+  // console.log("GameEndModal: ", game.winner, userId);
   useEffect(() => {
-    if (winner.id === userId) {
+
+    if (!game?.winner) return;
+    if (game.winner.id === userId) {
       setContent("You Win!");
     } else {
       setContent("You Lose the Game");
@@ -20,7 +21,9 @@ const GameEndModal: React.FC<GameOverModalProps> = ({ winner }) => {
   }, []);
   const navigate = useNavigate();
 
-  if (!winner) return null;
+  if (!game?.winner) {
+    return null;
+  }
 
   const handleSaveSong = () => {
     // Save the game and song data to the database
