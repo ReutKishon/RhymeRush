@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import socket from "../../services/socket.ts";
 import useUserStore from "../../store/useStore.ts";
 
-const CreateGameModal: React.FC = () => {
+const CreateGameModal = () => {
   const { userId } = useUserStore((state) => state);
   const [gameCode, setGameCode] = useState("");
 

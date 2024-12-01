@@ -9,6 +9,13 @@ interface User {
   passwordConfirm: string;
 }
 
+export interface UserData {
+  _id: string;
+  username: string;
+  score: number;
+  email: string;
+}
+
 export interface Player
   extends Omit<
     User,

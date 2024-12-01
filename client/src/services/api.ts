@@ -1,5 +1,10 @@
 import axios from "axios";
-import { Game, Player, Sentence } from "../../../shared/types/gameTypes";
+import {
+  Game,
+  Player,
+  UserData,
+  UserDocument,
+} from "../../../shared/types/gameTypes";
 
 const PATH = "http://localhost:3000/api/v1";
 
@@ -82,6 +87,29 @@ export const userTurnExpired = async (gameCode: string, playerId: string) => {
     );
     return response.data.data;
   } catch (err) {
+    throw err;
+  }
+};
+
+export const login = async (
+  email: string,
+  password: string,
+  setError: React.Dispatch<React.SetStateAction<string | null>>
+): Promise<UserData> => {
+  try {
+    const response = await axios.post(
+      "http://localhost:3000/api/v1/users/login",
+      {
+        email: email,
+        password: password,
+      }
+    );
+
+    const token = response.data.token;
+    localStorage.setItem("authToken", token);
+    return response.data.data.userData;
+  } catch (err) {
+    setError(err);
     throw err;
   }
 };

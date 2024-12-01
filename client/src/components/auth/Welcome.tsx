@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-const Welcome: React.FC = () => {
+const Welcome = () => {
   const navigate = useNavigate();
 
   return (

@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import useStore from "../../store/useStore";
+import { login } from "../../services/api";
+import { UserData } from "../../../../shared/types/gameTypes";
 
-const SignIn: React.FC = () => {
+const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("test1234");
   const [error, setError] = useState<string | null>(null);
@@ -19,24 +21,13 @@ const SignIn: React.FC = () => {
       return;
     }
 
-    try {
-      const response = await axios.post(
-        "http://localhost:3000/api/v1/users/login",
-        {
-          email: email,
-          password: password,
-        }
-      );
-      console.log(response);
-      const id = String(response.data.data.user._id);
-      setUserId(id);
-      // setUsernameGlobal(response.data.data.user.username);
+    const loggedUser: UserData = await login(email, password, setError);
+    console.log(loggedUser);
+    const id = String(loggedUser._id);
+    setUserId(id);
+    // setUsernameGlobal(response.data.data.user.username);
 
-      navigate("/home");
-    } catch (err: any) {
-      console.log(err);
-      setError(err.response.data.message);
-    }
+    navigate("/home");
   };
 
   return (

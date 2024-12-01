@@ -8,10 +8,7 @@ interface playerLeftModalProps {
   leftPlayer: string;
 }
 
-const PlayerLeftModal: React.FC<playerLeftModalProps> = ({
-  isVisible,
-  leftPlayer,
-}) => {
+const PlayerLeftModal = ({ isVisible, leftPlayer }: playerLeftModalProps) => {
   // const { playerData } = useFetchPlayer(gameCode);
 
   if (!isVisible) return null;

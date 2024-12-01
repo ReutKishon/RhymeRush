@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { UserDocument } from "../../../shared/types/gameTypes";
+import { UserDocument, UserData } from "../../../shared/types/gameTypes";
 import userModel from "../models/userModel";
 
 import catchAsync from "../utils/catchAsync";
@@ -18,28 +18,23 @@ const createSendToken = (
   res: Response
 ) => {
   const token = signToken(user._id);
-  const cookieExpirationTime = parseInt(
-    process.env.JWT_COOKIE_EXPIRES_IN as string,
-    10
-  );
 
-  const cookieOptions = {
-    expires: new Date(Date.now() + cookieExpirationTime * 24 * 60 * 60 * 1000),
-    secure: process.env.NODE_ENV === "production",
-    httpOnly: true,
+  const userData: UserData = {
+    username: user.username,
+    email: user.email,
+    _id: user._id.toString(),
+    score: user.score,
   };
-  res.cookie("jwt", token, cookieOptions);
-  // user.password = undefined;
   res.status(statusCode).json({
     status: "success",
     token,
-    data: { user },
+    data: { userData },
   });
 };
 
 export const signUp = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const newUser: UserDocument = await userModel.create(req.body);
+    const newUser = await userModel.create(req.body);
     createSendToken(newUser, 201, res);
   }
 );

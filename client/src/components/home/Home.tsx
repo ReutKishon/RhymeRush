@@ -1,9 +1,15 @@
 import axios from "axios";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-const Home: React.FC = ({}) => {
+const Home = () => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!localStorage.getItem("authToken")) {
+      navigate("/login");
+    }
+  }, []);
 
   const handleCreateGame = () => {
     navigate(`/create-game`);
