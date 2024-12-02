@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useUserStore from "../../../store/useStore";
-import {useGameData} from "../../../hooks";
+import { useGameData } from "../../../hooks";
 
 const GameEndModal = () => {
   const { data: game } = useGameData();
@@ -24,7 +24,7 @@ const GameEndModal = () => {
       setTitle("You are the Winner!");
       setContent("");
     }
-  }, [isEliminated, game?.winner]);
+  }, [isEliminated, game?.winner, eliminationReason, userId]);
 
   if (!isEliminated && !game?.winner) {
     return null;

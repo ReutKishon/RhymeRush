@@ -1,11 +1,11 @@
 import { useQuery } from "react-query";
-import { fetchGameData } from "../services/api";
+import { api } from "../services";
 import useStore from "../store/useStore";
 
 const useGameData = () => {
   const gameCode = useStore((state) => state.gameCode);
 
-  return useQuery(["game", gameCode], () => fetchGameData(gameCode), {
+  return useQuery(["game", gameCode], () => api.fetchGameData(gameCode), {
     enabled: !!gameCode,
   });
 };

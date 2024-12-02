@@ -8,7 +8,7 @@ const Home = () => {
     if (!localStorage.getItem("authToken")) {
       navigate("/login");
     }
-  }, []);
+  }, [navigate]);
 
   const handleCreateGame = () => {
     navigate(`/create-game`);

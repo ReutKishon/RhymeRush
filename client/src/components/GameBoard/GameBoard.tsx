@@ -17,7 +17,7 @@ const GameBoard = () => {
       setEliminationReason("");
       setIsEliminated(false);
     }
-  }, []);
+  }, [gameCode, setEliminationReason, setGameCode, setIsEliminated]);
 
   useSocketEvents(gameCode!);
 
