@@ -26,17 +26,6 @@ const userSchema: Schema<UserDocument> = new mongoose.Schema(
       minlength: 8,
       select: false,
     },
-    passwordConfirm: {
-      type: String,
-      required: [true, "Please confirm your password"],
-      validate: {
-        validator: function (val: string) {
-          // @ts-ignore
-          return val === this.password;
-        },
-        message: "Passwords do not match!",
-      },
-    },
   },
   {
     toJSON: { virtuals: true },
@@ -48,7 +37,6 @@ const userSchema: Schema<UserDocument> = new mongoose.Schema(
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   this.password = await bcrypt.hash(this.password, 12);
-  this.passwordConfirm = "";
   next();
 });
 

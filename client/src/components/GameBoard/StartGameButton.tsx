@@ -1,20 +1,17 @@
 import React from "react";
-import {socket,api} from "../../services";
-import useStore from "../../store/useStore.ts";
-import {useGameData} from "../../hooks";
+import { socket, api } from "../../services";
+import useAppStore from "../../store/useStore.ts";
 
 const StartGameButton = () => {
-  const { userId } = useStore((state) => state);
-  const { data: game } = useGameData();
-  
+  const { user, game } = useAppStore((state) => state);
+
   const onStartGame = () => {
     if (game?.isActive || game?.players.length === 1) {
       return;
     }
     const handleStartGame = async () => {
       try {
-        await api.startGame(game?.gameCode!);
-        socket.emit("updateGame", game?.gameCode);
+        await api.startGame(game?.code!);
       } catch (err) {
         console.log(err);
       }
@@ -22,7 +19,7 @@ const StartGameButton = () => {
     handleStartGame();
   };
 
-  if (game?.gameCreatorId !== userId) {
+  if (game?.gameCreatorId !== user.id) {
     return null;
   }
 

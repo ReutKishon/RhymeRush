@@ -1,27 +1,18 @@
 import { useEffect } from "react";
 import socket from "../services/socket";
-import { Game, Player } from "../../../shared/types/gameTypes";
-import queryClient from "../services/queryClient";
+import { Game } from "../../../shared/types/gameTypes";
+import useStore from "../store/useStore";
 const useSocketEvents = (gameCode: string) => {
+  const { setGame, setEliminationReason, setIsEliminated } = useStore(
+    (state) => state
+  );
   useEffect(() => {
-    socket.on("playerJoined", (player: Player) => {
-      queryClient.setQueryData<Game | undefined>(
-        ["game", gameCode],
-        (oldData: Game | undefined) => {
-          if (!oldData) return undefined;
-
-          return { ...oldData, players: [...oldData.players, player] };
-        }
-      );
-    });
-
-    socket.on("gameUpdated", () => {
-      console.log("gameUpdated");
-      queryClient.invalidateQueries(["game", gameCode]);
+    socket.on("gameUpdated", (gameData: Game) => {
+      console.log("gameUpdated: ", gameData);
+      setGame(gameData);
     });
 
     return () => {
-      socket.off("playerJoined");
       socket.off("gameUpdated");
     };
   }, [gameCode]);

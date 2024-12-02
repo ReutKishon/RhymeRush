@@ -1,30 +1,28 @@
 import React, { useEffect } from "react";
-import { PlayerList, SentenceInput, SongLyrics, StartGameButton } from "./";
+import {
+  PlayerList,
+  SentenceInput,
+  SongLyrics,
+  StartGameButton,
+  Topic,
+} from "./";
 import { useParams } from "react-router-dom";
 import useSocketEvents from "../../hooks/useSocketEvents.ts";
 import useStore from "../../store/useStore.ts";
 import GameEndModal from "./modals/GameEndModal.tsx";
+import { fetchGameData } from "../../services/api.ts";
 
 const GameBoard = () => {
   const { gameCode } = useParams<{ gameCode: string }>();
-  const { setGameCode, setEliminationReason, setIsEliminated } = useStore(
-    (state) => state
-  );
-
-  useEffect(() => {
-    if (gameCode) {
-      setGameCode(gameCode);
-      setEliminationReason("");
-      setIsEliminated(false);
-    }
-  }, [gameCode, setEliminationReason, setGameCode, setIsEliminated]);
+  
+  
 
   useSocketEvents(gameCode!);
 
   return (
     <div className="relative h-screen p-4">
       <div className="absolute top-10 inset-x-0 flex items-center justify-between px-4">
-        <h2 className="text-2xl font-bold text-center w-full">Topic:</h2>
+        <Topic />
       </div>
       <div className="absolute inset-0 flex flex-col items-center justify-center -mt-14">
         <SongLyrics />

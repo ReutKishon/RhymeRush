@@ -1,8 +1,9 @@
 import React, { useEffect } from "react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
-import useUserStore from "../../store/useStore";
-import { useTimer,usePlayerLose } from "../../hooks";
+import useAppStore from "../../store/useStore";
+import { useTimer, usePlayerLose } from "../../hooks";
 import { Player } from "../../../../shared/types/gameTypes";
+import { getRandomColor } from "../../utils/colorGenerator";
 
 interface PlayerProps {
   player: Player;
@@ -11,14 +12,15 @@ interface PlayerProps {
 }
 
 const PlayerAvatar = ({ player, isPlayerTurn, gameIsActive }: PlayerProps) => {
-  const { userId, gameCode } = useUserStore((state) => state);
+  const { user, game } = useAppStore((state) => state);
   const turnStarted = gameIsActive && isPlayerTurn;
+  const color = getRandomColor();
 
   const handlePlayerLose = usePlayerLose(
     "timeExpired",
-    gameCode,
-    userId,
-    player.id === userId
+    game.code,
+    user.id,
+    player.id === user.id
   );
 
   const onTimeExpired = () => {
@@ -52,9 +54,9 @@ const PlayerAvatar = ({ player, isPlayerTurn, gameIsActive }: PlayerProps) => {
         <CircularProgressbar
           value={(timer / 30) * 100}
           styles={buildStyles({
-            pathColor: adjustColorTone(player.color, 0.7),
-            trailColor: player.color,
-            backgroundColor: player.color,
+            pathColor: adjustColorTone(color, 0.7),
+            trailColor: color,
+            backgroundColor: color,
             strokeLinecap: "round",
             textColor: "white",
             textSize: "0px",
@@ -66,11 +68,11 @@ const PlayerAvatar = ({ player, isPlayerTurn, gameIsActive }: PlayerProps) => {
         // Static Circle for non-current players
         <div
           className="w-full h-full rounded-full"
-          style={{ backgroundColor: player.color }}
+          style={{ backgroundColor: color }}
         ></div>
       )}
       <div className="absolute inset-0 flex items-center justify-center text-white font-bold text-sm">
-        {player.username}
+        {player.name}
       </div>
     </div>
   );

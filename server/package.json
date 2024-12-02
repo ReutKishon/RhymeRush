@@ -14,6 +14,7 @@
     "@babel/plugin-transform-modules-commonjs": "^7.25.9",
     "@huggingface/inference": "^2.8.1",
     "@redis/client": "^1.6.0",
+    "axios": "^1.7.8",
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",

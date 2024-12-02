@@ -1,39 +1,43 @@
-// import { HfInference } from "@huggingface/inference";
-import OpenAI from "openai";
-
+import axios from "axios";
 import dotenv from "dotenv";
+
 dotenv.config();
-// const hf = new HfInference(process.env.HAGGING_FACE_TOKEN);
 
-const sentencesRhyme = async (sentence1: string, sentence2: string) => {
-  //   const lastWord1 = getLastWord(sentence1);
-  //   const lastWord2 = getLastWord(sentence2);
-  //   console.log("here: ", process.env.HAGGING_FACE_TOKEN);
-  const lastWord1 = "shy";
-  const lastWord2 = "clock";
+// OpenAI API key
+const apiKey = process.env.OPEN_AI_KEY;
 
-  const openai = new OpenAI({apiKey: process.env.OPEN_AI_KEY});
+async function callChatGPT(prompt: string) {
+  const url = "https://api.openai.com/v1/chat/completions";
 
-  const completion = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${apiKey}`,
+  };
+
+  const data = {
+    model: "gpt-3.5-turbo",
     messages: [
-      { role: "system", content: "You need to check if two words rhyme, answear yes/no" },
       {
-        role: "user",
-        content: `Do ${lastWord1} and ${lastWord2} rhyme?}`,
+        role: "system",
+        content:
+          "You are an assistant that checks if two words rhyme. Respond only with 'yes' or 'no'.",
       },
+      { role: "user", content: prompt },
     ],
-  });
+  };
 
-  console.log(completion.choices[0].message);
-  //   console.log(res.answer);
-  return true;
-};
+  try {
+    const response = await axios.post(url, data, { headers });
+    const result = response.data.choices[0].message.content;
+    return result === "yes";
+  } catch (error) {
+    console.error(
+      "Error calling ChatGPT API:",
+      error.response ? error.response.data : error.message
+    );
+    throw error;
+  }
 
-// Helper function to get the last word from a sentence
-function getLastWord(sentence: string): string {
-  const words = sentence.trim().split(" ");
-  return words[words.length - 1].toLowerCase();
 }
 
-export default sentencesRhyme;
+export default callChatGPT;

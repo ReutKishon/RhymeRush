@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import useUserStore from "../../store/useStore";
+import useAppStore from "../../store/useStore";
 
 const SignUp = () => {
   const [username, setUsername] = useState("");
@@ -11,7 +11,7 @@ const SignUp = () => {
 
   const [error, setError] = useState<string | null>(null);
 
-  const setUserId = useUserStore((state) => state.setUserId);
+  const setUser = useAppStore((state) => state.setUser);
   // const setUsernameGlobal = useUserStore((state) => state.setUsername);
 
   const navigate = useNavigate();
@@ -35,7 +35,7 @@ const SignUp = () => {
         }
       );
       console.log(response);
-      setUserId(username);
+      setUser(response.data.user);
       // setUserIdGlobal(response.data.data.user._id);
 
       navigate("/home");

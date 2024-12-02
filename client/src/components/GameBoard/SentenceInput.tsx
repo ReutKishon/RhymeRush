@@ -1,23 +1,23 @@
 import React, { useState } from "react";
-import useUserStore from "../../store/useStore.ts";
+import useAppStore from "../../store/useStore.ts";
 import socket from "../../services/socket.ts";
 import { api } from "../../services";
-import { useGameData, usePlayerLose } from "../../hooks";
+import { usePlayerLose } from "../../hooks";
 
-//
+
 const SentenceInput = () => {
   const [sentence, setSentence] = useState<string>("");
   const [error, setError] = useState<string>("");
-  const { userId } = useUserStore((state) => state);
-  const { data: game } = useGameData();
+  const { user,game } = useAppStore((state) => state);
+
 
   const isUserTurn =
-    game?.isActive && game.players[game.currentTurn]?.id === userId;
+    game?.isActive && game.players[game.currentPlayerId]?.id === user.id;
 
   const handlePlayerLose = usePlayerLose(
     "invalidSentence",
-    game?.gameCode!,
-    userId,
+    game?.code!,
+    user.id,
     isUserTurn!
   );
 
@@ -37,15 +37,13 @@ const SentenceInput = () => {
 
     const addSentenceToLyrics = async () => {
       try {
-        const sentenceIsValid = await api.addSentence(
-          game.gameCode,
-          userId,
+        const sentenceIsValid = await api.submitSentence(
+          game.code,
+          user.id,
           sentence
         );
         if (!sentenceIsValid) {
           handlePlayerLose();
-        } else {
-          socket.emit("updateGame", game.gameCode); // Notify other players
         }
       } catch (err) {
         setError(err);

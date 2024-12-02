@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { socket, api } from "../../services";
-import useUserStore from "../../store/useStore.ts";
+import useAppStore from "../../store/useStore.ts";
 
 const CreateGameModal = () => {
-  const { userId } = useUserStore((state) => state);
+  const { user } = useAppStore((state) => state);
   const [gameCode, setGameCode] = useState("");
 
   const navigate = useNavigate();
@@ -12,16 +12,16 @@ const CreateGameModal = () => {
   useEffect(() => {
     const createNewGame = async () => {
       try {
-        const gameData = await api.createGame(userId);
-        setGameCode(gameData.gameCode);
-        socket.emit("createGame", gameData.gameCode, userId);
+        const gameData = await api.createGame(user.id);
+        setGameCode(gameData.code);
+        socket.emit("createGame", gameData.code, user.id);
       } catch (err) {
         console.error("Error creating game:", err);
       }
     };
 
     createNewGame();
-  }, [userId]); // Only run this effect when userId changes
+  }, [user]); // Only run this effect when userId changes
 
   const handleEnterGame = () => {
     if (!gameCode) {

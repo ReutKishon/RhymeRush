@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
-import { UserDocument, UserData } from "../../../shared/types/gameTypes";
+import { User, UserDocument } from "../../../shared/types/gameTypes";
 import userModel from "../models/userModel";
 
 import catchAsync from "../utils/catchAsync";
-import { ObjectId } from "mongoose";
+import { Model, ObjectId } from "mongoose";
 import { AppError } from "../../../shared/utils/appError";
 
 const signToken = (id: ObjectId) => {
@@ -13,16 +13,16 @@ const signToken = (id: ObjectId) => {
   });
 };
 const createSendToken = (
-  user: UserDocument,
+  user: UserDocument & { _id: ObjectId},
   statusCode: number,
   res: Response
 ) => {
   const token = signToken(user._id);
 
-  const userData: UserData = {
+  const userData: Omit<User, 'password'> = {
     username: user.username,
     email: user.email,
-    _id: user._id.toString(),
+    id: user._id.toString(),
     score: user.score,
   };
   res.status(statusCode).json({
@@ -35,7 +35,7 @@ const createSendToken = (
 export const signUp = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const newUser = await userModel.create(req.body);
-    createSendToken(newUser, 201, res);
+    createSendToken(newUser as any, 201, res);
   }
 );
 
@@ -53,7 +53,7 @@ export const login = catchAsync(
       return next(new AppError("Incorrect email or password", 401));
     }
     //3) If valid, generate a token and send it back to the client
-    createSendToken(user, 200, res);
+    createSendToken(user as any, 200, res);
   }
 );
 

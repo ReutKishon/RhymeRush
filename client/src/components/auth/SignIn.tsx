@@ -2,14 +2,14 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useStore from "../../store/useStore";
 import { api } from "../../services";
-import { UserData } from "../../../../shared/types/gameTypes";
+import useAppStore from "../../store/useStore";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("test1234");
   const [error, setError] = useState<string | null>(null);
 
-  const setUserId = useStore((state) => state.setUserId);
+  const setUser = useAppStore((state) => state.setUser);
 
   const navigate = useNavigate();
 
@@ -20,10 +20,9 @@ const SignIn = () => {
       return;
     }
     try {
-      const loggedUser: UserData = await api.login(email, password);
+      const loggedUser = await api.login(email, password);
       console.log(loggedUser);
-      const id = String(loggedUser._id);
-      setUserId(id);
+      setUser(loggedUser);
 
       navigate("/home");
     } catch (err) {

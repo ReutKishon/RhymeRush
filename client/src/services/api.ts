@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Game, Player, UserData } from "../../../shared/types/gameTypes";
+import { Game, Player, User } from "../../../shared/types/gameTypes";
 
 const PATH = process.env.REACT_APP_API_BASE_URL;
 
@@ -60,7 +60,7 @@ export const removePlayer = async (
   }
 };
 
-export const addSentence = async (
+export const submitSentence = async (
   gameCode: string,
   playerId: string,
   sentence: string
@@ -78,10 +78,7 @@ export const addSentence = async (
   }
 };
 
-export const login = async (
-  email: string,
-  password: string
-): Promise<UserData> => {
+export const login = async (email: string, password: string): Promise<User> => {
   try {
     const response = await axios.post(
       "http://localhost:3000/api/v1/users/login",

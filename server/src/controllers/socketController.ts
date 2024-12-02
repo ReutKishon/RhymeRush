@@ -19,10 +19,6 @@ export const socketController = (io: Server) => {
       io.to(gameCode).emit("playerJoined", joinedPlayer);
     });
 
-    socket.on("updateGame", (gameCode: string) => {
-      io.to(gameCode).emit("gameUpdated");
-    });
-
     // socket.on("leaveGame", (gameCode: string, playerId: string) => {
     //   console.log("leaveGame", gameCode, playerId);
 

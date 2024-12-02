@@ -1,8 +1,8 @@
 import React from "react";
-import { useGameData } from "../../hooks";
+import useAppStore from "../../store/useStore";
 
 const Topic = () => {
-  const { data: game } = useGameData();
+  const { user, game } = useAppStore((state) => state);
 
   return (
     

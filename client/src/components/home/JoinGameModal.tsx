@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { socket, api } from "../../services";
-import useStore from "../../store/useStore.ts";
+import useAppStore from "../../store/useStore.ts";
 
 const JoinGameModal = () => {
   const [gameCode, setGameCode] = useState("");
-  const { userId } = useStore((state) => state);
+  const { user } = useAppStore((state) => state);
   const navigate = useNavigate();
 
   const handleEnterGame = async () => {
@@ -13,7 +13,7 @@ const JoinGameModal = () => {
       return;
     }
     try {
-      const joinedPlayer = await api.addPlayer(gameCode!, userId);
+      const joinedPlayer = await api.addPlayer(gameCode!, user.id);
 
       socket.emit("joinGame", gameCode, joinedPlayer);
       navigate(`/game/${gameCode}`);

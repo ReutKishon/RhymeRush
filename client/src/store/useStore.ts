@@ -1,31 +1,43 @@
 import { create } from "zustand";
+import { Game, User } from "../../../shared/types/gameTypes";
 
-interface UserState {
-  gameCode: string;
-  userId: string;
-  username: string;
+interface AppState {
+  game: Game;
+  user: User;
   isEliminated: boolean;
   eliminationReason: string;
-  setGameCode: (gameCode: string) => void;
-  setUserId: (id: string) => void;
-  setUsername: (username: string) => void;
   setIsEliminated: (eliminated: boolean) => void;
   setEliminationReason: (reason: string) => void;
+  setUser: (user: User) => void;
+  setGame: (game: Game) => void;
 }
 
-const useUserStore = create<UserState>((set) => ({
-  gameCode: "",
-  userId: "",
-  username: "",
+const useAppStore = create<AppState>((set) => ({
+  game: {
+    code: "",
+    topic: "",
+    players: [],
+    isActive: false,
+    currentPlayerId: "",
+    lyrics: [],
+    winnerPlayerId: "",
+    gameCreatorId: "",
+  },
+  user: {
+    username: "",
+    score: 0,
+    email: "",
+    password: "",
+    id: "",
+  },
   isEliminated: false,
   eliminationReason: "",
-  setGameCode: (gameCode: string) => set(() => ({ gameCode })),
-  setUserId: (id: string) => set(() => ({ userId: id })),
-  setUsername: (username: string) => set(() => ({ username })),
   setIsEliminated: (eliminated: boolean) =>
     set(() => ({ isEliminated: eliminated })),
   setEliminationReason: (reason: string) =>
     set(() => ({ eliminationReason: reason })),
+  setUser: (user: User) => set(() => ({ user })),
+  setGame: (game: Game) => set(() => ({ game })),
 }));
 
-export default useUserStore;
+export default useAppStore;

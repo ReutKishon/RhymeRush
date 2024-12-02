@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useUserStore from "../../../store/useStore";
-import { useGameData } from "../../../hooks";
+import useAppStore from "../../../store/useStore";
 
 const GameEndModal = () => {
-  const { data: game } = useGameData();
-  const { userId, isEliminated, eliminationReason } = useUserStore(
+
+  const { user, game,isEliminated, eliminationReason } = useUserStore(
     (state) => state
   );
   const [title, setTitle] = useState<string>("");
@@ -13,20 +13,20 @@ const GameEndModal = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isEliminated && !game?.winner) {
+    if (!isEliminated && !game?.winnerPlayerId) {
       return;
     }
-    if (isEliminated || game?.winner?.id !== userId) {
-      console.log(isEliminated, game?.winner?.id, userId);
+    if (isEliminated || game?.winnerPlayerId !== user.id) {
+      console.log(isEliminated, game?.winnerPlayerId, user.id);
       setTitle("You Lose the Game!");
       setContent(eliminationReason);
     } else {
       setTitle("You are the Winner!");
       setContent("");
     }
-  }, [isEliminated, game?.winner, eliminationReason, userId]);
+  }, [isEliminated, game?.winnerPlayerId, eliminationReason, user.id]);
 
-  if (!isEliminated && !game?.winner) {
+  if (!isEliminated && !game?.winnerPlayerId) {
     return null;
   }
 
