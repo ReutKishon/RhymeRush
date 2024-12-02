@@ -1,10 +1,8 @@
 import React, { useState } from "react";
 import useUserStore from "../../store/useStore.ts";
 import socket from "../../services/socket.ts";
-import { addSentence } from "../../services/api.ts";
-import { Player, Sentence } from "../../../../shared/types/gameTypes.ts";
-import { usePlayerLose } from "../../hooks/usePlayerLose.ts";
-import useGameData from "../../hooks/useGameData.ts";
+import { api } from "../../services";
+import { useGameData, usePlayerLose } from "../../hooks";
 
 //
 const SentenceInput = () => {
@@ -39,7 +37,7 @@ const SentenceInput = () => {
 
     const addSentenceToLyrics = async () => {
       try {
-        const sentenceIsValid = await addSentence(
+        const sentenceIsValid = await api.addSentence(
           game.gameCode,
           userId,
           sentence

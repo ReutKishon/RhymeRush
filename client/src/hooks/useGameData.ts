@@ -1,6 +1,5 @@
 import { useQuery } from "react-query";
 import { fetchGameData } from "../services/api";
-import { Game } from "../../../shared/types/gameTypes";
 import useStore from "../store/useStore";
 
 const useGameData = () => {

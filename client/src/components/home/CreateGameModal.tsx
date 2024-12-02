@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import socket from "../../services/socket.ts";
+import { socket, api } from "../../services";
 import useUserStore from "../../store/useStore.ts";
-import { createGame } from "../../services/api.ts";
 
 const CreateGameModal = () => {
   const { userId } = useUserStore((state) => state);
@@ -13,7 +12,7 @@ const CreateGameModal = () => {
   useEffect(() => {
     const createNewGame = async () => {
       try {
-        const gameData = await createGame(userId);
+        const gameData = await api.createGame(userId);
         setGameCode(gameData.gameCode);
         socket.emit("createGame", gameData.gameCode, userId);
       } catch (err) {

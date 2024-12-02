@@ -1,9 +1,7 @@
-import { useEffect } from "react";
-import { removePlayer } from "../services/api";
-import socket from "../services/socket";
+import { socket, api } from "../services";
 import useStore from "../store/useStore";
 
-export const usePlayerLose = (
+const usePlayerLose = (
   reason: "timeExpired" | "invalidSentence",
   gameCode: string,
   userId: string,
@@ -13,9 +11,8 @@ export const usePlayerLose = (
 
   return async () => {
     if (isUserTurn) {
-      console.log("isUserTurn: " + isUserTurn);
       try {
-        await removePlayer(gameCode, userId);
+        await api.removePlayer(gameCode, userId);
         setIsEliminated(true);
         setEliminationReason(reason);
         socket.emit("updateGame", gameCode); // Notify other players
@@ -25,3 +22,5 @@ export const usePlayerLose = (
     }
   };
 };
+
+export default usePlayerLose;

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import socket from "../../services/socket.ts";
-import { addPlayer } from "../../services/api.ts";
+import { socket, api } from "../../services";
 import useStore from "../../store/useStore.ts";
 
 const JoinGameModal = () => {
@@ -14,7 +13,7 @@ const JoinGameModal = () => {
       return;
     }
     try {
-      const joinedPlayer = await addPlayer(gameCode!, userId);
+      const joinedPlayer = await api.addPlayer(gameCode!, userId);
 
       socket.emit("joinGame", gameCode, joinedPlayer);
       navigate(`/game/${gameCode}`);

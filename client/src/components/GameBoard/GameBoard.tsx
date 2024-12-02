@@ -1,13 +1,9 @@
 import React, { useEffect } from "react";
-import PlayerList from "./PlayerList.tsx";
+import { PlayerList, SentenceInput, SongLyrics, StartGameButton } from "./";
 import { useParams } from "react-router-dom";
-import SentenceInput from "./SentenceInput.tsx";
-import SongLyrics from "./SongLyrics.tsx";
-import StartGameButton from "./StartGameButton.tsx";
 import useSocketEvents from "../../hooks/useSocketEvents.ts";
 import useStore from "../../store/useStore.ts";
 import GameEndModal from "./modals/GameEndModal.tsx";
-import useUserStore from "../../store/useStore.ts";
 
 const GameBoard = () => {
   const { gameCode } = useParams<{ gameCode: string }>();

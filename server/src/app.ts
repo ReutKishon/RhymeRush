@@ -2,7 +2,6 @@ import express, { NextFunction, Request, Response } from "express";
 import morgan from "morgan";
 import helmet from "helmet";
 import mongoSanitize from "express-mongo-sanitize";
-// import xss from "xss-clean";
 import cors from "cors";
 import userRouter from "./routes/userRoutes";
 import gameRouter from "./routes/gameRoutes";
@@ -10,7 +9,7 @@ import globalErrorHandler from "./controllers/errorController";
 
 import http from "http";
 import { Server, Socket } from "socket.io";
-import { Game, Player, Sentence } from "../../shared/types/gameTypes";
+import {  Player } from "../../shared/types/gameTypes";
 import { AppError } from "../../shared/utils/appError";
 
 const app = express();
@@ -59,23 +58,7 @@ io.on("connection", (socket: Socket) => {
   //   delete playerSocketMap[socket.id];
   //   io.to(gameCode).emit("playerLeft", playerId);
 
-  //   // console.log(`Player ${playerId} left the game ${gameCode}`);
-  // });
-
-  // socket.on("addSentence", (gameCode: string, newSentence: Sentence) => {
-  //   console.log("AddSentence", gameCode, newSentence);
-
-  //   io.to(gameCode).emit("updatedLyrics", newSentence);
-  // });
-
-  // socket.on("gameOver", (gameCode: string, winner: Player) => {
-  //   console.log("gameOver", gameCode, winner);
-
-  //   io.to(gameCode).emit("gameEnd", winner);
-  // });
-  // socket.on("updateTurn", (gameCode: string, turn: number) => {
-  //   io.to(gameCode).emit("updatedTurn", turn);
-  // });
+// }
 
   socket.on("disconnect", () => {
     const playerInfo = playerSocketMap[socket.id];

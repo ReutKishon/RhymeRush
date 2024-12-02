@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
-
-import PlayerAvatar from "./PlayerAvatar.tsx";
-import useGameData from "../../hooks/useGameData.ts";
+import React from "react";
+import { PlayerAvatar } from "../GameBoard";
+import { useGameData } from "../../hooks";
 
 const PlayerList = () => {
   const { data: game } = useGameData();

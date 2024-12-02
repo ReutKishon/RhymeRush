@@ -1,26 +1,7 @@
 import axios from "axios";
 import { Game, Player, UserData } from "../../../shared/types/gameTypes";
 
-const PATH = "http://localhost:3000/api/v1";
-
-// export const getUser = async (id: string): Promise<Player> => {
-//   try {
-//     const response = await axios.get(PATH + "/users/getInfo/" + id);
-//     if (response.status == 200) {
-//       const userInfo = response.data[0];
-//       // console.log(JSON.stringify(userInfo));
-//       const user: Player = {
-//         name: userInfo["name"],
-//         email: userInfo["email"],
-//         id: id,
-//         imageUrl: "",
-//       };
-//       return user;
-//     }
-//   } catch (error) {
-//     console.error("Error fetching user:", error);
-//   }
-// };
+const PATH = process.env.API_BASE_URL;
 
 export const createGame = async (gameCreatorId: string): Promise<Game> => {
   try {

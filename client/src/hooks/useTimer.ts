@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
 
-export const useTimer = (
+const useTimer = (
   initialTime: number,
   onTimeExpired: () => void,
   turnStarted: boolean
 ): [number, () => void] => {
   const [timer, setTimer] = useState(initialTime);
-  const [intervalId, setIntervalId] = useState<number | null>(null);
+  const [intervalId, setIntervalId] = useState<number | NodeJS.Timeout | null>(
+    null
+  );
 
   useEffect(() => {
     if (turnStarted && timer > 0) {
@@ -36,3 +38,5 @@ export const useTimer = (
 
   return [timer, resetTimer];
 };
+
+export default useTimer;

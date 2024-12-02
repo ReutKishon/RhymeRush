@@ -1,8 +1,7 @@
 import React from "react";
-import socket from "../../services/socket.ts";
+import {socket,api} from "../../services";
 import useStore from "../../store/useStore.ts";
-import { startGame } from "../../services/api.ts";
-import useGameData from "../../hooks/useGameData.ts";
+import {useGameData} from "../../hooks";
 
 const StartGameButton = () => {
   const { userId } = useStore((state) => state);
@@ -14,7 +13,7 @@ const StartGameButton = () => {
     }
     const handleStartGame = async () => {
       try {
-        await startGame(game?.gameCode!);
+        await api.startGame(game?.gameCode!);
         socket.emit("updateGame", game?.gameCode);
       } catch (err) {
         console.log(err);

@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Player } from "../../../../../shared/types/gameTypes";
 import useUserStore from "../../../store/useStore";
-import useGameData from "../../../hooks/useGameData";
+import {useGameData} from "../../../hooks";
 
 const GameEndModal = () => {
   const { data: game } = useGameData();

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useStore from "../../store/useStore";
-import { login } from "../../services/api";
+import { api } from "../../services";
 import { UserData } from "../../../../shared/types/gameTypes";
 
 const SignIn = () => {
@@ -20,7 +20,7 @@ const SignIn = () => {
       return;
     }
     try {
-      const loggedUser: UserData = await login(email, password);
+      const loggedUser: UserData = await api.login(email, password);
       console.log(loggedUser);
       const id = String(loggedUser._id);
       setUserId(id);

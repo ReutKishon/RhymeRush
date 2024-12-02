@@ -1,9 +1,8 @@
 import React, { useEffect } from "react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import useUserStore from "../../store/useStore";
-import { useTimer } from "../../hooks/useTimer.ts";
-import { usePlayerLose } from "../../hooks/usePlayerLose.ts";
-import { Player } from "../../../../shared/types/gameTypes.ts";
+import { useTimer,usePlayerLose } from "../../hooks";
+import { Player } from "../../../../shared/types/gameTypes";
 
 interface PlayerProps {
   player: Player;
