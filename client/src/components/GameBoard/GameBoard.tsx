@@ -7,14 +7,19 @@ import StartGameButton from "./StartGameButton.tsx";
 import useSocketEvents from "../../hooks/useSocketEvents.ts";
 import useStore from "../../store/useStore.ts";
 import GameEndModal from "./modals/GameEndModal.tsx";
+import useUserStore from "../../store/useStore.ts";
 
 const GameBoard = () => {
   const { gameCode } = useParams<{ gameCode: string }>();
-  const { setGameCode } = useStore((state) => state);
+  const { setGameCode, setEliminationReason, setIsEliminated } = useStore(
+    (state) => state
+  );
 
   useEffect(() => {
     if (gameCode) {
       setGameCode(gameCode);
+      setEliminationReason("");
+      setIsEliminated(false);
     }
   }, []);
 
@@ -34,7 +39,6 @@ const GameBoard = () => {
       <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 mb-4">
         <SentenceInput />
         <StartGameButton />
-
       </div>
       <GameEndModal />
       {/* <PlayerLeftModal isVisible={isPlayerLeft} leftPlayer={leftPlayerId!} /> */}

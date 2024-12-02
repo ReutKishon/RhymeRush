@@ -1,35 +1,34 @@
-import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import socket from "../../services/socket.ts";
 import useUserStore from "../../store/useStore.ts";
+import { createGame } from "../../services/api.ts";
 
 const CreateGameModal = () => {
   const { userId } = useUserStore((state) => state);
   const [gameCode, setGameCode] = useState("");
 
   const navigate = useNavigate();
-  useEffect(() => {
-    const createGame = async () => {
-      try {
-        const response = await axios.post(`http://localhost:3000/api/v1/game`, {
-          gameCreatorId: userId,
-        });
-        console.log("createGame: ", response);
 
-        setGameCode(response.data.data.gameData.gameCode);
+  useEffect(() => {
+    const createNewGame = async () => {
+      try {
+        const gameData = await createGame(userId);
+        setGameCode(gameData.gameCode);
+        socket.emit("createGame", gameData.gameCode, userId);
       } catch (err) {
-        console.log(err);
+        console.error("Error creating game:", err);
       }
     };
-    createGame();
-  }, [userId]);
+
+    createNewGame();
+  }, [userId]); // Only run this effect when userId changes
 
   const handleEnterGame = () => {
     if (!gameCode) {
       return;
     }
-    socket.emit("createGame", gameCode, userId);
+    // Navigate to the game room
     navigate(`/game/${gameCode}`);
   };
 

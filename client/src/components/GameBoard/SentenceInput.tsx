@@ -4,6 +4,7 @@ import socket from "../../services/socket.ts";
 import { addSentence } from "../../services/api.ts";
 import { Player, Sentence } from "../../../../shared/types/gameTypes.ts";
 import { useGameData } from "../../services/queries.ts";
+import { usePlayerLose } from "../../hooks/usePlayerLose.ts";
 
 //
 const SentenceInput = () => {
@@ -11,7 +12,6 @@ const SentenceInput = () => {
   const [error, setError] = useState<string>("");
   const { userId } = useUserStore((state) => state);
   const { data: game } = useGameData();
-  const { userTurnExpired } = useUserStore((state) => state);
 
   const isUserTurn = game?.players[game.currentTurn]?.id === userId;
 
@@ -20,19 +20,25 @@ const SentenceInput = () => {
   };
 
   const handleSentenceSubmit = () => {
+    if (!isUserTurn) {
+      return;
+    }
+
     if (sentence.trim() === "") {
       setError("Sentence cannot be empty.");
       return;
     }
 
-    if (!isUserTurn) {
-      console.log("not userTurn");
-      return;
-    }
     const addSentenceToLyrics = async () => {
       try {
-        await addSentence(game.gameCode,userId, sentence);
-        socket.emit("updateGame", game?.gameCode);
+        const sentenceIsValid = await addSentence(
+          game.gameCode,
+          userId,
+          sentence
+        );
+        if (!sentenceIsValid) {
+          usePlayerLose("invalidSentence", game.gameCode, userId);
+        }
       } catch (err) {
         setError(err);
       }

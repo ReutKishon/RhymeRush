@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { Game } from "../../../shared/types/gameTypes";
 
-const useFetchGame = (gameCode?: string) => {
+const useFetchGame = (gameCode: string) => {
   const [game, setGame] = useState<Game | null>(null);
   const [error, setError] = useState<string | null>(null);
 

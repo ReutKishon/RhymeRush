@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import useStore from "../../store/useStore";
 import { login } from "../../services/api";
 import { UserData } from "../../../../shared/types/gameTypes";
@@ -20,14 +19,16 @@ const SignIn = () => {
       setError("please provide email and password!");
       return;
     }
+    try {
+      const loggedUser: UserData = await login(email, password);
+      console.log(loggedUser);
+      const id = String(loggedUser._id);
+      setUserId(id);
 
-    const loggedUser: UserData = await login(email, password, setError);
-    console.log(loggedUser);
-    const id = String(loggedUser._id);
-    setUserId(id);
-    // setUsernameGlobal(response.data.data.user.username);
-
-    navigate("/home");
+      navigate("/home");
+    } catch (err) {
+      setError(err);
+    }
   };
 
   return (

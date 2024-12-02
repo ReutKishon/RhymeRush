@@ -19,7 +19,7 @@ const server = http.createServer(app);
 app.use(
   cors({
     origin: "http://localhost:5000", // Frontend URL
-    methods: "GET,POST,PATCH", // Allow specific methods
+    methods: "GET,POST,PATCH,DELETE", // Allow specific methods
     allowedHeaders: "Content-Type", // Allow specific headers
   })
 );

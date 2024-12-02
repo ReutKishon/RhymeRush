@@ -1,10 +1,5 @@
 import axios from "axios";
-import {
-  Game,
-  Player,
-  UserData,
-  UserDocument,
-} from "../../../shared/types/gameTypes";
+import { Game, Player, UserData } from "../../../shared/types/gameTypes";
 
 const PATH = "http://localhost:3000/api/v1";
 
@@ -26,6 +21,18 @@ const PATH = "http://localhost:3000/api/v1";
 //     console.error("Error fetching user:", error);
 //   }
 // };
+
+export const createGame = async (gameCreatorId: string): Promise<Game> => {
+  try {
+    const response = await axios.post(`http://localhost:3000/api/v1/game`, {
+      gameCreatorId,
+    });
+    const gameData: Game = response.data.data.gameData;
+    return gameData;
+  } catch (err) {
+    throw err;
+  }
+};
 
 export const getGameData = async (gameCode: string): Promise<Game> => {
   try {
@@ -66,7 +73,7 @@ export const addSentence = async (
   gameCode: string,
   playerId: string,
   sentence: string
-) => {
+): Promise<Boolean> => {
   try {
     const response = await axios.post(
       `${PATH}/game/${gameCode}/${playerId}/sentence`,
@@ -74,18 +81,7 @@ export const addSentence = async (
         sentence,
       }
     );
-    return response.data.data;
-  } catch (err) {
-    throw err;
-  }
-};
-
-export const userTurnExpired = async (gameCode: string, playerId: string) => {
-  try {
-    const response = await axios.post(
-      `${PATH}/game/${gameCode}/${playerId}/turnExpired`
-    );
-    return response.data.data;
+    return response.data.sentenceIsValid;
   } catch (err) {
     throw err;
   }
@@ -93,8 +89,7 @@ export const userTurnExpired = async (gameCode: string, playerId: string) => {
 
 export const login = async (
   email: string,
-  password: string,
-  setError: React.Dispatch<React.SetStateAction<string | null>>
+  password: string
 ): Promise<UserData> => {
   try {
     const response = await axios.post(
@@ -109,7 +104,6 @@ export const login = async (
     localStorage.setItem("authToken", token);
     return response.data.data.userData;
   } catch (err) {
-    setError(err);
     throw err;
   }
 };

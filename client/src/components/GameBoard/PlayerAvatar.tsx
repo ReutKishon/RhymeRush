@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import useUserStore from "../../store/useStore";
-import { userTurnExpired } from "../../services/api";
-import socket from "../../services/socket.ts";
+import { useTimer } from "../../hooks/useTimer.ts";
+import { usePlayerLose } from "../../hooks/usePlayerLose.ts";
 
 interface PlayerProps {
   username: string;
@@ -17,42 +17,23 @@ const PlayerAvatar = ({
   showAnimation,
   isUserTurn,
 }: PlayerProps) => {
-  const [timer, setTimer] = useState<number>(30); // 30-second timer
-  const [intervalId, setIntervalId] = useState<number | null>(null);
-  const { gameCode, userId } = useUserStore((state) => state);
+  const { userId, gameCode } = useUserStore((state) => state);
 
-  // currentTurn?.id === player.id
+  const handlePlayerLose = usePlayerLose("timeExpired", gameCode, userId);
+
+  const onTimeExpired = () => {
+    if (isUserTurn) {
+      handlePlayerLose(); // Call the pre-defined handler
+    }
+  };
+  
+
+  const [timer, resetTimer] = useTimer(30, isUserTurn, onTimeExpired);
+
   useEffect(() => {
     if (showAnimation) {
-      setTimer(30); // Reset timer when it's this player's turn
-
-      const newIntervalId = setInterval(() => {
-        setTimer((prevTime) => {
-          if (prevTime <= 1) {
-            clearInterval(newIntervalId); // Stop the timer when it reaches 0
-            if (isUserTurn) {
-              userTurnExpired(gameCode, userId);
-              socket.emit("updateGame", gameCode);
-            }
-            return 0;
-          }
-          return prevTime - 1; // Decrement timer
-        });
-      }, 1000);
-
-      setIntervalId(newIntervalId);
-    } else {
-      // If it's not this player's turn, stop the timer
-      if (intervalId) {
-        clearInterval(intervalId);
-      }
+      resetTimer(); // Reset timer when it's the player's turn
     }
-
-    return () => {
-      if (intervalId) {
-        clearInterval(intervalId); // Cleanup timer on unmount
-      }
-    };
   }, [showAnimation]);
 
   const adjustColorTone = (color: string, factor: number): string => {
@@ -91,7 +72,6 @@ const PlayerAvatar = ({
           style={{ backgroundColor: playerColor }}
         ></div>
       )}
-      {/* Username Overlay (common for both cases) */}
       <div className="absolute inset-0 flex items-center justify-center text-white font-bold text-sm">
         {username}
       </div>
@@ -100,7 +80,3 @@ const PlayerAvatar = ({
 };
 
 export default PlayerAvatar;
-
-// if (prevTime === 0) {
-//   setIsGameOver(true);
-// }

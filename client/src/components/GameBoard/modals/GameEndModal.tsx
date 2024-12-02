@@ -6,21 +6,28 @@ import { useGameData } from "../../../services/queries";
 
 const GameEndModal = () => {
   const { data: game } = useGameData();
-  const { userId, userTurnExpired } = useUserStore((state) => state);
+  const { userId, isEliminated, eliminationReason } = useUserStore(
+    (state) => state
+  );
+  const [title, setTitle] = useState<string>("");
   const [content, setContent] = useState<string>("");
-
-  // console.log("GameEndModal: ", game.winner, userId);
-  useEffect(() => {
-    if (!game?.winner) return;
-    if (game.winner.id === userId) {
-      setContent("You Win!");
-    } else {
-      setContent("You Lose the Game");
-    }
-  }, []);
   const navigate = useNavigate();
 
-  if (!game?.winner) {
+
+  useEffect(() => {
+    if (!isEliminated && !game?.winner) {
+      return;
+    }
+    if (isEliminated || game?.winner?.id !== userId) {
+      setTitle("You Lose the Game!");
+      setContent(eliminationReason);
+    } else {
+      setTitle("You Win!");
+    }
+  }, []);
+
+
+  if (!isEliminated && !game?.winner) {
     return null;
   }
 
@@ -40,7 +47,8 @@ const GameEndModal = () => {
         </button>
 
         {/* Modal Content */}
-        <h2 className="text-2xl font-bold mb-4">{content}</h2>
+        <h2 className="text-2xl font-bold mb-4">{title}</h2>
+        <h1 className="text-2xl font-bold mb-4">{content}</h1>
 
         <button
           onClick={handleSaveSong}

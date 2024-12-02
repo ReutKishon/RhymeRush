@@ -98,6 +98,23 @@ export const joinGame = catchAsync(
   }
 );
 
+export const startGame = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { gameCode } = req.params;
+    const io = req.app.get("socketio");
+
+    const gameData = await getGameFromRedis(gameCode);
+
+    gameData.isActive = true;
+    await redisClient.set(`game:${gameCode}`, JSON.stringify(gameData));
+
+    res.status(200).json({
+      status: "success",
+      message: "Game started successfully!",
+    });
+  }
+);
+
 export const deleteGame = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { gameCode } = req.params;
@@ -117,34 +134,7 @@ const removePlayer = async (gameData: Game, playerId: string) => {
     gameData.currentTurn = 0;
   }
   gameData.players = gameData.players.filter((p) => p.id !== playerId);
-
-  // if (gameData.players.length === 0) {
-  //   await redisClient.del(`game:${gameData.gameCode}`);
-  // }
-
-  // await redisClient.set(`game:${gameData.gameCode}`, JSON.stringify(gameData));
 };
-
-export const leaveGame = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { playerId, gameCode } = req.params;
-
-    if (!req.params.playerId || !req.params.gameCode) {
-      return next(
-        new AppError("a player must join a game and provide their ID!", 401)
-      );
-    }
-    const gameData = await getGameFromRedis(gameCode);
-
-    if (!isPlayerInGame(gameData.players, playerId)) {
-      return next(
-        new AppError(`Player with ID ${playerId} is not in the game!`, 400)
-      );
-    }
-    removePlayer(gameData, playerId);
-    res.status(200).json({ status: "success", data: gameData });
-  }
-);
 
 export const getGameInfo = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -198,58 +188,37 @@ export const addSentenceHandler = catchAsync(
       return next(new AppError("It is not your turn!", 400));
     }
 
-    const playerData = gameData.players[playerIndex];
-
     // Validate if the sentence meets the required criteria
-    if (!isSentenceValid(gameData, sentence)) {
-      handleLoosing(playerId, gameData);
-    } else {
+    const sentenceIsValid = isSentenceValid(gameData, sentence);
+
+    if (sentenceIsValid) {
+      const playerData = gameData.players[playerIndex];
       await addSentenceToSong(gameData, playerData, sentence);
+      await redisClient.set(
+        `game:${gameData.gameCode}`,
+        JSON.stringify(gameData)
+      );
     }
 
-    await redisClient.set(
-      `game:${gameData.gameCode}`,
-      JSON.stringify(gameData)
-    );
-
     res.status(200).json({
       status: "success",
-      data: { gameData },
+      sentenceIsValid,
     });
   }
 );
 
-const handleLoosing = (playerId: string, gameData: Game) => {
-  if (gameData.players.length === 2) {
-    gameData.winner = gameData.players.find((player) => player.id !== playerId);
-  } else {
-    removePlayer(gameData, playerId);
-  }
-};
-
-export const startGame = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { gameCode } = req.params;
-    const io = req.app.get("socketio");
-
-    const gameData = await getGameFromRedis(gameCode);
-
-    gameData.isActive = true;
-    await redisClient.set(`game:${gameCode}`, JSON.stringify(gameData));
-
-    res.status(200).json({
-      status: "success",
-      message: "Game started successfully!",
-    });
-  }
-);
-
-export const userTurnExpired = catchAsync(
+export const handlePlayerLoss = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { gameCode, playerId } = req.params;
     const gameData = await getGameFromRedis(gameCode);
-    handleLoosing(playerId, gameData);
 
+    if (gameData.players.length === 2) {
+      gameData.winner = gameData.players.find(
+        (player) => player.id !== playerId
+      );
+    } else {
+      removePlayer(gameData, playerId);
+    }
     await redisClient.set(
       `game:${gameData.gameCode}`,
       JSON.stringify(gameData)
@@ -257,7 +226,6 @@ export const userTurnExpired = catchAsync(
 
     res.status(200).json({
       status: "success",
-      data: { gameData },
     });
   }
 );
