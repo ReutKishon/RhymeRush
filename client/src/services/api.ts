@@ -2,6 +2,7 @@ import axios from "axios";
 import { Game, Player, UserData } from "../../../shared/types/gameTypes";
 
 const PATH = process.env.REACT_APP_API_BASE_URL;
+
 console.log(PATH);
 export const createGame = async (gameCreatorId: string): Promise<Game> => {
   try {
@@ -25,7 +26,7 @@ export const startGame = async (gameCode: string) => {
 
 export const fetchGameData = async (gameCode: string): Promise<Game> => {
   try {
-    console.log("path: ",PATH);
+    console.log("path: ", PATH);
     const response = await axios.get(`${PATH}/game/${gameCode}`);
     const gameData: Game = response.data.data.gameData;
     return gameData;
@@ -65,7 +66,7 @@ export const addSentence = async (
   sentence: string
 ): Promise<Boolean> => {
   try {
-    const response = await axios.post(
+    const response = await axios.patch(
       `${PATH}/game/${gameCode}/${playerId}/sentence`,
       {
         sentence,

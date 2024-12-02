@@ -6,14 +6,12 @@ import cors from "cors";
 import userRouter from "./routes/userRoutes";
 import gameRouter from "./routes/gameRoutes";
 import globalErrorHandler from "./controllers/errorController";
-
 import http from "http";
-import { Server, Socket } from "socket.io";
-import {  Player } from "../../shared/types/gameTypes";
+import { Server } from "socket.io";
 import { AppError } from "../../shared/utils/appError";
+import { socketController } from "./controllers/socketController";
 
 const app = express();
-const server = http.createServer(app);
 
 app.use(
   cors({
@@ -23,53 +21,16 @@ app.use(
   })
 );
 
+const server = http.createServer(app);
+
 const io = new Server(server, {
   cors: {
     origin: "http://localhost:5000",
     methods: ["GET", "POST"],
   },
 });
-const playerSocketMap: Record<string, { playerId: string; gameCode: string }> =
-  {};
 
-app.set("socketio", io);
-
-io.on("connection", (socket: Socket) => {
-  console.log("New client connected");
-
-  socket.on("createGame", (gameCode: string, playerId: string) => {
-    socket.join(gameCode);
-    playerSocketMap[socket.id] = { playerId: playerId, gameCode };
-  });
-
-  socket.on("joinGame", (gameCode: string, joinedPlayer: Player) => {
-    socket.join(gameCode);
-    playerSocketMap[socket.id] = { playerId: joinedPlayer.id, gameCode };
-    io.to(gameCode).emit("playerJoined", joinedPlayer);
-  });
-
-  socket.on("updateGame", (gameCode: string) => {
-    io.to(gameCode).emit("gameUpdated");
-  });
-  // socket.on("leaveGame", (gameCode: string, playerId: string) => {
-  //   console.log("leaveGame", gameCode, playerId);
-
-  //   socket.leave(gameCode); // Leave the game room
-  //   delete playerSocketMap[socket.id];
-  //   io.to(gameCode).emit("playerLeft", playerId);
-
-// }
-
-  socket.on("disconnect", () => {
-    const playerInfo = playerSocketMap[socket.id];
-    if (playerInfo) {
-      // Emit that the player left the game
-      io.to(playerInfo.gameCode).emit("playerLeft", playerInfo.playerId);
-      delete playerSocketMap[socket.id];
-    }
-    console.log("A client disconnected");
-  });
-});
+socketController(io);
 
 //set security HTTP headers
 app.use(helmet());
@@ -80,13 +41,10 @@ if (process.env.NODE_ENV === "development") {
 }
 
 // Body parser, reading data from body into req.body
-app.use(express.json({ limit: "10kb" }));
+app.use(express.json());
 
 // Data sanitization against NoSQL query injection
 app.use(mongoSanitize());
-
-// Data sanitization against XSS attacks
-// app.use(xss());
 
 app.use("/api/v1/users", userRouter);
 app.use("/api/v1/game", gameRouter);
@@ -94,6 +52,7 @@ app.use("/api/v1/game", gameRouter);
 app.all("*", (req: Request, res: Response, next: NextFunction) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
 });
+
 app.use(globalErrorHandler);
 
 export { server, io };

@@ -101,7 +101,6 @@ export const joinGame = catchAsync(
 export const startGame = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { gameCode } = req.params;
-    const io = req.app.get("socketio");
 
     const gameData = await getGameFromRedis(gameCode);
 
