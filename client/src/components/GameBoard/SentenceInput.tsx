@@ -3,8 +3,8 @@ import useUserStore from "../../store/useStore.ts";
 import socket from "../../services/socket.ts";
 import { addSentence } from "../../services/api.ts";
 import { Player, Sentence } from "../../../../shared/types/gameTypes.ts";
-import { useGameData } from "../../services/queries.ts";
 import { usePlayerLose } from "../../hooks/usePlayerLose.ts";
+import useGameData from "../../hooks/useGameData.ts";
 
 //
 const SentenceInput = () => {
@@ -13,7 +13,15 @@ const SentenceInput = () => {
   const { userId } = useUserStore((state) => state);
   const { data: game } = useGameData();
 
-  const isUserTurn = game?.players[game.currentTurn]?.id === userId;
+  const isUserTurn =
+    game?.isActive && game.players[game.currentTurn]?.id === userId;
+
+  const handlePlayerLose = usePlayerLose(
+    "invalidSentence",
+    game?.gameCode!,
+    userId,
+    isUserTurn!
+  );
 
   const handleSentenceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSentence(e.target.value);
@@ -37,7 +45,9 @@ const SentenceInput = () => {
           sentence
         );
         if (!sentenceIsValid) {
-          usePlayerLose("invalidSentence", game.gameCode, userId);
+          handlePlayerLose();
+        } else {
+          socket.emit("updateGame", game.gameCode); // Notify other players
         }
       } catch (err) {
         setError(err);

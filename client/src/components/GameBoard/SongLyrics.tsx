@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Sentence } from "../../../../shared/types/gameTypes";
-import { useGameData } from "../../services/queries";
+import useGameData from "../../hooks/useGameData";
 
 const SongLyrics = () => {
   const { data: game } = useGameData();

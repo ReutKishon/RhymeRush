@@ -1,32 +1,26 @@
 import React from "react";
 import socket from "../../services/socket.ts";
-import axios from "axios";
-import { Game } from "../../../../shared/types/gameTypes.ts";
-
-import { useGameData } from "../../services/queries.ts";
 import useStore from "../../store/useStore.ts";
+import { startGame } from "../../services/api.ts";
+import useGameData from "../../hooks/useGameData.ts";
 
 const StartGameButton = () => {
   const { userId } = useStore((state) => state);
   const { data: game } = useGameData();
-
-  const handleStartGame = () => {
+  
+  const onStartGame = () => {
     if (game?.isActive || game?.players.length === 1) {
-      console.log("handleStartGame: ", game);
       return;
     }
-
-    const startGame = async () => {
+    const handleStartGame = async () => {
       try {
-        await axios.patch(
-          `http://localhost:3000/api/v1/game/${game?.gameCode}/start`
-        );
+        await startGame(game?.gameCode!);
         socket.emit("updateGame", game?.gameCode);
       } catch (err) {
         console.log(err);
       }
     };
-    startGame();
+    handleStartGame();
   };
 
   if (game?.gameCreatorId !== userId) {
@@ -36,7 +30,7 @@ const StartGameButton = () => {
   return (
     <div>
       <button
-        onClick={handleStartGame}
+        onClick={onStartGame}
         className="w-30 px-4 py-2 mb-2 bg-green-500 text-white rounded-md"
       >
         Start Game

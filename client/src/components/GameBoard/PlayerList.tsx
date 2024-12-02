@@ -1,28 +1,18 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import PlayerAvatar from "./PlayerAvatar.tsx";
-import { useGameData } from "../../services/queries.ts";
-import useUserStore from "../../store/useStore.ts";
+import useGameData from "../../hooks/useGameData.ts";
 
-// interface PlayerListProps {
-//   players: Player[];
-//   currentTurn: number;
-// }
 const PlayerList = () => {
   const { data: game } = useGameData();
-  const { userId } = useUserStore((state) => state);
-
   return (
     <div className="flex flex-col space-y-8 p-4">
-      {game?.players.map((player, index) => (
+      {game?.players.map((player) => (
         <PlayerAvatar
-          key={index}
-          username={player.username}
-          playerColor={player.color}
-          showAnimation={
-            game?.isActive && game.players[game.currentTurn]?.id === player.id
-          }
-          isUserTurn={player.id === userId}
+          key={player.id}
+          player={player}
+          isPlayerTurn={game.players[game.currentTurn]?.id === player.id}
+          gameIsActive={game.isActive}
         />
       ))}
     </div>

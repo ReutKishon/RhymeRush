@@ -3,38 +3,36 @@ import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import useUserStore from "../../store/useStore";
 import { useTimer } from "../../hooks/useTimer.ts";
 import { usePlayerLose } from "../../hooks/usePlayerLose.ts";
+import { Player } from "../../../../shared/types/gameTypes.ts";
 
 interface PlayerProps {
-  username: string;
-  playerColor: string;
-  showAnimation: boolean;
-  isUserTurn: boolean;
+  player: Player;
+  isPlayerTurn: boolean;
+  gameIsActive: boolean;
 }
 
-const PlayerAvatar = ({
-  username,
-  playerColor,
-  showAnimation,
-  isUserTurn,
-}: PlayerProps) => {
+const PlayerAvatar = ({ player, isPlayerTurn, gameIsActive }: PlayerProps) => {
   const { userId, gameCode } = useUserStore((state) => state);
+  const turnStarted = gameIsActive && isPlayerTurn;
 
-  const handlePlayerLose = usePlayerLose("timeExpired", gameCode, userId);
+  const handlePlayerLose = usePlayerLose(
+    "timeExpired",
+    gameCode,
+    userId,
+    player.id === userId
+  );
 
   const onTimeExpired = () => {
-    if (isUserTurn) {
-      handlePlayerLose(); // Call the pre-defined handler
-    }
+    handlePlayerLose();
   };
-  
 
-  const [timer, resetTimer] = useTimer(30, isUserTurn, onTimeExpired);
+  const [timer, resetTimer] = useTimer(30, onTimeExpired, turnStarted);
 
   useEffect(() => {
-    if (showAnimation) {
+    if (turnStarted) {
       resetTimer(); // Reset timer when it's the player's turn
     }
-  }, [showAnimation]);
+  }, [turnStarted]);
 
   const adjustColorTone = (color: string, factor: number): string => {
     const hex = color.replace("#", "");
@@ -48,16 +46,16 @@ const PlayerAvatar = ({
   return (
     <div
       className={`relative w-28 h-28 transition-all duration-1000 ${
-        showAnimation && timer > 0 ? "shrink-grow-animation" : ""
+        turnStarted && timer > 0 ? "shrink-grow-animation" : ""
       }`}
     >
-      {showAnimation ? (
+      {turnStarted ? (
         <CircularProgressbar
           value={(timer / 30) * 100}
           styles={buildStyles({
-            pathColor: adjustColorTone(playerColor, 0.7),
-            trailColor: playerColor,
-            backgroundColor: playerColor,
+            pathColor: adjustColorTone(player.color, 0.7),
+            trailColor: player.color,
+            backgroundColor: player.color,
             strokeLinecap: "round",
             textColor: "white",
             textSize: "0px",
@@ -69,11 +67,11 @@ const PlayerAvatar = ({
         // Static Circle for non-current players
         <div
           className="w-full h-full rounded-full"
-          style={{ backgroundColor: playerColor }}
+          style={{ backgroundColor: player.color }}
         ></div>
       )}
       <div className="absolute inset-0 flex items-center justify-center text-white font-bold text-sm">
-        {username}
+        {player.username}
       </div>
     </div>
   );

@@ -6,18 +6,22 @@ import useStore from "../store/useStore";
 export const usePlayerLose = (
   reason: "timeExpired" | "invalidSentence",
   gameCode: string,
-  userId: string
+  userId: string,
+  isUserTurn: boolean
 ) => {
   const { setIsEliminated, setEliminationReason } = useStore((state) => state);
 
   return async () => {
-    try {
-      await removePlayer(gameCode, userId); // Remove player from backend
-      setIsEliminated(true); // Update Zustand state
-      setEliminationReason(reason); // Track reason for elimination
-      socket.emit("updateGame", gameCode); // Notify other players
-    } catch (err) {
-      console.error("Failed to handle player lose:", err);
+    if (isUserTurn) {
+      console.log("isUserTurn: " + isUserTurn);
+      try {
+        await removePlayer(gameCode, userId);
+        setIsEliminated(true);
+        setEliminationReason(reason);
+        socket.emit("updateGame", gameCode); // Notify other players
+      } catch (err) {
+        console.error("Failed to handle player lose:", err);
+      }
     }
   };
 };

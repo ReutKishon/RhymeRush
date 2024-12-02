@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Player } from "../../../../../shared/types/gameTypes";
 import useUserStore from "../../../store/useStore";
-import { useGameData } from "../../../services/queries";
+import useGameData from "../../../hooks/useGameData";
 
 const GameEndModal = () => {
   const { data: game } = useGameData();
@@ -13,19 +13,19 @@ const GameEndModal = () => {
   const [content, setContent] = useState<string>("");
   const navigate = useNavigate();
 
-
   useEffect(() => {
     if (!isEliminated && !game?.winner) {
       return;
     }
     if (isEliminated || game?.winner?.id !== userId) {
+      console.log(isEliminated, game?.winner?.id, userId);
       setTitle("You Lose the Game!");
       setContent(eliminationReason);
     } else {
-      setTitle("You Win!");
+      setTitle("You are the Winner!");
+      setContent("");
     }
-  }, []);
-
+  }, [isEliminated, game?.winner]);
 
   if (!isEliminated && !game?.winner) {
     return null;

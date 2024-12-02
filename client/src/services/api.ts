@@ -34,7 +34,16 @@ export const createGame = async (gameCreatorId: string): Promise<Game> => {
   }
 };
 
-export const getGameData = async (gameCode: string): Promise<Game> => {
+export const startGame = async (gameCode: string) => {
+  try {
+    await axios.patch(`http://localhost:3000/api/v1/game/${gameCode}/start`);
+  } catch (err) {
+    throw err;
+  }
+};
+
+export const fetchGameData = async (gameCode: string): Promise<Game> => {
+  console.log("Fetching game data");
   try {
     const response = await axios.get(`${PATH}/game/${gameCode}`);
     const gameData: Game = response.data.data.gameData;

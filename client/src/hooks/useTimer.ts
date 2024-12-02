@@ -2,19 +2,19 @@ import { useEffect, useState } from "react";
 
 export const useTimer = (
   initialTime: number,
-  isUserTurn: boolean,
-  onTimeExpired: () => void
+  onTimeExpired: () => void,
+  turnStarted: boolean
 ): [number, () => void] => {
   const [timer, setTimer] = useState(initialTime);
   const [intervalId, setIntervalId] = useState<number | null>(null);
 
   useEffect(() => {
-    if (timer > 0) {
+    if (turnStarted && timer > 0) {
       const id = setInterval(() => {
         setTimer((prevTime) => {
           if (prevTime <= 1) {
             clearInterval(id);
-            if (isUserTurn) {onTimeExpired();}// Trigger when time expires
+            onTimeExpired(); // Trigger when time expires
             return 0;
           }
           return prevTime - 1;
@@ -27,7 +27,7 @@ export const useTimer = (
     return () => {
       if (intervalId) clearInterval(intervalId); // Cleanup on unmount
     };
-  }, [timer]);
+  }, [timer, turnStarted]);
 
   const resetTimer = () => {
     if (intervalId) clearInterval(intervalId);
