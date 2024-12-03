@@ -60,7 +60,7 @@ export const createGame = catchAsync(
       isActive: false,
       currentPlayerId: gameCreator.id,
       lyrics: [],
-      winnerPlayerId: null ,
+      winnerPlayerId: null,
       gameCreatorId: gameCreatorId,
     };
     await redisClient.set(`game:${gameCode}`, JSON.stringify(gameData));
@@ -134,8 +134,8 @@ export const deleteGame = catchAsync(
 
 const removePlayer = async (gameData: Game, playerId: string) => {
   const currentPlayerIdx = gameData.players.findIndex((p) => p.id === playerId);
-  if (currentPlayerIdx== gameData.players.length - 1) {
-    gameData.currentPlayerId = gameData.players[0].id
+  if (currentPlayerIdx == gameData.players.length - 1) {
+    gameData.currentPlayerId = gameData.players[0].id;
   }
   gameData.players = gameData.players.filter((p) => p.id !== playerId);
 };

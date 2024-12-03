@@ -1,14 +1,38 @@
 import { Server, Socket } from "socket.io";
-import { Player } from "../../../shared/types/gameTypes";
+import { Game, Player } from "../../../shared/types/gameTypes";
+import { createGame } from "./gameController";
 
 const playerSocketMap: Record<string, { playerId: string; gameCode: string }> =
   {};
+
+import { v4 as uuidv4 } from "uuid";
+import generateSongTopic from "../utils/generateTopic";
+import redisClient from "../redisClient";
 
 export const socketController = (io: Server) => {
   io.on("connection", (socket: Socket) => {
     console.log("New client connected");
 
-    socket.on("createGame", (gameCode: string, playerId: string) => {
+    socket.on("createGame", async (playerId: string) => {
+
+      const gameCode = uuidv4().slice(0, 12); // Generate a 6-char unique code
+  
+      const gameData: Game = {
+        code: gameCode,
+        topic: generateSongTopic(),
+        players: [{
+          id: playerId,
+          name: "sdfsdf"
+        }],
+        isActive: false,
+        currentPlayerId: playerId,
+        lyrics: [],
+        winnerPlayerId: null,
+        gameCreatorId: playerId,
+      };
+      await redisClient.set(`game:${gameCode}`, JSON.stringify(gameData));
+      io.to(gameCode).emit("gameUpdated", gameData);
+
       socket.join(gameCode);
       playerSocketMap[socket.id] = { playerId, gameCode };
     });

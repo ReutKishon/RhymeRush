@@ -1,13 +1,19 @@
 import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
+import useAppStore from "../../store/useStore";
+import { jwtDecode } from "jwt-decode";
 const Home = () => {
   const navigate = useNavigate();
+  const {user, setUser } = useAppStore()
 
   useEffect(() => {
     if (!localStorage.getItem("authToken")) {
       navigate("/login");
     }
+    if (localStorage.getItem("authToken")) {
+      setUser(jwtDecode(localStorage.getItem("authToken") as string));
+    }
+
   }, [navigate]);
 
   const handleCreateGame = () => {

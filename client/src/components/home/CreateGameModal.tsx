@@ -12,9 +12,7 @@ const CreateGameModal = () => {
   useEffect(() => {
     const createNewGame = async () => {
       try {
-        const gameData = await api.createGame(user.id);
-        setGameCode(gameData.code);
-        socket.emit("createGame", gameData.code, user.id);
+        socket.emit("createGame", gameCode, user.id);
       } catch (err) {
         console.error("Error creating game:", err);
       }
