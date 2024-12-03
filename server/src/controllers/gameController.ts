@@ -5,11 +5,10 @@ import { Game, Player, Sentence } from "../../../shared/types/gameTypes";
 import redisClient from "../redisClient";
 import generateSongTopic from "../utils/generateTopic";
 import { getUserInfo } from "./authController";
-import { getRandomColor } from "../utils/colorGenerator";
 import { AppError } from "../../../shared/utils/appError";
 import { io } from "../app";
 
-const getGameFromRedis = async (gameCode: string) => {
+export const getGameFromRedis = async (gameCode: string) => {
   const gameDataString = await redisClient.get(`game:${gameCode}`);
   if (!gameDataString) {
     throw new AppError(`Game with code ${gameCode} does not exist!`, 404);
@@ -64,7 +63,6 @@ export const createGame = catchAsync(
       gameCreatorId: gameCreatorId,
     };
     await redisClient.set(`game:${gameCode}`, JSON.stringify(gameData));
-    io.to(gameCode).emit("gameUpdated", gameData);
 
     res.status(201).json({
       status: "success",
@@ -92,7 +90,6 @@ export const joinGame = catchAsync(
 
     gameData.players.push(playerData);
     await redisClient.set(`game:${gameCode}`, JSON.stringify(gameData));
-    io.to(gameCode).emit("gameUpdated", gameData);
 
     res.status(200).json({
       status: "success",

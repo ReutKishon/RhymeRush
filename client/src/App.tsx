@@ -1,6 +1,6 @@
 // src/App.tsx
 import React, { useEffect } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import CreateGameModal from "./components/home/CreateGameModal.tsx";
 import GameBoard from "./components/GameBoard/GameBoard.tsx";
 import Home from "./components/home/Home.tsx";
@@ -10,12 +10,10 @@ import Welcome from "./components/auth/Welcome.tsx";
 import SignUp from "./components/auth/SignUp.tsx";
 import SignIn from "./components/auth/SignIn.tsx";
 import "./index.css";
+import { jwtDecode } from "jwt-decode";
+import useAppStore from "./store/useStore.ts";
 
 function App() {
-  // const setUser = useUserStore((state) => state.setUser);
-  // const mePlayer: Player = { id: "6739987bf9d3cb784cd0c600" };
-  // setUser(mePlayer);
-
   useEffect(() => {
     return () => {
       socket.off("connect");

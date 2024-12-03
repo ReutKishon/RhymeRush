@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import useAppStore from "../../store/useStore";
+import { jwtDecode } from "jwt-decode";
 
 const SignUp = () => {
   const [username, setUsername] = useState("");
@@ -15,7 +16,10 @@ const SignUp = () => {
   // const setUsernameGlobal = useUserStore((state) => state.setUsername);
 
   const navigate = useNavigate();
-
+  if (localStorage.getItem("authToken")) {
+    setUser(jwtDecode(localStorage.getItem("authToken") as string));
+    navigate('/home')
+  }
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
 

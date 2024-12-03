@@ -9,6 +9,8 @@ const useSocketEvents = (gameCode: string) => {
   useEffect(() => {
     socket.on("gameUpdated", (gameData: Game) => {
       console.log("gameUpdated: ", gameData);
+      setEliminationReason("");
+      setIsEliminated(false);
       setGame(gameData);
     });
 

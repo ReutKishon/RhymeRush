@@ -6,7 +6,7 @@ const PlayerList = () => {
   const { user, game } = useAppStore((state) => state);
   return (
     <div className="flex flex-col space-y-8 p-4">
-      {game?.players.map((player) => (
+      {game?.players?.map((player) => (
         <PlayerAvatar
           key={player.id}
           player={player}

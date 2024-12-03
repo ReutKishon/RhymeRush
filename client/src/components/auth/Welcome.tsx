@@ -1,8 +1,18 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import useAppStore from "../../store/useStore";
+import { jwtDecode } from "jwt-decode";
 
 const Welcome = () => {
   const navigate = useNavigate();
+
+  const {setUser } = useAppStore()
+
+  if (localStorage.getItem("authToken")) {
+    setUser(jwtDecode(localStorage.getItem("authToken") as string));
+    navigate('/home')
+  }
+
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100">

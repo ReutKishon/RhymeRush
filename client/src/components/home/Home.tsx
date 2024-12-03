@@ -10,9 +10,7 @@ const Home = () => {
     if (!localStorage.getItem("authToken")) {
       navigate("/login");
     }
-    if (localStorage.getItem("authToken")) {
-      setUser(jwtDecode(localStorage.getItem("authToken") as string));
-    }
+   
 
   }, [navigate]);
 

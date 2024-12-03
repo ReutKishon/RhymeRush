@@ -4,6 +4,7 @@ import { Game, Player, User } from "../../../shared/types/gameTypes";
 const PATH = process.env.REACT_APP_API_BASE_URL;
 
 console.log(PATH);
+
 export const createGame = async (gameCreatorId: string): Promise<Game> => {
   try {
     const response = await axios.post(`http://localhost:3000/api/v1/game`, {

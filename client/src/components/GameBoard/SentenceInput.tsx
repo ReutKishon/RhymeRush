@@ -4,21 +4,18 @@ import socket from "../../services/socket.ts";
 import { api } from "../../services";
 import { usePlayerLose } from "../../hooks";
 
-
 const SentenceInput = () => {
   const [sentence, setSentence] = useState<string>("");
   const [error, setError] = useState<string>("");
-  const { user,game } = useAppStore((state) => state);
+  const { user, game } = useAppStore((state) => state);
 
-
-  const isUserTurn =
-    game?.isActive && game.players[game.currentPlayerId]?.id === user.id;
+  const isUserTurn = game?.isActive && game.currentPlayerId === user.id;
 
   const handlePlayerLose = usePlayerLose(
     "invalidSentence",
     game?.code!,
     user.id,
-    isUserTurn!
+    isUserTurn
   );
 
   const handleSentenceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -62,7 +59,7 @@ const SentenceInput = () => {
         onChange={handleSentenceChange}
         className="w-full border border-gray-300 rounded px-4 py-2 mb-2"
         placeholder="Type your sentence here"
-        disabled={!game?.isActive || !isUserTurn}
+        disabled={!game.isActive || !isUserTurn}
       />
       {error && <p className="text-red-500 text-sm">{error}</p>}
       <button

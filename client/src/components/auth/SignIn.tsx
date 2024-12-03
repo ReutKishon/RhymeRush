@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import useStore from "../../store/useStore";
 import { api } from "../../services";
 import useAppStore from "../../store/useStore";
+import { jwtDecode } from "jwt-decode";
 
 const SignIn = () => {
   const [email, setEmail] = useState("");
@@ -12,6 +13,12 @@ const SignIn = () => {
   const setUser = useAppStore((state) => state.setUser);
 
   const navigate = useNavigate();
+
+
+  if (localStorage.getItem("authToken")) {
+    setUser(jwtDecode(localStorage.getItem("authToken") as string));
+    navigate('/home')
+  }
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();

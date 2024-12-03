@@ -4,7 +4,7 @@ import { socket, api } from "../../services";
 import useAppStore from "../../store/useStore.ts";
 
 const CreateGameModal = () => {
-  const { user } = useAppStore((state) => state);
+  const { user, setGame } = useAppStore((state) => state);
   const [gameCode, setGameCode] = useState("");
 
   const navigate = useNavigate();
@@ -12,7 +12,11 @@ const CreateGameModal = () => {
   useEffect(() => {
     const createNewGame = async () => {
       try {
-        socket.emit("createGame", gameCode, user.id);
+        const game = await api.createGame(user.id);
+        socket.emit("createGame", game.code, user.id);
+        console.log(game.code);
+        setGame(game);
+        setGameCode(game.code);
       } catch (err) {
         console.error("Error creating game:", err);
       }
