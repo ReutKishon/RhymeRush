@@ -13,9 +13,8 @@ const JoinGameModal = () => {
       return;
     }
     try {
-      const joinedPlayer = await api.addPlayer(gameCode!, user.id);
-
-      socket.emit("joinGame", gameCode, joinedPlayer);
+      await api.joinPlayerToGame(gameCode, user.id);
+      socket.emit("joinGame",user.id, gameCode);
       navigate(`/game/${gameCode}`);
     } catch (err) {
       console.log(err);
@@ -23,7 +22,7 @@ const JoinGameModal = () => {
   };
 
   const handleGameCodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setGameCode(event.target.value); // Update gameCode state when the input changes
+    setGameCode(event.target.value);
   };
 
   return (

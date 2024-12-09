@@ -3,18 +3,23 @@ import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import useAppStore from "../../store/useStore";
 import { useTimer, usePlayerLose } from "../../hooks";
 import { Player } from "../../../../shared/types/gameTypes";
-import { getRandomColor } from "../../utils/colorGenerator";
+import { socket } from "../../services";
 
 interface PlayerProps {
   player: Player;
   isPlayerTurn: boolean;
   gameIsActive: boolean;
+  color: string;
 }
 
-const PlayerAvatar = ({ player, isPlayerTurn, gameIsActive }: PlayerProps) => {
-  const { user, game } = useAppStore((state) => state);
+const PlayerAvatar = ({
+  player,
+  isPlayerTurn,
+  gameIsActive,
+  color,
+}: PlayerProps) => {
+  const { user, game, timer } = useAppStore((state) => state);
   const turnStarted = gameIsActive && isPlayerTurn;
-  const color = getRandomColor();
 
   const handlePlayerLose = usePlayerLose(
     "timeExpired",
@@ -27,11 +32,11 @@ const PlayerAvatar = ({ player, isPlayerTurn, gameIsActive }: PlayerProps) => {
     handlePlayerLose();
   };
 
-  const [timer, resetTimer] = useTimer(30, onTimeExpired, turnStarted);
+  // const [timer, resetTimer] = useTimer(30, onTimeExpired, turnStarted);
 
   useEffect(() => {
     if (turnStarted) {
-      resetTimer(); // Reset timer when it's the player's turn
+      socket.emit("startTurn", player.id); // Notify other players
     }
   }, [turnStarted]);
 

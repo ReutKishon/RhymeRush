@@ -9,6 +9,7 @@ import { AppError } from "../../../shared/utils/appError";
 import { io } from "../app";
 
 export const getGameFromRedis = async (gameCode: string) => {
+  console.log("getGameFromRedis :", gameCode);
   const gameDataString = await redisClient.get(`game:${gameCode}`);
   if (!gameDataString) {
     throw new AppError(`Game with code ${gameCode} does not exist!`, 404);
@@ -90,6 +91,7 @@ export const joinGame = catchAsync(
 
     gameData.players.push(playerData);
     await redisClient.set(`game:${gameCode}`, JSON.stringify(gameData));
+    io.to(gameCode).emit("gameUpdated", gameData);
 
     res.status(200).json({
       status: "success",
@@ -148,7 +150,7 @@ export const getGameInfo = catchAsync(
         )
       );
     }
-
+    console.log("getGameInfo");
     const gameData = await getGameFromRedis(gameCode);
 
     res.status(200).json({

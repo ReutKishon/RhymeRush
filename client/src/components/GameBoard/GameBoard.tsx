@@ -8,14 +8,28 @@ import {
 } from "./";
 import { useParams } from "react-router-dom";
 import useSocketEvents from "../../hooks/useSocketEvents.ts";
-import useStore from "../../store/useStore.ts";
 import GameEndModal from "./modals/GameEndModal.tsx";
-import { fetchGameData } from "../../services/api.ts";
+import { api } from "../../services/index.ts";
+import useAppStore from "../../store/useStore.ts";
 
 const GameBoard = () => {
   const { gameCode } = useParams<{ gameCode: string }>();
-  
-  
+  const { setGame } = useAppStore((state) => state);
+
+  useEffect(() => {
+    const fetchGame = async () => {
+      try {
+        if (gameCode) {
+          const game = await api.fetchGameData(gameCode);
+          console.log("GameBoard: " + game);
+          setGame(game);
+        }
+      } catch (err) {
+        console.error("Failed to fetch game details: ", err);
+      }
+    };
+    fetchGame();
+  }, [gameCode]);
 
   useSocketEvents(gameCode!);
 

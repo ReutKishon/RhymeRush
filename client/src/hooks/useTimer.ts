@@ -6,9 +6,7 @@ const useTimer = (
   turnStarted: boolean
 ): [number, () => void] => {
   const [timer, setTimer] = useState(initialTime);
-  const [intervalId, setIntervalId] = useState<number | NodeJS.Timeout | null>(
-    null
-  );
+  const [intervalId, setIntervalId] = useState<number | null>(null);
 
   useEffect(() => {
     if (turnStarted && timer > 0) {

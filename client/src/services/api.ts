@@ -7,10 +7,13 @@ console.log(PATH);
 
 export const createGame = async (gameCreatorId: string): Promise<Game> => {
   try {
+
     const response = await axios.post(`http://localhost:3000/api/v1/game`, {
       gameCreatorId,
     });
     const gameData: Game = response.data.data.gameData;
+    console.log("Creating new game with code " + gameData.code);
+
     return gameData;
   } catch (err) {
     throw err;
@@ -27,7 +30,6 @@ export const startGame = async (gameCode: string) => {
 
 export const fetchGameData = async (gameCode: string): Promise<Game> => {
   try {
-    console.log("path: ", PATH);
     const response = await axios.get(`${PATH}/game/${gameCode}`);
     const gameData: Game = response.data.data.gameData;
     return gameData;
@@ -36,7 +38,7 @@ export const fetchGameData = async (gameCode: string): Promise<Game> => {
   }
 };
 
-export const addPlayer = async (
+export const joinPlayerToGame = async (
   gameCode: string,
   joinedPlayerId: string
 ): Promise<Player> => {

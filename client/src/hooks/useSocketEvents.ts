@@ -3,7 +3,7 @@ import socket from "../services/socket";
 import { Game } from "../../../shared/types/gameTypes";
 import useStore from "../store/useStore";
 const useSocketEvents = (gameCode: string) => {
-  const { setGame, setEliminationReason, setIsEliminated } = useStore(
+  const { setGame, setEliminationReason, setIsEliminated ,setTimer} = useStore(
     (state) => state
   );
   useEffect(() => {
@@ -12,6 +12,12 @@ const useSocketEvents = (gameCode: string) => {
       setEliminationReason("");
       setIsEliminated(false);
       setGame(gameData);
+    });
+
+    socket.on("timerUpdate", (timer: number) => {
+      console.log("timerUpdated: ", timer);
+   
+      setTimer(timer);
     });
 
     return () => {

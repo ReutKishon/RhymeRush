@@ -10,8 +10,8 @@ const root = ReactDOM.createRoot(rootElement);
 
 root.render(
   <QueryClientProvider client={queryClient}>
-    <StrictMode>
+    {/* <StrictMode> */}
       <App />
-    </StrictMode>
+    {/* </StrictMode> */}
   </QueryClientProvider>
 );

@@ -6,10 +6,12 @@ interface AppState {
   user: User;
   isEliminated: boolean;
   eliminationReason: string;
+  timer: number;
   setIsEliminated: (eliminated: boolean) => void;
   setEliminationReason: (reason: string) => void;
   setUser: (user: User) => void;
   setGame: (game: Game) => void;
+  setTimer: (timer: number) => void;
 }
 
 const useAppStore = create<AppState>((set) => ({
@@ -30,6 +32,7 @@ const useAppStore = create<AppState>((set) => ({
     password: "",
     id: "",
   },
+  timer: 30,
   isEliminated: false,
   eliminationReason: "",
   setIsEliminated: (eliminated: boolean) =>
@@ -38,6 +41,7 @@ const useAppStore = create<AppState>((set) => ({
     set(() => ({ eliminationReason: reason })),
   setUser: (user: User) => set(() => ({ user })),
   setGame: (game: Game) => set(() => ({ game })),
+  setTimer: (timer: number) => set(() => ({ timer })),
 }));
 
 export default useAppStore;
