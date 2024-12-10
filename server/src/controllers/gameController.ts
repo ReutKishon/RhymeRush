@@ -182,7 +182,7 @@ export const addSentenceHandler = catchAsync(
     const gameData = await getGameFromRedis(gameCode);
 
     // Check if it's the player's turn
-    if (playerId != gameData.currentPlayerId) {
+    if (playerId != gameData.turnOrder[gameData.currentTurnIndex]) {
       return next(new AppError("It is not your turn!", 400));
     }
 
@@ -215,7 +215,7 @@ export const addSentenceHandler = catchAsync(
 const nextTurn = (gameData: Game) => {
   // Find the next active player, starting from the currentTurnIndex
   const nextActivePlayerIndex = gameData.turnOrder
-    .slice(gameData.currentTurnIndex + 1) // Slice from the next index onward
+    .slice(gameData.currentTurnIndex + 1)
     .findIndex((playerId) => gameData.players[playerId].active);
 
   if (nextActivePlayerIndex !== -1) {
@@ -223,6 +223,7 @@ const nextTurn = (gameData: Game) => {
       gameData.currentTurnIndex + 1 + nextActivePlayerIndex;
   } else {
     // No active player found in the slice, search from the beginning
+
     const nextActivePlayerIndex = gameData.turnOrder
       .slice(0, gameData.currentTurnIndex)
       .findIndex((playerId) => gameData.players[playerId].active);

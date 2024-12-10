@@ -7,7 +7,7 @@ const SentenceInput = () => {
   const [error, setError] = useState<string>("");
   const { user, game } = useAppStore((state) => state);
 
-  const isUserTurn = game.isActive && game.currentPlayerId === user.id;
+  const isUserTurn = game.isActive && game.turnOrder[game.currentTurnIndex] === user.id;
 
   const handleSentenceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSentence(e.target.value);
@@ -23,14 +23,14 @@ const SentenceInput = () => {
       return;
     }
 
-    const addSentenceToLyrics = async () => {
+    const submit = async () => {
       try {
         await api.submitSentence(game.code, user.id, sentence);
       } catch (err) {
         setError(err);
       }
     };
-    addSentenceToLyrics();
+    submit();
     setSentence("");
     setError("");
   };

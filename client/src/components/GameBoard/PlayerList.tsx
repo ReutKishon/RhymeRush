@@ -25,8 +25,8 @@ const PlayerList = () => {
         <PlayerAvatar
           key={player.id}
           player={player}
-          isPlayerTurn={game?.currentPlayerId === player.id}
-          gameIsActive={game?.isActive!}
+          isPlayerTurn={game.turnOrder[game.currentTurnIndex] === player.id}
+          gameIsActive={game.isActive}
           color={getColorById(player.id)}
         />
       ))}

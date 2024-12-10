@@ -60,7 +60,8 @@ export const socketController = (io: Server) => {
       } else {
         clearInterval(intervalId);
         intervalId = null;
-        io.emit("timeExpired");
+
+        // emit("timeExpired");
       }
     }, 1000);
   };

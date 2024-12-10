@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import useAppStore from "../../store/useStore";
 import { PlayerBase } from "../../../../shared/types/gameTypes";
@@ -17,11 +17,15 @@ const PlayerAvatar = ({
   gameIsActive,
   color,
 }: PlayerProps) => {
-  const { timer } = useAppStore((state) => state);
-  const turnStarted = gameIsActive && isPlayerTurn;
+  const { timer, setTimer } = useAppStore((state) => state);
+
+  const turnStarted = useMemo(() => {
+    return gameIsActive && isPlayerTurn;
+  }, [gameIsActive, isPlayerTurn]);
 
   useEffect(() => {
     if (turnStarted) {
+      setTimer(30);
       socket.emit("startTurn", player.id); // Notify other players
     }
   }, [turnStarted]);

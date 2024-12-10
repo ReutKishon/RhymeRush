@@ -70,15 +70,11 @@ export const submitSentence = async (
   gameCode: string,
   playerId: string,
   sentence: string
-): Promise<Boolean> => {
+): Promise<void> => {
   try {
-    const response = await axios.patch(
-      `${PATH}/game/${gameCode}/${playerId}/sentence`,
-      {
-        sentence,
-      }
-    );
-    return response.data.sentenceIsValid;
+    await axios.patch(`${PATH}/game/${gameCode}/${playerId}/sentence`, {
+      sentence,
+    });
   } catch (err) {
     throw err;
   }
