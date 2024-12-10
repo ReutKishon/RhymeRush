@@ -6,12 +6,12 @@ const StartGameButton = () => {
   const { user, game } = useAppStore((state) => state);
 
   const onStartGame = () => {
-    if (game?.isActive || game?.players.length === 1) {
+    if (game.isActive || Object.keys(game.players).length === 1) {
       return;
     }
     const handleStartGame = async () => {
       try {
-        await api.startGame(game?.code!);
+        await api.startGame(game.code);
       } catch (err) {
         console.log(err);
       }
@@ -19,7 +19,7 @@ const StartGameButton = () => {
     handleStartGame();
   };
 
-  if (game?.gameCreatorId !== user.id) {
+  if (game.gameCreatorId !== user.id) {
     return null;
   }
 

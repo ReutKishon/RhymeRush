@@ -1,33 +1,33 @@
-import { ObjectId } from "mongoose";
-
 export interface User {
   username: string;
   score: number;
   email: string;
   password: string;
-  id : string;
-
+  id: string;
 }
 
-
-export interface Player{
+export interface PlayerBase {
   id: string;
   name: string;
+  active: boolean;
 }
-export interface Game {
+
+export interface GameBase {
   code: string;
   topic: string;
-  players: Player[];
+  players: Record<string, PlayerBase>;
+  turnOrder: string[]; // By their ids
+  currentTurnIndex: number;
   isActive: boolean;
-  currentPlayerId: string; 
+  currentPlayerId: string;
   lyrics: Sentence[];
   winnerPlayerId: string;
-  gameCreatorId: string; // id of the player who created the game
+  gameCreatorId: string;
 }
 
 export interface Sentence {
   content: string;
-  player: string;
+  playerId: string;
 }
 
 type UserInput = Omit<User, "_id">;

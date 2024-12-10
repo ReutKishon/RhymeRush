@@ -1,12 +1,11 @@
 import React, { useEffect } from "react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import useAppStore from "../../store/useStore";
-import { useTimer, usePlayerLose } from "../../hooks";
-import { Player } from "../../../../shared/types/gameTypes";
+import { PlayerBase } from "../../../../shared/types/gameTypes";
 import { socket } from "../../services";
 
 interface PlayerProps {
-  player: Player;
+  player: PlayerBase;
   isPlayerTurn: boolean;
   gameIsActive: boolean;
   color: string;
@@ -18,21 +17,8 @@ const PlayerAvatar = ({
   gameIsActive,
   color,
 }: PlayerProps) => {
-  const { user, game, timer } = useAppStore((state) => state);
+  const { timer } = useAppStore((state) => state);
   const turnStarted = gameIsActive && isPlayerTurn;
-
-  const handlePlayerLose = usePlayerLose(
-    "timeExpired",
-    game.code,
-    user.id,
-    player.id === user.id
-  );
-
-  const onTimeExpired = () => {
-    handlePlayerLose();
-  };
-
-  // const [timer, resetTimer] = useTimer(30, onTimeExpired, turnStarted);
 
   useEffect(() => {
     if (turnStarted) {

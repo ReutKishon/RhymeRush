@@ -1,12 +1,14 @@
 import { Request, Response, NextFunction } from "express";
 import { v4 as uuidv4 } from "uuid";
 import catchAsync from "../utils/catchAsync";
-import { Game, Player, Sentence } from "../../../shared/types/gameTypes";
 import redisClient from "../redisClient";
 import generateSongTopic from "../utils/generateTopic";
 import { getUserInfo } from "./authController";
 import { AppError } from "../../../shared/utils/appError";
 import { io } from "../app";
+import { Game, Player } from "types/gameTypes";
+import { Sentence } from "../../../shared/types/gameTypes";
+import { playerSocketMap } from "./socketController";
 
 export const getGameFromRedis = async (gameCode: string) => {
   console.log("getGameFromRedis :", gameCode);
@@ -17,15 +19,7 @@ export const getGameFromRedis = async (gameCode: string) => {
   return JSON.parse(gameDataString) as Game;
 };
 
-const getPlayerIndex = (players: Player[], playerId: string): number => {
-  return players.findIndex((player) => player.id === playerId);
-};
-
-const isPlayerInGame = (players: Player[], playerId: string): boolean => {
-  return getPlayerIndex(players, playerId) != -1;
-};
-
-const isSentenceValid = (gameData: Game, sentence: string): boolean => {
+export const isSentenceValid = (gameData: Game, sentence: string): boolean => {
   const isLengthValid = sentence.split(" ").length == 5;
   // const isRhyme
   return isLengthValid;
@@ -33,13 +27,25 @@ const isSentenceValid = (gameData: Game, sentence: string): boolean => {
   //TODO: check if sentence is related to the topic
 };
 
-export const getPlayerData = async (playerId: string) => {
+export const getPlayerSocketId = (playerId: string) => {
+  for (let socketId in playerSocketMap) {
+    if (playerSocketMap[socketId].playerId === playerId) {
+      return socketId;
+    }
+  }
+  return null;
+};
+
+export const createPlayer = async (playerId: string): Promise<Player> => {
   const user = await getUserInfo(playerId);
-  const playerData: Player = {
+  const socketId = getPlayerSocketId(playerId);
+  const player = {
     id: playerId,
     name: user.username,
+    active: true,
+    socketId,
   };
-  return playerData;
+  return player;
 };
 
 export const createGame = catchAsync(
@@ -50,13 +56,15 @@ export const createGame = catchAsync(
       return next(new AppError("a game must be created by a player!", 401));
     }
 
-    const gameCreator = await getPlayerData(req.body.gameCreatorId);
+    const gameCreator = await createPlayer(req.body.gameCreatorId);
     const gameCode = uuidv4().slice(0, 12); // Generate a 6-char unique code
 
     const gameData: Game = {
       code: gameCode,
       topic: generateSongTopic(),
-      players: [gameCreator],
+      players: { [gameCreatorId]: gameCreator },
+      turnOrder: [gameCreator.id],
+      currentTurnIndex: 0,
       isActive: false,
       currentPlayerId: gameCreator.id,
       lyrics: [],
@@ -67,7 +75,7 @@ export const createGame = catchAsync(
 
     res.status(201).json({
       status: "success",
-      data: { gameData },
+      data: { gameCode },
     });
   }
 );
@@ -81,17 +89,19 @@ export const joinGame = catchAsync(
         new AppError("a player must join a game and provide their ID!", 401)
       );
     }
-    const gameData = await getGameFromRedis(gameCode);
-    if (isPlayerInGame(gameData.players, playerId)) {
+    const game = await getGameFromRedis(gameCode);
+    if (game.players[playerId]) {
       return next(
         new AppError(`Player with ID ${playerId} is already in the game!`, 400)
       );
     }
-    const playerData = await getPlayerData(playerId);
+    const playerData = await createPlayer(playerId);
 
-    gameData.players.push(playerData);
-    await redisClient.set(`game:${gameCode}`, JSON.stringify(gameData));
-    io.to(gameCode).emit("gameUpdated", gameData);
+    game.players[playerId] = playerData;
+    game.turnOrder.push(playerData.id);
+
+    await redisClient.set(`game:${gameCode}`, JSON.stringify(game));
+    io.to(gameCode).emit("gameUpdated", game);
 
     res.status(200).json({
       status: "success",
@@ -131,14 +141,6 @@ export const deleteGame = catchAsync(
   }
 );
 
-const removePlayer = async (gameData: Game, playerId: string) => {
-  const currentPlayerIdx = gameData.players.findIndex((p) => p.id === playerId);
-  if (currentPlayerIdx == gameData.players.length - 1) {
-    gameData.currentPlayerId = gameData.players[0].id;
-  }
-  gameData.players = gameData.players.filter((p) => p.id !== playerId);
-};
-
 export const getGameInfo = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { gameCode } = req.params;
@@ -150,7 +152,6 @@ export const getGameInfo = catchAsync(
         )
       );
     }
-    console.log("getGameInfo");
     const gameData = await getGameFromRedis(gameCode);
 
     res.status(200).json({
@@ -167,15 +168,10 @@ const addSentenceToSong = async (
 ) => {
   const sentenceData: Sentence = {
     content: sentence,
-    player: playerId,
+    playerId,
   };
 
   gameData.lyrics.push(sentenceData);
-  const currentPlayerIdx = gameData.players.findIndex((p) => p.id === playerId);
-  const nextTurnPlayerIdx =
-    currentPlayerIdx == gameData.players.length - 1 ? 0 : currentPlayerIdx + 1;
-
-  gameData.currentPlayerId = gameData.players[nextTurnPlayerIdx].id;
 };
 
 export const addSentenceHandler = catchAsync(
@@ -195,36 +191,49 @@ export const addSentenceHandler = catchAsync(
 
     if (sentenceIsValid) {
       await addSentenceToSong(gameData, playerId, sentence);
-      await redisClient.set(`game:${gameData.code}`, JSON.stringify(gameData));
-      io.to(gameCode).emit("gameUpdated", gameData);
-    }
-    res.status(200).json({
-      status: "success",
-      sentenceIsValid,
-    });
-  }
-);
-
-export const handlePlayerLoss = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { gameCode, playerId } = req.params;
-    const gameData = await getGameFromRedis(gameCode);
-
-    if (gameData.players.length === 2) {
-      gameData.winnerPlayerId = gameData.players.find(
-        (player) => player.id !== playerId
-      ).id;
     } else {
-      removePlayer(gameData, playerId);
+      gameData.players[playerId].active = false;
+      const socketId = getPlayerSocketId(playerId);
+      io.to(socketId).emit("invalidInput");
     }
+
+    nextTurn(gameData);
+
     await redisClient.set(`game:${gameData.code}`, JSON.stringify(gameData));
     io.to(gameCode).emit("gameUpdated", gameData);
 
+    if (gameData.winnerPlayerId) {
+      io.to(gameData.code).emit("gameEnd");
+    }
+
     res.status(200).json({
       status: "success",
     });
   }
 );
+
+const nextTurn = (gameData: Game) => {
+  // Find the next active player, starting from the currentTurnIndex
+  const nextActivePlayerIndex = gameData.turnOrder
+    .slice(gameData.currentTurnIndex + 1) // Slice from the next index onward
+    .findIndex((playerId) => gameData.players[playerId].active);
+
+  if (nextActivePlayerIndex !== -1) {
+    gameData.currentTurnIndex =
+      gameData.currentTurnIndex + 1 + nextActivePlayerIndex;
+  } else {
+    // No active player found in the slice, search from the beginning
+    const nextActivePlayerIndex = gameData.turnOrder
+      .slice(0, gameData.currentTurnIndex)
+      .findIndex((playerId) => gameData.players[playerId].active);
+
+    if (nextActivePlayerIndex !== -1) {
+      gameData.currentTurnIndex = nextActivePlayerIndex;
+    } else {
+      gameData.winnerPlayerId = gameData.turnOrder[gameData.currentTurnIndex];
+    }
+  }
+};
 
 export const getAllGames = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {

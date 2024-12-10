@@ -5,6 +5,10 @@ import useAppStore from "../../store/useStore";
 const PlayerList = () => {
   const { game } = useAppStore((state) => state);
 
+  const players = useMemo(() => {
+    return Object.values(game.players);
+  }, [game.players]);
+
   const getColorById = useMemo(() => {
     const colors = ["#FF5733", "#33FF57", "#3357FF", "#F3FF33", "#FF33A1"];
     return (id: string) => {
@@ -17,12 +21,12 @@ const PlayerList = () => {
 
   return (
     <div className="flex flex-col space-y-8 p-4">
-      {game?.players?.map((player) => (
+      {players.map((player) => (
         <PlayerAvatar
           key={player.id}
           player={player}
-          isPlayerTurn={game.currentPlayerId === player.id}
-          gameIsActive={game.isActive}
+          isPlayerTurn={game?.currentPlayerId === player.id}
+          gameIsActive={game?.isActive!}
           color={getColorById(player.id)}
         />
       ))}

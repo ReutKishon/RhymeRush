@@ -1,22 +1,13 @@
 import React, { useState } from "react";
 import useAppStore from "../../store/useStore.ts";
-import socket from "../../services/socket.ts";
 import { api } from "../../services";
-import { usePlayerLose } from "../../hooks";
 
 const SentenceInput = () => {
   const [sentence, setSentence] = useState<string>("");
   const [error, setError] = useState<string>("");
   const { user, game } = useAppStore((state) => state);
 
-  const isUserTurn = game?.isActive && game.currentPlayerId === user.id;
-
-  const handlePlayerLose = usePlayerLose(
-    "invalidSentence",
-    game?.code!,
-    user.id,
-    isUserTurn
-  );
+  const isUserTurn = game.isActive && game.currentPlayerId === user.id;
 
   const handleSentenceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSentence(e.target.value);
@@ -34,14 +25,7 @@ const SentenceInput = () => {
 
     const addSentenceToLyrics = async () => {
       try {
-        const sentenceIsValid = await api.submitSentence(
-          game.code,
-          user.id,
-          sentence
-        );
-        if (!sentenceIsValid) {
-          handlePlayerLose();
-        }
+        await api.submitSentence(game.code, user.id, sentence);
       } catch (err) {
         setError(err);
       }

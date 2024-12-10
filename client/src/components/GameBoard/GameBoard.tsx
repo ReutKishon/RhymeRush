@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   PlayerList,
   SentenceInput,
@@ -8,20 +8,24 @@ import {
 } from "./";
 import { useParams } from "react-router-dom";
 import useSocketEvents from "../../hooks/useSocketEvents.ts";
-import GameEndModal from "./modals/GameEndModal.tsx";
+import GameOverModal from "./modals/GameOverModal.tsx";
 import { api } from "../../services/index.ts";
 import useAppStore from "../../store/useStore.ts";
+import GameEndModal from "./modals/GameEndModal.tsx";
 
 const GameBoard = () => {
   const { gameCode } = useParams<{ gameCode: string }>();
   const { setGame } = useAppStore((state) => state);
+
+  const [showGameOverModal, setShowGameOverModal] = useState(false);
+  const [loosingReason, setLoosingReason] = useState("");
+  const [showWinningModal, setShowWinningModal] = useState(false);
 
   useEffect(() => {
     const fetchGame = async () => {
       try {
         if (gameCode) {
           const game = await api.fetchGameData(gameCode);
-          console.log("GameBoard: " + game);
           setGame(game);
         }
       } catch (err) {
@@ -31,8 +35,12 @@ const GameBoard = () => {
     fetchGame();
   }, [gameCode]);
 
-  useSocketEvents(gameCode!);
-
+  useSocketEvents({
+    gameCode: gameCode!,
+    setShowGameOverModal,
+    setLoosingReason,
+    setShowWinningModal,
+  });
   return (
     <div className="relative h-screen p-4">
       <div className="absolute top-10 inset-x-0 flex items-center justify-between px-4">
@@ -48,8 +56,13 @@ const GameBoard = () => {
         <SentenceInput />
         <StartGameButton />
       </div>
-      <GameEndModal />
-      {/* <PlayerLeftModal isVisible={isPlayerLeft} leftPlayer={leftPlayerId!} /> */}
+      {showGameOverModal && (
+        <GameOverModal
+          setShowModal={setShowGameOverModal}
+          reason={loosingReason}
+        />
+      )}
+      {showWinningModal && <GameEndModal setShowModal={setShowWinningModal} />}
     </div>
   );
 };

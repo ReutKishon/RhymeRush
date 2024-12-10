@@ -6,23 +6,19 @@ import useAppStore from "../../store/useStore.ts";
 const CreateGameModal = () => {
   const { user } = useAppStore((state) => state);
   const [gameCode, setGameCode] = useState("");
-  const hasCreatedGame = useRef(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const createNewGame = async () => {
       try {
-        if (!hasCreatedGame.current) {
-          hasCreatedGame.current = true;
-          const game = await api.createGame(user.id);
-          socket.emit("createGame", game.code, user.id);
-          setGameCode(game.code);
-        }
+        const gameCode = await api.createGame(user.id);
+        socket.emit("createGame", gameCode, user.id);
+        setGameCode(gameCode);
       } catch (err) {
         console.error("Error creating game:", err);
       }
     };
-    if (user?.id) {
+    if (user.id) {
       createNewGame();
     }
   }, [user.id]);

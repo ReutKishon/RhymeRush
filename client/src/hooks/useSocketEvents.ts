@@ -1,27 +1,51 @@
 import { useEffect } from "react";
 import socket from "../services/socket";
-import { Game } from "../../../shared/types/gameTypes";
+import { GameBase as Game } from "../../../shared/types/gameTypes";
 import useStore from "../store/useStore";
-const useSocketEvents = (gameCode: string) => {
-  const { setGame, setEliminationReason, setIsEliminated ,setTimer} = useStore(
-    (state) => state
-  );
+
+interface SocketEventsProps {
+  gameCode: string;
+  setShowGameOverModal: (show: boolean) => void;
+  setShowWinningModal: (show: boolean) => void;
+  setLoosingReason: (reason: string) => void;
+}
+const useSocketEvents = ({
+  gameCode,
+  setShowGameOverModal,
+  setLoosingReason,
+  setShowWinningModal,
+}: SocketEventsProps) => {
+  const { setGame, setTimer } = useStore((state) => state);
+
   useEffect(() => {
     socket.on("gameUpdated", (gameData: Game) => {
       console.log("gameUpdated: ", gameData);
-      setEliminationReason("");
-      setIsEliminated(false);
       setGame(gameData);
     });
 
     socket.on("timerUpdate", (timer: number) => {
-      console.log("timerUpdated: ", timer);
-   
       setTimer(timer);
+    });
+
+    socket.on("timeExpired", () => {
+      setShowGameOverModal(true);
+      setLoosingReason("Your time is expired!");
+    });
+
+    socket.on("invalidInput", () => {
+      setShowGameOverModal(true);
+      setLoosingReason("Your sentence is not valid!");
+    });
+
+    socket.on("gameEnd", () => {
+      console.log("gameEnd")
+      setShowWinningModal(true);
     });
 
     return () => {
       socket.off("gameUpdated");
+      socket.off("timeExpired");
+      socket.off("timerUpdate");
     };
   }, [gameCode]);
 };

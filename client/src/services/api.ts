@@ -1,20 +1,23 @@
 import axios from "axios";
-import { Game, Player, User } from "../../../shared/types/gameTypes";
+import {
+  GameBase as Game,
+  PlayerBase as Player,
+  User,
+} from "../../../shared/types/gameTypes";
 
 const PATH = process.env.REACT_APP_API_BASE_URL;
 
 console.log(PATH);
 
-export const createGame = async (gameCreatorId: string): Promise<Game> => {
+export const createGame = async (gameCreatorId: string): Promise<string> => {
   try {
-
     const response = await axios.post(`http://localhost:3000/api/v1/game`, {
       gameCreatorId,
     });
-    const gameData: Game = response.data.data.gameData;
-    console.log("Creating new game with code " + gameData.code);
+    const gameCode = response.data.data.gameCode;
+    console.log("Creating new game with code " + gameCode);
 
-    return gameData;
+    return gameCode;
   } catch (err) {
     throw err;
   }
