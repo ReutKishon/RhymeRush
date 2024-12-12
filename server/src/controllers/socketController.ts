@@ -1,4 +1,7 @@
 import { Server, Socket } from "socket.io";
+import { handleNextTurn, loosingHandler } from "./gameController";
+import { Game } from "types/gameTypes";
+import redisClient from "../redisClient";
 
 export const playerSocketMap: Record<
   string,
@@ -20,6 +23,7 @@ export const socketController = (io: Server) => {
     socket.on("joinGame", async (playerId: string, gameCode: string) => {
       socket.join(gameCode);
       playerSocketMap[socket.id] = { playerId, gameCode };
+      console.log(playerSocketMap)
     });
 
     socket.on("leaveGame", async (playerId: string, gameCode: string) => {
@@ -29,11 +33,11 @@ export const socketController = (io: Server) => {
       // io.to(gameCode).emit("gameUpdated", game);
     });
 
-    socket.on("startTurn", (currentPlayerId: string) => {
+    socket.on("startTurn", (game: Game, currentPlayerId: string) => {
       const timer = 30;
       console.log("turnStarted");
 
-      startTimer(timer, currentPlayerId);
+      startTimer(timer, game, currentPlayerId);
     });
 
     socket.on("disconnect", () => {
@@ -47,21 +51,24 @@ export const socketController = (io: Server) => {
     });
   });
 
-  const startTimer = (timer: number, currentPlayerId: string) => {
+  const startTimer = (timer: number, game: Game, currentPlayerId: string) => {
     if (intervalId) {
       clearInterval(intervalId);
       intervalId = null;
     }
 
-    intervalId = setInterval(() => {
+    intervalId = setInterval(async () => {
       if (timer > 0) {
         timer--;
         io.emit("timerUpdate", timer);
       } else {
         clearInterval(intervalId);
         intervalId = null;
+        loosingHandler("timeExpired", game, currentPlayerId);
+        handleNextTurn(game);
 
-        // emit("timeExpired");
+        await redisClient.set(`game:${game.code}`, JSON.stringify(game));
+        io.to(game.code).emit("gameUpdated", game);
       }
     }, 1000);
   };

@@ -174,6 +174,25 @@ const addSentenceToSong = async (
   gameData.lyrics.push(sentenceData);
 };
 
+export const loosingHandler = async (
+  reason: "invalidInput" | "timeExpired",
+  game: Game,
+  playerId: string
+) => {
+  game.players[playerId].active = false;
+  const socketId = getPlayerSocketId(playerId);
+  console.log("socketId: " + socketId);  
+  io.to(socketId).emit(reason);
+};
+
+export const handleNextTurn = async (game: Game) => {
+  nextTurn(game);
+
+  if (game.winnerPlayerId) {
+    io.to(game.code).emit("gameEnd");
+  }
+};
+
 export const addSentenceHandler = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const { gameCode, playerId } = req.params;
@@ -192,19 +211,13 @@ export const addSentenceHandler = catchAsync(
     if (sentenceIsValid) {
       await addSentenceToSong(gameData, playerId, sentence);
     } else {
-      gameData.players[playerId].active = false;
-      const socketId = getPlayerSocketId(playerId);
-      io.to(socketId).emit("invalidInput");
+      loosingHandler("invalidInput", gameData, playerId);
     }
 
-    nextTurn(gameData);
+    handleNextTurn(gameData);
 
     await redisClient.set(`game:${gameData.code}`, JSON.stringify(gameData));
     io.to(gameCode).emit("gameUpdated", gameData);
-
-    if (gameData.winnerPlayerId) {
-      io.to(gameData.code).emit("gameEnd");
-    }
 
     res.status(200).json({
       status: "success",
@@ -214,8 +227,7 @@ export const addSentenceHandler = catchAsync(
 
 const nextTurn = (gameData: Game) => {
   // Find the next active player, starting from the currentTurnIndex
-  const nextActivePlayerIndex = gameData.turnOrder
-    .slice(gameData.currentTurnIndex + 1)
+  const nextActivePlayerIndex = gameData.turnOrder?.slice(gameData.currentTurnIndex + 1)
     .findIndex((playerId) => gameData.players[playerId].active);
 
   if (nextActivePlayerIndex !== -1) {
@@ -224,8 +236,7 @@ const nextTurn = (gameData: Game) => {
   } else {
     // No active player found in the slice, search from the beginning
 
-    const nextActivePlayerIndex = gameData.turnOrder
-      .slice(0, gameData.currentTurnIndex)
+    const nextActivePlayerIndex = gameData.turnOrder?.slice(0, gameData.currentTurnIndex)
       .findIndex((playerId) => gameData.players[playerId].active);
 
     if (nextActivePlayerIndex !== -1) {

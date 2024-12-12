@@ -1,57 +1,46 @@
 import React, { useEffect, useMemo } from "react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
-import useAppStore from "../../store/useStore";
 import { PlayerBase } from "../../../../shared/types/gameTypes";
 import { socket } from "../../services";
+import { adjustColorTone, getColorById } from "../../utils/colorGenerator";
 
 interface PlayerProps {
   player: PlayerBase;
   isPlayerTurn: boolean;
-  gameIsActive: boolean;
-  color: string;
+  timer: number | null;
+  setTimer: (timer: number) => void;
 }
 
 const PlayerAvatar = ({
   player,
   isPlayerTurn,
-  gameIsActive,
-  color,
+  timer,
+  setTimer,
 }: PlayerProps) => {
-  const { timer, setTimer } = useAppStore((state) => state);
+  console.log(`PlayerAvatar rendered for player: ${player.name}`);
 
-  const turnStarted = useMemo(() => {
-    return gameIsActive && isPlayerTurn;
-  }, [gameIsActive, isPlayerTurn]);
+  const avatarColor = useMemo(() => getColorById(player.id), [player.id]);
 
   useEffect(() => {
-    if (turnStarted) {
-      setTimer(30);
-      socket.emit("startTurn", player.id); // Notify other players
+    if (isPlayerTurn) {
+      setTimer(30); // Reset the timer to 30 for the current player
+      socket.emit("startTurn", player.id);
     }
-  }, [turnStarted]);
-
-  const adjustColorTone = (color: string, factor: number): string => {
-    const hex = color.replace("#", "");
-    const rgb = hex.match(/.{1,2}/g)?.map((value) => parseInt(value, 16)) ?? [];
-    const adjustedRgb = rgb.map((channel) =>
-      Math.min(255, Math.max(0, Math.floor(channel * factor)))
-    );
-    return `rgb(${adjustedRgb.join(",")})`;
-  };
+  }, [isPlayerTurn, player.id, setTimer]);
 
   return (
     <div
       className={`relative w-28 h-28 transition-all duration-1000 ${
-        turnStarted && timer > 0 ? "shrink-grow-animation" : ""
+        timer && timer > 0 ? "shrink-grow-animation" : ""
       }`}
     >
-      {turnStarted ? (
+      {timer ? (
         <CircularProgressbar
           value={(timer / 30) * 100}
           styles={buildStyles({
-            pathColor: adjustColorTone(color, 0.7),
-            trailColor: color,
-            backgroundColor: color,
+            pathColor: adjustColorTone(avatarColor, 0.7),
+            trailColor: avatarColor,
+            backgroundColor: avatarColor,
             strokeLinecap: "round",
             textColor: "white",
             textSize: "0px",
@@ -63,7 +52,7 @@ const PlayerAvatar = ({
         // Static Circle for non-current players
         <div
           className="w-full h-full rounded-full"
-          style={{ backgroundColor: color }}
+          style={{ backgroundColor: avatarColor }}
         ></div>
       )}
       <div className="absolute inset-0 flex items-center justify-center text-white font-bold text-sm">
@@ -73,4 +62,4 @@ const PlayerAvatar = ({
   );
 };
 
-export default PlayerAvatar;
+export default React.memo(PlayerAvatar);
