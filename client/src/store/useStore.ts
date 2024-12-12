@@ -3,14 +3,17 @@ import { User, GameBase as Game } from "../../../shared/types/gameTypes";
 
 interface AppState {
   game: Game;
+  gameCode: string;
   user: User;
   timer: number;
   setUser: (user: User) => void;
   setGame: (game: Game) => void;
+  setGameCode: (gameCode: string) => void;
   setTimer: (timer: number) => void;
 }
 
 const useAppStore = create<AppState>((set) => ({
+  gameCode: "",
   game: {
     code: "",
     topic: "",
@@ -33,6 +36,7 @@ const useAppStore = create<AppState>((set) => ({
   timer: 30,
   setUser: (user: User) => set(() => ({ user })),
   setGame: (game: Game) => set(() => ({ game })),
+  setGameCode: (gameCode: string) => set(() => ({ gameCode })),
   setTimer: (timer: number) => set(() => ({ timer })),
 }));
 

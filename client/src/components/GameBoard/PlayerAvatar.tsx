@@ -3,12 +3,14 @@ import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import { PlayerBase } from "../../../../shared/types/gameTypes";
 import { socket } from "../../services";
 import { adjustColorTone, getColorById } from "../../utils/colorGenerator";
+import useAppStore from "../../store/useStore";
 
 interface PlayerProps {
   player: PlayerBase;
   isPlayerTurn: boolean;
   timer: number | null;
   setTimer: (timer: number) => void;
+  gameCode: string;
 }
 
 const PlayerAvatar = ({
@@ -16,15 +18,17 @@ const PlayerAvatar = ({
   isPlayerTurn,
   timer,
   setTimer,
+  gameCode
 }: PlayerProps) => {
   console.log(`PlayerAvatar rendered for player: ${player.name}`);
+
 
   const avatarColor = useMemo(() => getColorById(player.id), [player.id]);
 
   useEffect(() => {
     if (isPlayerTurn) {
       setTimer(30); // Reset the timer to 30 for the current player
-      socket.emit("startTurn", player.id);
+      socket.emit("startTurn", player.id, gameCode);
     }
   }, [isPlayerTurn, player.id, setTimer]);
 

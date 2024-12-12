@@ -176,21 +176,11 @@ const addSentenceToSong = async (
 
 export const loosingHandler = async (
   reason: "invalidInput" | "timeExpired",
-  game: Game,
-  playerId: string
+  player: Player
 ) => {
-  game.players[playerId].active = false;
-  const socketId = getPlayerSocketId(playerId);
-  console.log("socketId: " + socketId);  
+  player.active = false;
+  const socketId = getPlayerSocketId(player.id);
   io.to(socketId).emit(reason);
-};
-
-export const handleNextTurn = async (game: Game) => {
-  nextTurn(game);
-
-  if (game.winnerPlayerId) {
-    io.to(game.code).emit("gameEnd");
-  }
 };
 
 export const addSentenceHandler = catchAsync(
@@ -211,13 +201,10 @@ export const addSentenceHandler = catchAsync(
     if (sentenceIsValid) {
       await addSentenceToSong(gameData, playerId, sentence);
     } else {
-      loosingHandler("invalidInput", gameData, playerId);
+      await loosingHandler("invalidInput", gameData.players[playerId]);
     }
 
-    handleNextTurn(gameData);
-
-    await redisClient.set(`game:${gameData.code}`, JSON.stringify(gameData));
-    io.to(gameCode).emit("gameUpdated", gameData);
+    await checkForWinnerAndUpdateGame(gameData);
 
     res.status(200).json({
       status: "success",
@@ -226,24 +213,61 @@ export const addSentenceHandler = catchAsync(
 );
 
 const nextTurn = (gameData: Game) => {
+  const getNextActivePlayerIndex = (
+    startIndex: number,
+    endIndex?: number
+  ): number => {
+    return (
+      gameData.turnOrder
+        ?.slice(startIndex, endIndex)
+        .findIndex((playerId) => gameData.players[playerId].active) ?? -1
+    );
+  };
+
   // Find the next active player, starting from the currentTurnIndex
-  const nextActivePlayerIndex = gameData.turnOrder?.slice(gameData.currentTurnIndex + 1)
-    .findIndex((playerId) => gameData.players[playerId].active);
+  let nextActivePlayerIndex = getNextActivePlayerIndex(
+    gameData.currentTurnIndex + 1
+  );
 
   if (nextActivePlayerIndex !== -1) {
     gameData.currentTurnIndex =
       gameData.currentTurnIndex + 1 + nextActivePlayerIndex;
   } else {
     // No active player found in the slice, search from the beginning
-
-    const nextActivePlayerIndex = gameData.turnOrder?.slice(0, gameData.currentTurnIndex)
-      .findIndex((playerId) => gameData.players[playerId].active);
+    nextActivePlayerIndex = getNextActivePlayerIndex(
+      0,
+      gameData.currentTurnIndex
+    );
 
     if (nextActivePlayerIndex !== -1) {
       gameData.currentTurnIndex = nextActivePlayerIndex;
-    } else {
-      gameData.winnerPlayerId = gameData.turnOrder[gameData.currentTurnIndex];
     }
+  }
+};
+
+function getActivePlayers(gameData: Game): Player[] {
+  return Object.values(gameData.players).filter((player) => player.active);
+}
+
+const declareWinner = (game: Game, activePlayers: Player[]) => {
+  game.winnerPlayerId = activePlayers[0].id;
+  io.to(game.code).emit("gameEnd", game);
+};
+
+// Function to continue the game if more than one active player is left
+const continueGame = async (game: Game) => {
+  nextTurn(game);
+  await redisClient.set(`game:${game.code}`, JSON.stringify(game));
+  io.to(game.code).emit("gameUpdated", game);
+};
+
+export const checkForWinnerAndUpdateGame = async (game: Game) => {
+  const activePlayers = getActivePlayers(game);
+
+  if (activePlayers.length === 1) {
+    declareWinner(game, activePlayers);
+  } else {
+    await continueGame(game);
   }
 };
 

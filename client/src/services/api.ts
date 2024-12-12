@@ -33,6 +33,7 @@ export const startGame = async (gameCode: string) => {
 
 export const fetchGameData = async (gameCode: string): Promise<Game> => {
   try {
+  
     const response = await axios.get(`${PATH}/game/${gameCode}`);
     const gameData: Game = response.data.data.gameData;
     return gameData;

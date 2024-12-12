@@ -37,8 +37,9 @@ const useSocketEvents = ({
       setLoosingReason("Your sentence is not valid!");
     });
 
-    socket.on("gameEnd", () => {
-      console.log("gameEnd")
+    socket.on("gameEnd", (gameData: Game) => {
+      console.log("gameEnd");
+      setGame(gameData);
       setShowWinningModal(true);
     });
 

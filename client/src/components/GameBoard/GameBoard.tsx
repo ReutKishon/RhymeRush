@@ -15,7 +15,7 @@ import GameEndModal from "./modals/GameEndModal.tsx";
 
 const GameBoard = () => {
   const { gameCode } = useParams<{ gameCode: string }>();
-  const { setGame } = useAppStore((state) => state);
+  const { setGame, setGameCode } = useAppStore((state) => state);
 
   const [showGameOverModal, setShowGameOverModal] = useState(false);
   const [loosingReason, setLoosingReason] = useState("");
@@ -27,6 +27,7 @@ const GameBoard = () => {
         if (gameCode) {
           const game = await api.fetchGameData(gameCode);
           setGame(game);
+          setGameCode(gameCode);
         }
       } catch (err) {
         console.error("Failed to fetch game details: ", err);

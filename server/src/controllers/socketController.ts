@@ -1,7 +1,10 @@
 import { Server, Socket } from "socket.io";
-import { handleNextTurn, loosingHandler } from "./gameController";
+import {
+  checkForWinnerAndUpdateGame,
+  getGameFromRedis,
+  loosingHandler,
+} from "./gameController";
 import { Game } from "types/gameTypes";
-import redisClient from "../redisClient";
 
 export const playerSocketMap: Record<
   string,
@@ -23,7 +26,7 @@ export const socketController = (io: Server) => {
     socket.on("joinGame", async (playerId: string, gameCode: string) => {
       socket.join(gameCode);
       playerSocketMap[socket.id] = { playerId, gameCode };
-      console.log(playerSocketMap)
+      console.log(playerSocketMap);
     });
 
     socket.on("leaveGame", async (playerId: string, gameCode: string) => {
@@ -33,11 +36,11 @@ export const socketController = (io: Server) => {
       // io.to(gameCode).emit("gameUpdated", game);
     });
 
-    socket.on("startTurn", (game: Game, currentPlayerId: string) => {
-      const timer = 30;
+    socket.on("startTurn", async (playerId: string, gameCode: string) => {
+      let timer = 30;
       console.log("turnStarted");
-
-      startTimer(timer, game, currentPlayerId);
+      const game = await getGameFromRedis(gameCode);
+      startTimer(timer, game, playerId);
     });
 
     socket.on("disconnect", () => {
@@ -51,7 +54,7 @@ export const socketController = (io: Server) => {
     });
   });
 
-  const startTimer = (timer: number, game: Game, currentPlayerId: string) => {
+  const startTimer = (timer: number, game: Game, playerId: string) => {
     if (intervalId) {
       clearInterval(intervalId);
       intervalId = null;
@@ -64,11 +67,8 @@ export const socketController = (io: Server) => {
       } else {
         clearInterval(intervalId);
         intervalId = null;
-        loosingHandler("timeExpired", game, currentPlayerId);
-        handleNextTurn(game);
-
-        await redisClient.set(`game:${game.code}`, JSON.stringify(game));
-        io.to(game.code).emit("gameUpdated", game);
+        await loosingHandler("timeExpired", game.players[playerId]);
+        await checkForWinnerAndUpdateGame(game);
       }
     }, 1000);
   };
