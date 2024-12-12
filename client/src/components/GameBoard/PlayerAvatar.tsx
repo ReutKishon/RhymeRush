@@ -3,7 +3,6 @@ import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import { PlayerBase } from "../../../../shared/types/gameTypes";
 import { socket } from "../../services";
 import { adjustColorTone, getColorById } from "../../utils/colorGenerator";
-import useAppStore from "../../store/useStore";
 
 interface PlayerProps {
   player: PlayerBase;
@@ -18,10 +17,9 @@ const PlayerAvatar = ({
   isPlayerTurn,
   timer,
   setTimer,
-  gameCode
+  gameCode,
 }: PlayerProps) => {
   console.log(`PlayerAvatar rendered for player: ${player.name}`);
-
 
   const avatarColor = useMemo(() => getColorById(player.id), [player.id]);
 
@@ -32,9 +30,12 @@ const PlayerAvatar = ({
     }
   }, [isPlayerTurn, player.id, setTimer]);
 
+  const playerStatusClass = player.active ? "" : "opacity-50 grayscale";
+
+
   return (
     <div
-      className={`relative w-28 h-28 transition-all duration-1000 ${
+      className={`relative w-28 h-28 transition-all duration-1000 ${playerStatusClass} ${
         timer && timer > 0 ? "shrink-grow-animation" : ""
       }`}
     >
