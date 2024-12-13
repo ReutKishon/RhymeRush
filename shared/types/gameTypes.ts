@@ -1,6 +1,7 @@
 export interface User {
   username: string;
   score: number;
+  songs: Sentence[][];
   email: string;
   password: string;
   id: string;

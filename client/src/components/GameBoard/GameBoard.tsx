@@ -12,6 +12,7 @@ import GameOverModal from "./modals/GameOverModal.tsx";
 import { api } from "../../services/index.ts";
 import useAppStore from "../../store/useStore.ts";
 import GameEndModal from "./modals/GameEndModal.tsx";
+import { Box, Typography } from "@mui/material";
 
 const GameBoard = () => {
   const { gameCode } = useParams<{ gameCode: string }>();
@@ -43,28 +44,45 @@ const GameBoard = () => {
     setShowWinningModal,
   });
   return (
-    <div className="relative h-screen p-4">
-      <div className="absolute top-10 inset-x-0 flex items-center justify-between px-4">
+    <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
+      {/* Top Section - Start Button and Topic */}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          p: 3,
+        }}
+      >
         <Topic />
-      </div>
-      <div className="absolute inset-0 flex flex-col items-center justify-center -mt-14">
-        <SongLyrics />
-      </div>
-      <div className="absolute right-20 top-20">
-        <PlayerList />
-      </div>
-      <div className="absolute bottom-20 left-1/2 transform -translate-x-1/2 mb-4">
-        <SentenceInput />
         <StartGameButton />
-      </div>
-      {showGameOverModal && (
-        <GameOverModal
-          setShowModal={setShowGameOverModal}
-          reason={loosingReason}
-        />
-      )}
-      {showWinningModal && <GameEndModal setShowModal={setShowWinningModal} />}
-    </div>
+      </Box>
+
+      {/* Middle Section - SongLyrics (Centered in the middle of the page) */}
+      <Box
+        sx={{
+          flex: 1, // Allow the middle section to take the remaining space
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <PlayerList />
+        <SongLyrics />
+      </Box>
+      {/* Bottom Section - Sentence Input */}
+      <Box
+        sx={{
+          marginTop: 10,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          paddingBottom: 12,
+        }}
+      >
+        <SentenceInput />
+      </Box>
+    </Box>
   );
 };
 

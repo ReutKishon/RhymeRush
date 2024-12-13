@@ -26,6 +26,17 @@ const userSchema: Schema<UserDocument> = new mongoose.Schema(
       minlength: 8,
       select: false,
     },
+    songs: {
+      type: [
+        [
+          {
+            content: { type: String, required: true },
+            playerId: { type: String, required: true },
+          },
+        ],
+      ],
+      default: [],
+    },
   },
   {
     toJSON: { virtuals: true },

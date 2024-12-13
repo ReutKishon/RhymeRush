@@ -13,17 +13,15 @@ const signToken = (id: ObjectId) => {
   });
 };
 const createSendToken = (
-  user: UserDocument & { _id: ObjectId},
+  user: UserDocument & { _id: ObjectId },
   statusCode: number,
   res: Response
 ) => {
   const token = signToken(user._id);
 
-  const userData: Omit<User, 'password'> = {
-    username: user.username,
-    email: user.email,
+  const userData: Omit<User, "password"> = {
+    ...user,
     id: user._id.toString(),
-    score: user.score,
   };
   res.status(statusCode).json({
     status: "success",

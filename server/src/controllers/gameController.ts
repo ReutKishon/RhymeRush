@@ -9,6 +9,9 @@ import { io } from "../app";
 import { Game, Player } from "types/gameTypes";
 import { Sentence } from "../../../shared/types/gameTypes";
 import { playerSocketMap } from "./socketController";
+import userModel from "../models/userModel";
+import UserModel from "../models/userModel";
+
 
 export const getGameFromRedis = async (gameCode: string) => {
   console.log("getGameFromRedis :", gameCode);
@@ -287,3 +290,40 @@ export const getAllGames = catchAsync(
     });
   }
 );
+
+
+// export const saveSong = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
+//   const { song } = req.body; 
+//   const userId = req.user.id; 
+
+//   // Check if song data is present
+//   if (!song || !Array.isArray(song) || song.length === 0) {
+//     return res.status(400).json({
+//       status: "fail",
+//       message: "Song must be a non-empty array of sentences",
+//     });
+//   }
+
+//   try {
+//     // Find the user by their ID
+//     const user = await UserModel.findById(userId);
+
+//     if (!user) {
+//       return res.status(404).json({
+//         status: "fail",
+//         message: "User not found",
+//       });
+//     }
+
+//     user.songs.push(song); 
+//     await user.save(); 
+
+//     res.status(201).json({
+//       status: "success",
+//       message: "Song saved successfully",
+//       data: { song },
+//     });
+//   } catch (error) {
+//     next(error); 
+//   }
+// });

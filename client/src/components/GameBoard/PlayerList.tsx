@@ -1,6 +1,7 @@
 import React, { useMemo } from "react";
 import { PlayerAvatar } from "../GameBoard";
 import useAppStore from "../../store/useStore";
+import { Box } from "@mui/material";
 
 const PlayerList = () => {
   const { game, timer, setTimer } = useAppStore((state) => state);
@@ -27,7 +28,20 @@ const PlayerList = () => {
     });
   }, [players, game.turnOrder, game.currentTurnIndex, game.isActive, timer]);
 
-  return <div className="flex flex-col space-y-8 p-4">{playerComponents}</div>;
+  return (
+    <Box
+      sx={{
+        width: "20%",
+        display: "flex",
+        justifyContent: "center",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: 2,
+      }}
+    >
+      {playerComponents}
+    </Box>
+  );
 };
 
 export default PlayerList;

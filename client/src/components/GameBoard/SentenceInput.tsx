@@ -1,13 +1,17 @@
 import React, { useState } from "react";
 import useAppStore from "../../store/useStore.ts";
 import { api } from "../../services";
+import SendIcon from "@mui/icons-material/Send";
+import Button from "@mui/material/Button";
+import { Box, TextField } from "@mui/material";
 
 const SentenceInput = () => {
   const [sentence, setSentence] = useState<string>("");
   const [error, setError] = useState<string>("");
   const { user, game } = useAppStore((state) => state);
 
-  const isUserTurn = game.isActive && game.turnOrder[game.currentTurnIndex] === user.id;
+  const isUserTurn =
+    game.isActive && game.turnOrder[game.currentTurnIndex] === user.id;
 
   const handleSentenceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSentence(e.target.value);
@@ -36,23 +40,49 @@ const SentenceInput = () => {
   };
 
   return (
-    <div className="flex items-center gap-2">
-      <input
-        type="text"
-        value={sentence}
+    <Box
+      sx={{
+        display: "flex",
+        width: "50%",
+        justifyContent: "center",
+      }}
+    >
+      <TextField
+        variant="outlined"
+        placeholder="Type a new line"
         onChange={handleSentenceChange}
-        className="w-full border border-gray-300 rounded px-4 py-2 mb-2"
-        placeholder="Type your sentence here"
-        disabled={!game.isActive || !isUserTurn}
+        sx={{
+          width: "100%",
+          height: "50px",
+          "& .MuiOutlinedInput-root": {
+            height: "50px",
+            fontSize: "18px",
+            borderRadius: 5,
+            borderStyle: "solid",
+            borderWidth: 1,
+            borderColor: "black",
+          },
+        }}
       />
-      {error && <p className="text-red-500 text-sm">{error}</p>}
-      <button
+      <Button
         onClick={handleSentenceSubmit}
-        className="w-60 px-4 py-2 mb-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition"
+        sx={{
+          borderRadius: "100%",
+          width: "50px",
+          height: "50px",
+          minWidth: 0,
+          marginLeft: "8px",
+          padding: 0,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          backgroundColor: "#ffcccc",
+        }}
+        variant="contained"
       >
-        Submit Sentence
-      </button>
-    </div>
+        <SendIcon />
+      </Button>
+    </Box>
   );
 };
 

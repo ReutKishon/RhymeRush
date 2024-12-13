@@ -3,6 +3,7 @@ import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import { PlayerBase } from "../../../../shared/types/gameTypes";
 import { socket } from "../../services";
 import { adjustColorTone, getColorById } from "../../utils/colorGenerator";
+import { Box, Typography } from "@mui/material";
 
 interface PlayerProps {
   player: PlayerBase;
@@ -32,12 +33,15 @@ const PlayerAvatar = ({
 
   const playerStatusClass = player.active ? "" : "opacity-50 grayscale";
 
-
   return (
-    <div
-      className={`relative w-28 h-28 transition-all duration-1000 ${playerStatusClass} ${
-        timer && timer > 0 ? "shrink-grow-animation" : ""
-      }`}
+    <Box
+      sx={{
+        position: "relative",
+        width: 112, 
+        height: 112,
+        transition: "all 1s",
+        ...(isPlayerTurn && { transform: "scale(1.1)" }), // Example to show player turn
+      }}
     >
       {timer ? (
         <CircularProgressbar
@@ -50,20 +54,33 @@ const PlayerAvatar = ({
             textColor: "white",
             textSize: "0px",
           })}
-          background // Enables the filled background effect
+          background
           backgroundPadding={5}
         />
       ) : (
-        // Static Circle for non-current players
-        <div
-          className="w-full h-full rounded-full"
-          style={{ backgroundColor: avatarColor }}
-        ></div>
+        <Box
+          sx={{
+            width: "100%",
+            height: "100%",
+            borderRadius: "50%",
+            backgroundColor: avatarColor,
+          }}
+        />
       )}
-      <div className="absolute inset-0 flex items-center justify-center text-white font-bold text-sm">
-        {player.name}
-      </div>
-    </div>
+      <Box
+        sx={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          color: "white",
+          fontWeight: "bold",
+          fontSize: "14px", // Equivalent to text-sm in Tailwind
+        }}
+      >
+        <Typography>{player.name}</Typography>
+      </Box>
+    </Box>
   );
 };
 

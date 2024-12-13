@@ -1,12 +1,18 @@
 import React from "react";
 import { socket, api } from "../../services";
 import useAppStore from "../../store/useStore.ts";
+import { Button } from "@mui/material";
 
 const StartGameButton = () => {
   const { user, game } = useAppStore((state) => state);
+  console.log("StartGameButton");
 
   const onStartGame = () => {
-    if (game.isActive || Object.keys(game.players).length === 1) {
+    if (
+      game.isActive ||
+      Object.keys(game.players).length === 1 ||
+      user.id !== game.gameCreatorId
+    ) {
       return;
     }
     const handleStartGame = async () => {
@@ -19,19 +25,23 @@ const StartGameButton = () => {
     handleStartGame();
   };
 
-  if (game.gameCreatorId !== user.id) {
-    return null;
-  }
-
   return (
-    <div>
-      <button
-        onClick={onStartGame}
-        className="w-30 px-4 py-2 mb-2 bg-green-500 text-white rounded-md"
-      >
-        Start Game
-      </button>
-    </div>
+    <Button
+      onClick={onStartGame}
+      sx={{
+        width: "8%",
+        height: "10%",
+        padding: 2,
+        backgroundColor: "#ffcccc",
+        color: "white",
+        borderRadius: 1,
+        "&:hover": {
+          backgroundColor: "#ffcccc",
+        },
+      }}
+    >
+      Start
+    </Button>
   );
 };
 
