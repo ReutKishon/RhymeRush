@@ -5,14 +5,28 @@ import {
   User,
 } from "../../../shared/types/gameTypes";
 
-const PATH = process.env.REACT_APP_API_BASE_URL;
+const api = axios.create({
+  baseURL: process.env.REACT_APP_API_BASE_URL,
+});
 
-console.log(PATH);
+// Attach a request interceptor to add the token before every request
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('authToken'); // Get the token before every request
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+}, (error) => {
+  return Promise.reject(error);
+});
+
+
+
 
 export const createGame = async (gameCreatorId: string): Promise<string> => {
   try {
     console.log("Creating new game1");
-    const response = await axios.post(`http://localhost:3000/api/v1/game`, {
+    const response = await api.post(`/game`, {
       gameCreatorId,
     });
     const gameCode = response.data.data.gameCode;
@@ -27,7 +41,7 @@ export const createGame = async (gameCreatorId: string): Promise<string> => {
 
 export const startGame = async (gameCode: string) => {
   try {
-    await axios.patch(`http://localhost:3000/api/v1/game/${gameCode}/start`);
+    await api.patch(`/game/${gameCode}/start`);
   } catch (err) {
     throw err;
   }
@@ -35,7 +49,7 @@ export const startGame = async (gameCode: string) => {
 
 export const fetchGameData = async (gameCode: string): Promise<Game> => {
   try {
-    const response = await axios.get(`${PATH}/game/${gameCode}`);
+    const response = await api.get(`game/${gameCode}`);
     const gameData: Game = response.data.data.gameData;
     return gameData;
   } catch (err) {
@@ -48,8 +62,8 @@ export const joinPlayerToGame = async (
   joinedPlayerId: string
 ): Promise<Player> => {
   try {
-    const response = await axios.patch(
-      `${PATH}/game/${gameCode}/${joinedPlayerId}`
+    const response = await api.patch(
+      `/game/${gameCode}/${joinedPlayerId}`
     );
     return response.data.data.joinedPlayer;
   } catch (err) {
@@ -62,7 +76,7 @@ export const removePlayer = async (
   playerId: string
 ): Promise<void> => {
   try {
-    await axios.delete(`${PATH}/game/${gameCode}/${playerId}`);
+    await api.delete(`/game/${gameCode}/${playerId}`);
   } catch (err) {
     throw err;
   }
@@ -74,7 +88,7 @@ export const submitSentence = async (
   sentence: string
 ): Promise<void> => {
   try {
-    await axios.patch(`${PATH}/game/${gameCode}/${playerId}/sentence`, {
+    await api.patch(`/game/${gameCode}/${playerId}/sentence`, {
       sentence,
     });
   } catch (err) {

@@ -10,6 +10,7 @@ import { Game, Player } from "types/gameTypes";
 import { Sentence } from "../../../shared/types/gameTypes";
 import { playerSocketMap } from "./socketController";
 import { relatedToTopic, sentencesAreRhyme } from "../utils/sentencValidation";
+import { CustomRequest } from "types/appTypes";
 
 export const getGameFromRedis = async (gameCode: string) => {
   console.log("getGameFromRedis :", gameCode);
@@ -151,25 +152,24 @@ export const deleteGame = catchAsync(
   }
 );
 
-export const getGameInfo = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { gameCode } = req.params;
-    if (!gameCode) {
-      return next(
-        new AppError(
-          `a game must be retrieved by providing its code! ${gameCode}`,
-          401
-        )
-      );
-    }
-    const gameData = await getGameFromRedis(gameCode);
-
-    res.status(200).json({
-      status: "success",
-      data: { gameData },
-    });
+export const getGameInfo = catchAsync(async (req: CustomRequest, res, next) => {
+  console.log(req.user);
+  const { gameCode } = req.params;
+  if (!gameCode) {
+    return next(
+      new AppError(
+        `a game must be retrieved by providing its code! ${gameCode}`,
+        401
+      )
+    );
   }
-);
+  const gameData = await getGameFromRedis(gameCode);
+
+  res.status(200).json({
+    status: "success",
+    data: { gameData },
+  });
+});
 
 const addSentenceToSong = async (
   gameData: Game,
