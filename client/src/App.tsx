@@ -30,6 +30,7 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/create-game" element={<CreateGameModal />} />
         <Route path="/join-game" element={<JoinGameModal />} />
+        <Route path="/my-songs" element={<Home />} />
         <Route path="/game/:gameCode" element={<GameBoard />} />
       </Routes>
     </BrowserRouter>

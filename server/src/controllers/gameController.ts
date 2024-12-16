@@ -9,9 +9,7 @@ import { io } from "../app";
 import { Game, Player } from "types/gameTypes";
 import { Sentence } from "../../../shared/types/gameTypes";
 import { playerSocketMap } from "./socketController";
-import userModel from "../models/userModel";
-import UserModel from "../models/userModel";
-
+import { relatedToTopic, sentencesAreRhyme } from "../utils/sentencValidation";
 
 export const getGameFromRedis = async (gameCode: string) => {
   console.log("getGameFromRedis :", gameCode);
@@ -22,12 +20,21 @@ export const getGameFromRedis = async (gameCode: string) => {
   return JSON.parse(gameDataString) as Game;
 };
 
-export const isSentenceValid = (gameData: Game, sentence: string): boolean => {
-  const isLengthValid = sentence.split(" ").length == 5;
-  // const isRhyme
-  return isLengthValid;
+export const isSentenceValid = async (
+  game: Game,
+  sentence: string
+): Promise<boolean> => {
+  if (sentence.split(" ").length < 5) return false;
 
-  //TODO: check if sentence is related to the topic
+  if (!relatedToTopic(game.topic, sentence)) return false;
+
+  if (game.lyrics.length > 0 && game.lyrics.length % 2 != 0) {
+    const areRhyme = await sentencesAreRhyme(
+      sentence,
+      game.lyrics[game.lyrics.length - 1].content
+    );
+    if (!areRhyme) return false;
+  }
 };
 
 export const getPlayerSocketId = (playerId: string) => {
@@ -291,10 +298,9 @@ export const getAllGames = catchAsync(
   }
 );
 
-
 // export const saveSong = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-//   const { song } = req.body; 
-//   const userId = req.user.id; 
+//   const { song } = req.body;
+//   const userId = req.user.id;
 
 //   // Check if song data is present
 //   if (!song || !Array.isArray(song) || song.length === 0) {
@@ -315,8 +321,8 @@ export const getAllGames = catchAsync(
 //       });
 //     }
 
-//     user.songs.push(song); 
-//     await user.save(); 
+//     user.songs.push(song);
+//     await user.save();
 
 //     res.status(201).json({
 //       status: "success",
@@ -324,6 +330,6 @@ export const getAllGames = catchAsync(
 //       data: { song },
 //     });
 //   } catch (error) {
-//     next(error); 
+//     next(error);
 //   }
 // });

@@ -13,6 +13,7 @@ const CreateGameModal = () => {
       try {
         const gameCode = await api.createGame(user.id);
         socket.emit("createGame", gameCode, user.id);
+        console.log(gameCode);
         setGameCode(gameCode);
       } catch (err) {
         console.error("Error creating game:", err);

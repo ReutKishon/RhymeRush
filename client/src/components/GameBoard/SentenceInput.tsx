@@ -51,6 +51,7 @@ const SentenceInput = () => {
         variant="outlined"
         placeholder="Type a new line"
         onChange={handleSentenceChange}
+        disabled={!isUserTurn}
         sx={{
           width: "100%",
           height: "50px",

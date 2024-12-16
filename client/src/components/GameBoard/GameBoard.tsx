@@ -82,6 +82,15 @@ const GameBoard = () => {
       >
         <SentenceInput />
       </Box>
+      <GameOverModal
+        showModal={showGameOverModal}
+        setShowModal={setShowGameOverModal}
+        reason={loosingReason}
+      />
+      <GameEndModal
+        showModal={showWinningModal}
+        setShowModal={setShowWinningModal}
+      />
     </Box>
   );
 };

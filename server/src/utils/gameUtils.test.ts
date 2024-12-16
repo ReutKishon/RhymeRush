@@ -1,6 +1,6 @@
 // mathUtils.test.ts
 import { describe, expect, test } from "@jest/globals";
-import callChatGPT from "./sentencesRhymed";
+import { callChatGPT } from "./sentencValidation";
 
 
 describe("sentence are rhymed", () => {

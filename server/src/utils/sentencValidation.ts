@@ -6,7 +6,7 @@ dotenv.config();
 // OpenAI API key
 const apiKey = process.env.OPEN_AI_KEY;
 
-async function callChatGPT(prompt: string) {
+export async function callChatGPT(prompt: string) {
   const url = "https://api.openai.com/v1/chat/completions";
 
   const headers = {
@@ -31,13 +31,34 @@ async function callChatGPT(prompt: string) {
     const result = response.data.choices[0].message.content;
     return result === "yes";
   } catch (error) {
-    console.error(
-      "Error calling ChatGPT API:",
-      error.response ? error.response.data : error.message
-    );
+    // console.error(
+    //   "Error calling ChatGPT API:",
+    //   error.response ? error.response.data : error.message
+    // );
+    console.error(error);
     throw error;
   }
-
 }
 
-export default callChatGPT;
+export const sentencesAreRhyme = async (
+  s1: string,
+  s2: string
+): Promise<boolean> => {
+  const s1_words = s1.split(" ");
+  const s2_words = s2.split(" ");
+
+  const word1 = s1_words[s1_words.length - 1];
+  const word2 = s2_words[s2_words.length - 1];
+  const prompt = `${word1},${word2}`;
+  return await callChatGPT(prompt);
+};
+
+export const relatedToTopic = async (
+  topic: string,
+  sentence: string
+): Promise<boolean> => {
+  const prompt = `topic:${topic},sentence:${sentence}`;
+  return await callChatGPT(prompt);
+};
+
+

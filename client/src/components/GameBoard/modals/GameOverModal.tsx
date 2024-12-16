@@ -1,28 +1,79 @@
+import { Box, IconButton, Modal, Typography } from "@mui/material";
 import React from "react";
+import CloseIcon from "@mui/icons-material/Close";
 
 interface GameOverModalProps {
+  showModal: boolean;
   setShowModal: (show: boolean) => void;
   reason: string;
 }
 const GameOverModal = ({
+  showModal,
   setShowModal,
   reason,
 }: GameOverModalProps) => {
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-      <div className="bg-white rounded-lg p-8 relative text-center">
-        <button
-          className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+    <Modal
+      open={showModal}
+      onClose={() => setShowModal(false)}
+      aria-labelledby="game-over-title"
+      aria-describedby="game-over-description"
+    >
+      <Box
+        sx={{
+          backgroundColor: "white",
+          borderRadius: 2,
+          p: 4,
+          position: "relative",
+          textAlign: "center",
+          width: "100%",
+          maxWidth: "400px",
+          margin: "auto",
+          top: "50%",
+          transform: "translateY(-50%)",
+        }}
+      >
+        <IconButton
           onClick={() => setShowModal(false)}
           aria-label="Close Modal"
+          sx={{
+            position: "absolute",
+            top: 8,
+            right: 8,
+            color: "gray",
+            "&:hover": {
+              color: "#555",
+            },
+          }}
         >
-          X
-        </button>
+          <CloseIcon />
+        </IconButton>
 
-        <h2 className="text-2xl font-bold mb-4">Game Over</h2>
-        <h1 className="text-2xl font-bold mb-4">{reason}</h1>
-      </div>
-    </div>
+        <Typography
+          id="game-over-title"
+          variant="h2"
+          sx={{
+            fontSize: "1.5rem",
+            fontWeight: "bold",
+            mb: 2,
+          }}
+        >
+          Game Over
+        </Typography>
+
+        <Typography
+          id="game-over-description"
+          variant="h1"
+          sx={{
+            fontSize: "1.5rem",
+            fontWeight: "bold",
+            mb: 2,
+          }}
+        >
+          {reason}
+        </Typography>
+      </Box>
+    </Modal>
   );
 };
 
