@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import useAppStore from "../../../store/useStore";
 import { Box, Button, IconButton, Modal, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
+import { saveSong } from "../../../services/api";
 
 interface GameOverModalProps {
   showModal: boolean;
@@ -12,8 +13,12 @@ const GameEndModal = ({ showModal, setShowModal }: GameOverModalProps) => {
   const navigate = useNavigate();
   const { game } = useAppStore((state) => state);
 
-  const handleSaveSong = () => {
-    // Save the game and song data to the database
+  const handleSaveSong = async () => {
+    try {
+      await saveSong(game.code);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   const handleCloseModal = () => {

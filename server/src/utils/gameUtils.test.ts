@@ -1,10 +1,27 @@
 // mathUtils.test.ts
 import { describe, expect, test } from "@jest/globals";
-import { callChatGPT } from "./sentencValidation";
-
+import { relatedToTopic, sentencesAreRhyme } from "./sentencValidation";
 
 describe("sentence are rhymed", () => {
-  test("check if two sentences are rhymed", () => {
-    expect(callChatGPT("hat cat")).toBe(true);
+  test("check if two sentences are rhymed", async () => {
+    expect(await sentencesAreRhyme("something short", "something court")).toBe(
+      true
+    );
+  });
+});
+
+describe("relation to topic", () => {
+  test("check if a sentence is related to topic", async () => {
+    expect(
+      await relatedToTopic("Love and relationship", "I sent you flowers")
+    ).toBe(true);
+  });
+  test("check if a sentence is not related to topic", async () => {
+    expect(
+      await relatedToTopic(
+        "Love and relationship",
+        "I'll go to sleep early today"
+      )
+    ).toBe(false);
   });
 });

@@ -7,6 +7,7 @@ import {
   addSentenceHandler,
   startGame,
   deleteGame,
+  saveSong,
 } from "../controllers/gameController";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import asyncHandler from "express-async-handler";
@@ -29,9 +30,8 @@ const protect = asyncHandler(async (req: CustomRequest, res, next) => {
 
       // verify token
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      const id = (decoded as JwtPayload).id;
-      // get user from the token
-      req.user = await UserModel.findById(id).select("-password");
+      // get userId from the token
+      req.userId = (decoded as JwtPayload).id;
 
       next();
     } catch (error) {
@@ -52,5 +52,7 @@ router.route("/:gameCode").get(getGameInfo).delete(deleteGame);
 router.route("/:gameCode/start").patch(startGame);
 router.route("/:gameCode/:playerId").patch(joinGame);
 router.route("/:gameCode/:playerId/sentence").patch(addSentenceHandler);
+router.route("/:gameCode/save-song").post(saveSong);
+
 
 export default router;

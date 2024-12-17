@@ -13,6 +13,13 @@ export interface PlayerBase {
   active: boolean;
 }
 
+export interface Song {
+  _id: string;
+  topic: string;
+  lyrics: Sentence[];
+  createdAt: Date;
+}
+
 export interface GameBase {
   code: string;
   topic: string;
@@ -24,6 +31,7 @@ export interface GameBase {
   lyrics: Sentence[];
   winnerPlayerId: string;
   gameCreatorId: string;
+  songId: string;
 }
 
 export interface Sentence {

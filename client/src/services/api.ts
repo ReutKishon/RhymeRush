@@ -10,18 +10,18 @@ const api = axios.create({
 });
 
 // Attach a request interceptor to add the token before every request
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem('authToken'); // Get the token before every request
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("authToken"); // Get the token before every request
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
   }
-  return config;
-}, (error) => {
-  return Promise.reject(error);
-});
-
-
-
+);
 
 export const createGame = async (gameCreatorId: string): Promise<string> => {
   try {
@@ -62,9 +62,7 @@ export const joinPlayerToGame = async (
   joinedPlayerId: string
 ): Promise<Player> => {
   try {
-    const response = await api.patch(
-      `/game/${gameCode}/${joinedPlayerId}`
-    );
+    const response = await api.patch(`/game/${gameCode}/${joinedPlayerId}`);
     return response.data.data.joinedPlayer;
   } catch (err) {
     throw err;
@@ -94,6 +92,9 @@ export const submitSentence = async (
   } catch (err) {
     throw err;
   }
+};
+export const saveSong = async (gameCode: string): Promise<void> => {
+  await api.post(`/game/${gameCode}/save-song`);
 };
 
 export const login = async (email: string, password: string): Promise<User> => {

@@ -7,10 +7,12 @@ import { getUserInfo } from "./authController";
 import { AppError } from "../../../shared/utils/appError";
 import { io } from "../app";
 import { Game, Player } from "types/gameTypes";
-import { Sentence } from "../../../shared/types/gameTypes";
+import { Sentence, Song } from "../../../shared/types/gameTypes";
 import { playerSocketMap } from "./socketController";
 import { relatedToTopic, sentencesAreRhyme } from "../utils/sentencValidation";
 import { CustomRequest } from "types/appTypes";
+import UserModel from "../models/userModel";
+import SongModel from "../models/songModel";
 
 export const getGameFromRedis = async (gameCode: string) => {
   console.log("getGameFromRedis :", gameCode);
@@ -68,10 +70,10 @@ export const createGame = catchAsync(
     }
 
     const gameCreator = await createPlayer(req.body.gameCreatorId);
-    const gameCode = uuidv4().slice(0, 12); // Generate a 6-char unique code
+    const uniqueCode = uuidv4();
 
     const gameData: Game = {
-      code: gameCode,
+      code: uniqueCode.slice(0, 12),
       topic: generateSongTopic(),
       players: { [gameCreatorId]: gameCreator },
       turnOrder: [gameCreator.id],
@@ -81,12 +83,13 @@ export const createGame = catchAsync(
       lyrics: [],
       winnerPlayerId: null,
       gameCreatorId: gameCreatorId,
+      songId: uniqueCode,
     };
-    await redisClient.set(`game:${gameCode}`, JSON.stringify(gameData));
+    await redisClient.set(`game:${gameData.code}`, JSON.stringify(gameData));
 
     res.status(201).json({
       status: "success",
-      data: { gameCode },
+      data: { gameCode: gameData.code },
     });
   }
 );
@@ -153,7 +156,6 @@ export const deleteGame = catchAsync(
 );
 
 export const getGameInfo = catchAsync(async (req: CustomRequest, res, next) => {
-  console.log(req.user);
   const { gameCode } = req.params;
   if (!gameCode) {
     return next(
@@ -298,38 +300,47 @@ export const getAllGames = catchAsync(
   }
 );
 
-// export const saveSong = catchAsync(async (req: Request, res: Response, next: NextFunction) => {
-//   const { song } = req.body;
-//   const userId = req.user.id;
+export const saveSong = catchAsync(
+  async (req: CustomRequest, res: Response, next: NextFunction) => {
+    const { gameCode } = req.params;
+    const userId = req.userId;
 
-//   // Check if song data is present
-//   if (!song || !Array.isArray(song) || song.length === 0) {
-//     return res.status(400).json({
-//       status: "fail",
-//       message: "Song must be a non-empty array of sentences",
-//     });
-//   }
+    if (!gameCode) {
+      return next(new AppError("Invalid song data provided!", 400));
+    }
+    const gameData = await getGameFromRedis(gameCode);
 
-//   try {
-//     // Find the user by their ID
-//     const user = await UserModel.findById(userId);
+    const song: Song = {
+      _id: gameData.songId,
+      topic: gameData.topic,
+      lyrics: gameData.lyrics,
+      createdAt: new Date(),
+    };
+    createSong(song);
+    addSongToUser(userId, song._id);
+  }
+);
 
-//     if (!user) {
-//       return res.status(404).json({
-//         status: "fail",
-//         message: "User not found",
-//       });
-//     }
+const createSong = async (song: Song) => {
+  try {
+    const doc = await SongModel.create(song);
+    console.log(doc);
+  } catch (err) {
+    if (err.code === 11000) {
+      return;
+    } else {
+      throw err;
+    }
+  }
+};
 
-//     user.songs.push(song);
-//     await user.save();
-
-//     res.status(201).json({
-//       status: "success",
-//       message: "Song saved successfully",
-//       data: { song },
-//     });
-//   } catch (error) {
-//     next(error);
-//   }
-// });
+const addSongToUser = async (userId: string, songId: string) => {
+  try {
+    const userDoc = await UserModel.findOne({ _id: userId, songs: songId });
+    if (!userDoc) {
+      await UserModel.findByIdAndUpdate(userId, { $push: { songs: songId } });
+    }
+  } catch (err) {
+    throw err;
+  }
+};
