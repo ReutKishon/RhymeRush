@@ -22,7 +22,6 @@ const PlayerList = () => {
           isPlayerTurn={isPlayerTurn}
           timer={isPlayerTurn ? timer : null}
           setTimer={setTimer}
-          gameCode={game.code}
         />
       );
     });

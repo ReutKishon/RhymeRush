@@ -12,7 +12,7 @@ const CreateGameModal = () => {
     const createNewGame = async () => {
       try {
         const gameCode = await api.createGame(user.id);
-        socket.emit("createGame", gameCode, user.id);
+        socket.emit("gameCreated", gameCode, user.id);
         console.log(gameCode);
         setGameCode(gameCode);
       } catch (err) {
@@ -28,7 +28,6 @@ const CreateGameModal = () => {
     if (!gameCode) {
       return;
     }
-    // Navigate to the game room
     navigate(`/game/${gameCode}`);
   };
 

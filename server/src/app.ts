@@ -9,7 +9,7 @@ import globalErrorHandler from "./controllers/errorController";
 import http from "http";
 import { Server } from "socket.io";
 import { AppError } from "../../shared/utils/appError";
-import { socketController } from "./controllers/socketController";
+import { socketHandler } from "./socket";
 
 const app = express();
 
@@ -30,7 +30,7 @@ const io = new Server(server, {
   },
 });
 
-socketController(io);
+socketHandler(io);
 
 //set security HTTP headers
 app.use(helmet());

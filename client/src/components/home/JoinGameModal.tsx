@@ -13,7 +13,6 @@ const JoinGameModal = () => {
       return;
     }
     try {
-      await api.joinPlayerToGame(gameCode, user.id);
       socket.emit("joinGame",user.id, gameCode);
       navigate(`/game/${gameCode}`);
     } catch (err) {

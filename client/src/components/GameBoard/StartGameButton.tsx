@@ -5,9 +5,8 @@ import { Button } from "@mui/material";
 
 const StartGameButton = () => {
   const { user, game } = useAppStore((state) => state);
-  console.log("StartGameButton");
 
-  const onStartGame = () => {
+  const onStartGamePress = () => {
     if (
       game.isActive ||
       Object.keys(game.players).length === 1 ||
@@ -15,19 +14,12 @@ const StartGameButton = () => {
     ) {
       return;
     }
-    const handleStartGame = async () => {
-      try {
-        await api.startGame(game.code);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-    handleStartGame();
+    socket.emit("startGame");
   };
 
   return (
     <Button
-      onClick={onStartGame}
+      onClick={onStartGamePress}
       sx={{
         width: "8%",
         height: "10%",

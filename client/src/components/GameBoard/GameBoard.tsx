@@ -12,7 +12,7 @@ import GameOverModal from "./modals/GameOverModal.tsx";
 import { api } from "../../services/index.ts";
 import useAppStore from "../../store/useStore.ts";
 import GameEndModal from "./modals/GameEndModal.tsx";
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 
 const GameBoard = () => {
   const { gameCode } = useParams<{ gameCode: string }>();
@@ -38,7 +38,6 @@ const GameBoard = () => {
   }, [gameCode]);
 
   useSocketEvents({
-    gameCode: gameCode!,
     setShowGameOverModal,
     setLoosingReason,
     setShowWinningModal,

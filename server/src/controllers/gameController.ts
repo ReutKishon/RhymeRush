@@ -6,9 +6,8 @@ import generateSongTopic from "../utils/generateTopic";
 import { getUserInfo } from "./authController";
 import { AppError } from "../../../shared/utils/appError";
 import { io } from "../app";
-import { Game, Player } from "types/gameTypes";
-import { Sentence, Song } from "../../../shared/types/gameTypes";
-import { playerSocketMap } from "./socketController";
+import { Game } from "types/gameTypes";
+import { PlayerBase, Sentence, Song } from "../../../shared/types/gameTypes";
 import { relatedToTopic, sentencesAreRhyme } from "../utils/sentencValidation";
 import { CustomRequest } from "types/appTypes";
 import UserModel from "../models/userModel";
@@ -39,23 +38,12 @@ export const isSentenceValid = async (
   }
 };
 
-export const getPlayerSocketId = (playerId: string) => {
-  for (let socketId in playerSocketMap) {
-    if (playerSocketMap[socketId].playerId === playerId) {
-      return socketId;
-    }
-  }
-  return null;
-};
-
-export const createPlayer = async (playerId: string): Promise<Player> => {
+export const createPlayer = async (playerId: string): Promise<PlayerBase> => {
   const user = await getUserInfo(playerId);
-  const socketId = getPlayerSocketId(playerId);
   const player = {
     id: playerId,
     name: user.username,
     active: true,
-    socketId,
   };
   return player;
 };
@@ -71,7 +59,7 @@ export const createGame = catchAsync(
     const gameCreator = await createPlayer(req.body.gameCreatorId);
     const uniqueCode = uuidv4();
 
-    const gameData: Game = {
+    const game: Game = {
       code: uniqueCode.slice(0, 12),
       topic: generateSongTopic(),
       players: { [gameCreatorId]: gameCreator },
@@ -84,75 +72,74 @@ export const createGame = catchAsync(
       gameCreatorId: gameCreatorId,
       songId: uniqueCode,
     };
-    await redisClient.set(`game:${gameData.code}`, JSON.stringify(gameData));
-
+    await redisClient.set(`game:${game.code}`, JSON.stringify(game));
     res.status(201).json({
       status: "success",
-      data: { gameCode: gameData.code },
+      data: { gameCode: game.code },
     });
   }
 );
 
-export const joinGame = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { playerId, gameCode } = req.params;
+// export const joinGame = catchAsync(
+//   async (req: Request, res: Response, next: NextFunction) => {
+//     const { playerId, gameCode } = req.params;
 
-    if (!playerId || !gameCode) {
-      return next(
-        new AppError("a player must join a game and provide their ID!", 401)
-      );
-    }
-    const game = await getGameFromRedis(gameCode);
-    if (game.players[playerId]) {
-      return next(
-        new AppError(`Player with ID ${playerId} is already in the game!`, 400)
-      );
-    }
-    const playerData = await createPlayer(playerId);
+//     if (!playerId || !gameCode) {
+//       return next(
+//         new AppError("a player must join a game and provide their ID!", 401)
+//       );
+//     }
+//     const game = await getGameFromRedis(gameCode);
+//     if (game.players[playerId]) {
+//       return next(
+//         new AppError(`Player with ID ${playerId} is already in the game!`, 400)
+//       );
+//     }
+//     const playerData = await createPlayer(playerId);
 
-    game.players[playerId] = playerData;
-    game.turnOrder.push(playerData.id);
+//     game.players[playerId] = playerData;
+//     game.turnOrder.push(playerData.id);
 
-    await redisClient.set(`game:${gameCode}`, JSON.stringify(game));
-    io.to(gameCode).emit("gameUpdated", game);
+//     await redisClient.set(`game:${gameCode}`, JSON.stringify(game));
+//     io.to(gameCode).emit("gameUpdated", game);
 
-    res.status(200).json({
-      status: "success",
-      data: { joinedPlayer: playerData },
-    });
-  }
-);
+//     res.status(200).json({
+//       status: "success",
+//       data: { joinedPlayer: playerData },
+//     });
+//   }
+// );
 
-export const startGame = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { gameCode } = req.params;
+// export const startGame = catchAsync(
+//   async (req: Request, res: Response, next: NextFunction) => {
+//     const { gameCode } = req.params;
 
-    const gameData = await getGameFromRedis(gameCode);
+//     const gameData = await getGameFromRedis(gameCode);
 
-    gameData.isActive = true;
-    await redisClient.set(`game:${gameCode}`, JSON.stringify(gameData));
-    io.to(gameCode).emit("gameUpdated", gameData);
+//     gameData.isActive = true;
+//     await redisClient.set(`game:${gameCode}`, JSON.stringify(gameData));
+//     io.to(gameCode).emit("gameUpdated", gameData);
 
-    res.status(200).json({
-      status: "success",
-      message: "Game started successfully!",
-    });
-  }
-);
+//     res.status(200).json({
+//       status: "success",
+//       message: "Game started successfully!",
+//     });
+//   }
+// );
 
-export const deleteGame = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { gameCode } = req.params;
+// export const deleteGame = catchAsync(
+//   async (req: Request, res: Response, next: NextFunction) => {
+//     const { gameCode } = req.params;
 
-    if (!gameCode) {
-      return next(
-        new AppError("a game must be deleted by providing its code!", 401)
-      );
-    }
-    await redisClient.del(`game:${gameCode}`);
-    res.status(204).json({ status: "success", data: null });
-  }
-);
+//     if (!gameCode) {
+//       return next(
+//         new AppError("a game must be deleted by providing its code!", 401)
+//       );
+//     }
+//     await redisClient.del(`game:${gameCode}`);
+//     res.status(204).json({ status: "success", data: null });
+//   }
+// );
 
 export const getGameInfo = catchAsync(async (req: CustomRequest, res, next) => {
   const { gameCode } = req.params;
@@ -172,58 +159,58 @@ export const getGameInfo = catchAsync(async (req: CustomRequest, res, next) => {
   });
 });
 
-const addSentenceToSong = async (
-  gameData: Game,
-  playerId: string,
-  sentence: string
-) => {
-  const sentenceData: Sentence = {
-    content: sentence,
-    playerId,
-  };
+// const addSentenceToSong = async (
+//   gameData: Game,
+//   playerId: string,
+//   sentence: string
+// ) => {
+//   const sentenceData: Sentence = {
+//     content: sentence,
+//     playerId,
+//   };
 
-  gameData.lyrics.push(sentenceData);
-};
+//   gameData.lyrics.push(sentenceData);
+// };
 
-export const loosingHandler = async (
-  reason: "invalidInput" | "timeExpired",
-  player: Player
-) => {
-  player.active = false;
-  const socketId = getPlayerSocketId(player.id);
-  io.to(socketId).emit(reason);
-};
+// export const loosingHandler = async (
+//   reason: "invalidInput" | "timeExpired",
+//   player: Player
+// ) => {
+//   player.active = false;
+//   const socketId = getPlayerSocketId(player.id);
+//   io.to(socketId).emit(reason);
+// };
 
-export const addSentenceHandler = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const { gameCode, playerId } = req.params;
-    const { sentence } = req.body;
+// export const addSentenceHandler = catchAsync(
+//   async (req: Request, res: Response, next: NextFunction) => {
+//     const { gameCode, playerId } = req.params;
+//     const { sentence } = req.body;
 
-    const gameData = await getGameFromRedis(gameCode);
+//     const gameData = await getGameFromRedis(gameCode);
 
-    // Check if it's the player's turn
-    if (playerId != gameData.turnOrder[gameData.currentTurnIndex]) {
-      return next(new AppError("It is not your turn!", 400));
-    }
+//     // Check if it's the player's turn
+//     if (playerId != gameData.turnOrder[gameData.currentTurnIndex]) {
+//       return next(new AppError("It is not your turn!", 400));
+//     }
 
-    // Validate if the sentence meets the required criteria
-    const sentenceIsValid = await isSentenceValid(gameData, sentence);
+//     // Validate if the sentence meets the required criteria
+//     const sentenceIsValid = await isSentenceValid(gameData, sentence);
 
-    if (sentenceIsValid) {
-      await addSentenceToSong(gameData, playerId, sentence);
-    } else {
-      await loosingHandler("invalidInput", gameData.players[playerId]);
-    }
+//     if (sentenceIsValid) {
+//       await addSentenceToSong(gameData, playerId, sentence);
+//     } else {
+//       await loosingHandler("invalidInput", gameData.players[playerId]);
+//     }
 
-    await checkForWinnerAndUpdateGame(gameData);
+//     await checkForWinnerAndUpdateGame(gameData);
 
-    res.status(200).json({
-      status: "success",
-    });
-  }
-);
+//     res.status(200).json({
+//       status: "success",
+//     });
+//   }
+// );
 
-const nextTurn = (gameData: Game) => {
+export const nextTurn = (gameData: Game) => {
   const getNextActivePlayerIndex = (
     startIndex: number,
     endIndex?: number
@@ -256,31 +243,31 @@ const nextTurn = (gameData: Game) => {
   }
 };
 
-function getActivePlayers(gameData: Game): Player[] {
-  return Object.values(gameData.players).filter((player) => player.active);
-}
+// function getActivePlayers(gameData: Game): Player[] {
+//   return Object.values(gameData.players).filter((player) => player.active);
+// }
 
-const declareWinner = (game: Game, activePlayers: Player[]) => {
-  game.winnerPlayerId = activePlayers[0].id;
-  io.to(game.code).emit("gameEnd", game);
-};
+// const declareWinner = (game: Game, activePlayers: Player[]) => {
+//   game.winnerPlayerId = activePlayers[0].id;
+//   io.to(game.code).emit("gameEnd", game);
+// };
 
-// Function to continue the game if more than one active player is left
-const continueGame = async (game: Game) => {
-  nextTurn(game);
-  await redisClient.set(`game:${game.code}`, JSON.stringify(game));
-  io.to(game.code).emit("gameUpdated", game);
-};
+// // Function to continue the game if more than one active player is left
+// const continueGame = async (game: Game) => {
+//   nextTurn(game);
+//   await redisClient.set(`game:${game.code}`, JSON.stringify(game));
+//   io.to(game.code).emit("gameUpdated", game);
+// };
 
-export const checkForWinnerAndUpdateGame = async (game: Game) => {
-  const activePlayers = getActivePlayers(game);
+// export const checkForWinnerAndUpdateGame = async (game: Game) => {
+//   const activePlayers = getActivePlayers(game);
 
-  if (activePlayers.length === 1) {
-    declareWinner(game, activePlayers);
-  } else {
-    await continueGame(game);
-  }
-};
+//   if (activePlayers.length === 1) {
+//     declareWinner(game, activePlayers);
+//   } else {
+//     await continueGame(game);
+//   }
+// };
 
 export const getAllGames = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {

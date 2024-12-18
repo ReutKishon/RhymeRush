@@ -1,12 +1,12 @@
 import * as express from "express";
 import {
   createGame,
-  joinGame,
+  // joinGame,
   getAllGames,
   getGameInfo,
-  addSentenceHandler,
-  startGame,
-  deleteGame,
+  // addSentenceHandler,
+  // startGame,
+  // deleteGame,
   saveSong,
 } from "../controllers/gameController";
 import jwt, { JwtPayload } from "jsonwebtoken";
@@ -48,10 +48,10 @@ const protect = asyncHandler(async (req: CustomRequest, res, next) => {
 
 router.use(protect);
 router.route("/").post(createGame).get(getAllGames);
-router.route("/:gameCode").get(getGameInfo).delete(deleteGame);
-router.route("/:gameCode/start").patch(startGame);
-router.route("/:gameCode/:playerId").patch(joinGame);
-router.route("/:gameCode/:playerId/sentence").patch(addSentenceHandler);
+router.route("/:gameCode").get(getGameInfo);
+// router.route("/:gameCode/start").patch(startGame);
+// router.route("/:gameCode/:playerId").patch(joinGame);
+// router.route("/:gameCode/:playerId/sentence").patch(addSentenceHandler);
 router.route("/:gameCode/save-song").post(saveSong);
 
 

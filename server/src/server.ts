@@ -2,11 +2,11 @@ import dotenv from "dotenv";
 dotenv.config();
 import { default as mongoose } from "mongoose";
 
-process.on("uncaughtException", (err) => {
-  // console.log(err.name, err.message);
-  console.log(err);
-  process.exit(1);
-});
+// process.on("uncaughtException", (err) => {
+//   // console.log(err.name, err.message);
+//   console.log(err);
+//   process.exit(1);
+// });
 
 import { server } from "./app";
 import "./redisClient";
@@ -30,10 +30,10 @@ server.listen(port, () => {
   console.log(`app running on port ${port} ...`);
 });
 
-process.on("unhandledRejection", (err: Error) => {
-  console.log(err.name, err.message);
-  server.close(() => {
-    console.log("Server closed due to unhandled rejection");
-    process.exit(1);
-  });
-});
+// process.on("unhandledRejection", (err: Error) => {
+//   console.log(err.name, err.message);
+//   server.close(() => {
+//     console.log("Server closed due to unhandled rejection");
+//     process.exit(1);
+//   });
+// });

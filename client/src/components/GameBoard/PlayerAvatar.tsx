@@ -10,7 +10,6 @@ interface PlayerProps {
   isPlayerTurn: boolean;
   timer: number | null;
   setTimer: (timer: number) => void;
-  gameCode: string;
 }
 
 const PlayerAvatar = ({
@@ -18,7 +17,6 @@ const PlayerAvatar = ({
   isPlayerTurn,
   timer,
   setTimer,
-  gameCode,
 }: PlayerProps) => {
   console.log(`PlayerAvatar rendered for player: ${player.name}`);
 
@@ -27,11 +25,10 @@ const PlayerAvatar = ({
   useEffect(() => {
     if (isPlayerTurn) {
       setTimer(30); // Reset the timer to 30 for the current player
-      socket.emit("startTurn", player.id, gameCode);
+      socket.emit("startNewTurn");
     }
   }, [isPlayerTurn, player.id, setTimer]);
 
-  const playerStatusClass = player.active ? "" : "opacity-50 grayscale";
 
   return (
     <Box
