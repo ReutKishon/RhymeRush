@@ -24,4 +24,12 @@ describe("relation to topic", () => {
       )
     ).toBe(false);
   });
+  test("Celebration and Joy", async () => {
+    expect(
+      await relatedToTopic(
+        "Celebration and Joy",
+        "Hi whats up you guys"
+      )
+    ).toBe(false);
+  });
 });

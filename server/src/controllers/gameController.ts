@@ -32,11 +32,10 @@ export const isSentenceValid = async (
   if (!relatedToTopic(game.topic, sentence)) return false;
 
   if (game.lyrics.length > 0 && game.lyrics.length % 2 != 0) {
-    const areRhyme = await sentencesAreRhyme(
+    return await sentencesAreRhyme(
       sentence,
       game.lyrics[game.lyrics.length - 1].content
     );
-    if (!areRhyme) return false;
   }
 };
 
@@ -208,7 +207,7 @@ export const addSentenceHandler = catchAsync(
     }
 
     // Validate if the sentence meets the required criteria
-    const sentenceIsValid = isSentenceValid(gameData, sentence);
+    const sentenceIsValid = await isSentenceValid(gameData, sentence);
 
     if (sentenceIsValid) {
       await addSentenceToSong(gameData, playerId, sentence);

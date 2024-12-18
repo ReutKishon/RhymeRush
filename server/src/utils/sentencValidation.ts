@@ -40,15 +40,17 @@ export async function isTwoWordsRhyme(prompt: string): Promise<boolean> {
     "You are an assistant that checks if two words rhyme. Respond only with 'yes' or 'no'.";
   const response = await callChatGPT(content, prompt);
   const result = response.data.choices[0].message.content;
+  console.log("isTwoWordsRhyme :", result);
+
   return result === "yes";
 }
-
 
 export async function isRelatedToTopic(prompt: string): Promise<boolean> {
   const content =
     "You are an assistant that checks if a sentence is related to a topic. Respond only with 'yes' or 'no'.";
   const response = await callChatGPT(content, prompt);
   const result = response.data.choices[0].message.content;
+  console.log("isRelatedToTopic:", result);
   return result === "yes";
 }
 
