@@ -1,79 +1,63 @@
-import { Box, IconButton, Modal, Typography } from "@mui/material";
 import React from "react";
-import CloseIcon from "@mui/icons-material/Close";
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Typography,
+  Button,
+  Box,
+} from "@mui/material";
 
 interface GameOverModalProps {
-  showModal: boolean;
-  setShowModal: (show: boolean) => void;
-  reason: string;
+  show: boolean;
+  player: string | null;
+  reason: string | null;
+  onClose: () => void;
 }
+
 const GameOverModal = ({
-  showModal,
-  setShowModal,
+  show,
+  player,
   reason,
+  onClose,
 }: GameOverModalProps) => {
   return (
-    <Modal
-      open={showModal}
-      onClose={() => setShowModal(false)}
+    <Dialog
+      open={show}
+      onClose={onClose}
       aria-labelledby="game-over-title"
-      aria-describedby="game-over-description"
+      fullWidth
+      maxWidth="xs"
     >
-      <Box
-        sx={{
-          backgroundColor: "white",
-          borderRadius: 2,
-          p: 4,
-          position: "relative",
-          textAlign: "center",
-          width: "100%",
-          maxWidth: "400px",
-          margin: "auto",
-          top: "50%",
-          transform: "translateY(-50%)",
-        }}
-      >
-        <IconButton
-          onClick={() => setShowModal(false)}
-          aria-label="Close Modal"
-          sx={{
-            position: "absolute",
-            top: 8,
-            right: 8,
-            color: "gray",
-            "&:hover": {
-              color: "#555",
-            },
-          }}
-        >
-          <CloseIcon />
-        </IconButton>
-
-        <Typography
-          id="game-over-title"
-          variant="h2"
-          sx={{
-            fontSize: "1.5rem",
-            fontWeight: "bold",
-            mb: 2,
-          }}
-        >
-          Game Over
+      <DialogTitle id="game-over-title">
+        <Typography variant="h5" align="center" color="error">
+          Game Over!
         </Typography>
+      </DialogTitle>
 
-        <Typography
-          id="game-over-description"
-          variant="h1"
-          sx={{
-            fontSize: "1.5rem",
-            fontWeight: "bold",
-            mb: 2,
-          }}
+      <DialogContent>
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          justifyContent="center"
         >
-          {reason}
-        </Typography>
-      </Box>
-    </Modal>
+          <Typography variant="h6" gutterBottom>
+            Player: <strong>{player ?? "Unknown"}</strong>
+          </Typography>
+          <Typography variant="body1">
+            Reason: <strong>{reason ?? "No reason provided"}</strong>
+          </Typography>
+        </Box>
+      </DialogContent>
+
+      <DialogActions>
+        <Button onClick={onClose} variant="contained" color="primary" fullWidth>
+          Close
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 

@@ -54,7 +54,7 @@ export const startNewTurn = async (
   playerId: string
 ) => {
   let timer = 30;
-  console.log("turnStarted");
+  console.log("turnStarted", playerId);
   const game = await getGameFromRedis(gameCode);
   startTimer(io, timer, game, playerId);
 };
@@ -65,7 +65,6 @@ export const addSentence = async (
   playerId: string,
   sentence: string
 ) => {
-
   const game = await getGameFromRedis(gameCode);
 
   // Check if it's the player's turn
@@ -75,10 +74,11 @@ export const addSentence = async (
 
   // Validate if the sentence meets the required criteria
   const sentenceIsValid = await isSentenceValid(game, sentence);
-
+  console.log("sentenceIsValid", sentenceIsValid);
   if (sentenceIsValid) {
     await addSentenceToSong(game, playerId, sentence);
   } else {
+    stopTimer();
     await loosingHandler(io, "invalidInput", game.players[playerId]);
   }
 
@@ -116,10 +116,18 @@ const startTimer = (
     } else {
       clearInterval(intervalId);
       intervalId = null;
+      console.log("timeExpired: " + game.players[playerId],playerId)
       await loosingHandler(io, "timeExpired", game.players[playerId]);
       await checkForWinnerAndUpdateGame(io, game);
     }
   }, 1000);
+};
+
+const stopTimer = () => {
+  if (intervalId) {
+    clearInterval(intervalId);
+    intervalId = null;
+  }
 };
 
 const loosingHandler = async (
@@ -128,13 +136,14 @@ const loosingHandler = async (
   player: PlayerBase
 ) => {
   player.active = false;
-  io.emit(reason, player.id);
+  io.emit(reason, player.name);
 };
 
 const checkForWinnerAndUpdateGame = async (io: Server, game: Game) => {
   const activePlayers = Object.values(game.players).filter(
     (player) => player.active
   );
+  console.log(activePlayers);
 
   if (activePlayers.length === 1) {
     game.winnerPlayerId = activePlayers[0].id;

@@ -1,30 +1,26 @@
 import { useEffect } from "react";
 import socket from "../services/socket";
-import { GameBase as Game } from "../../../shared/types/gameTypes";
+import { GameBase as Game, PlayerBase } from "../../../shared/types/gameTypes";
 import useStore from "../store/useStore";
 
 interface SocketEventsProps {
-  setShowGameOverModal: (show: boolean) => void;
-  setShowWinningModal: (show: boolean) => void;
-  setLoosingReason: (reason: string) => void;
+  // setShowGameOverModal: (show: boolean) => void;
+  // setShowWinningModal: (show: boolean) => void;
+  // setGameOverContent: (reason: string) => void;
+  triggerGameOverModal: (playerName: string, reason: string) => void;
 }
 const useSocketEvents = ({
-  setShowGameOverModal,
-  setLoosingReason,
-  setShowWinningModal,
+  triggerGameOverModal
 }: SocketEventsProps) => {
-  const { setGame, setTimer, gameCode } = useStore(
-    (state) => state
-  );
+  const { setGame, setTimer, gameCode } = useStore((state) => state);
 
   useEffect(() => {
-
     socket.on("gameUpdated", (gameData: Game) => {
-      if (gameData.winnerPlayerId) {
-        console.log("winner: ", gameData.winnerPlayerId);
-        setShowWinningModal(true);
-        return;
-      }
+      // if (gameData.winnerPlayerId) {
+      //   console.log("winner: ", gameData.winnerPlayerId);
+      //   setShowWinningModal(true);
+      //   return;
+      // }
       console.log("gameUpdated: ", gameData);
       setGame(gameData);
     });
@@ -33,18 +29,15 @@ const useSocketEvents = ({
       setTimer(timer);
     });
 
-    socket.on("timeExpired", () => {
-      setShowGameOverModal(true);
-      setLoosingReason("Your time is expired!");
+    socket.on("timeExpired", (playerName: string) => {
+      triggerGameOverModal(playerName, "Time expired");
     });
 
-    socket.on("invalidInput", () => {
-      setShowGameOverModal(true);
-      setLoosingReason("Your sentence is not valid!");
+    socket.on("invalidInput", (playerName: string) => {
+      triggerGameOverModal(playerName, "Invalid sentence");
     });
 
     return () => {
-      socket.off("gameCreated");
       socket.off("gameUpdated");
       socket.off("timeExpired");
       socket.off("timerUpdate");

@@ -13,14 +13,19 @@ import { api } from "../../services/index.ts";
 import useAppStore from "../../store/useStore.ts";
 import GameEndModal from "./modals/GameEndModal.tsx";
 import { Box } from "@mui/material";
+import useGameOverModal from "../../hooks/useGameOverModal.ts";
 
 const GameBoard = () => {
   const { gameCode } = useParams<{ gameCode: string }>();
   const { setGame, setGameCode } = useAppStore((state) => state);
 
-  const [showGameOverModal, setShowGameOverModal] = useState(false);
-  const [loosingReason, setLoosingReason] = useState("");
-  const [showWinningModal, setShowWinningModal] = useState(false);
+  const {
+    showGameOverModal,
+    losingPlayerName,
+    losingReason,
+    triggerGameOverModal,
+    hideGameOverModal,
+  } = useGameOverModal();
 
   useEffect(() => {
     const fetchGame = async () => {
@@ -37,11 +42,7 @@ const GameBoard = () => {
     fetchGame();
   }, [gameCode]);
 
-  useSocketEvents({
-    setShowGameOverModal,
-    setLoosingReason,
-    setShowWinningModal,
-  });
+  useSocketEvents({ triggerGameOverModal });
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
       {/* Top Section - Start Button and Topic */}
@@ -82,13 +83,10 @@ const GameBoard = () => {
         <SentenceInput />
       </Box>
       <GameOverModal
-        showModal={showGameOverModal}
-        setShowModal={setShowGameOverModal}
-        reason={loosingReason}
-      />
-      <GameEndModal
-        showModal={showWinningModal}
-        setShowModal={setShowWinningModal}
+        show={showGameOverModal}
+        player={losingPlayerName}
+        reason={losingReason}
+        onClose={hideGameOverModal}
       />
     </Box>
   );

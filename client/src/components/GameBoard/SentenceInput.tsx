@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import useAppStore from "../../store/useStore.ts";
-import { api } from "../../services";
+import { api, socket } from "../../services";
 import SendIcon from "@mui/icons-material/Send";
 import Button from "@mui/material/Button";
 import { Box, TextField } from "@mui/material";
@@ -26,15 +26,8 @@ const SentenceInput = () => {
       setError("Sentence cannot be empty.");
       return;
     }
+    socket.emit("addSentence", sentence);
 
-    const submit = async () => {
-      try {
-        await api.submitSentence(game.code, user.id, sentence);
-      } catch (err) {
-        setError(err);
-      }
-    };
-    submit();
     setSentence("");
     setError("");
   };

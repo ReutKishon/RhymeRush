@@ -23,19 +23,33 @@ export const socketHandler = (io: Server) => {
     );
 
     socket.on("joinGame", async (playerId: string, gameCode: string) => {
-      const game = await joinGame(socket, gameCode, playerId);
-      if (game) {
-        joinSocketToGameRoom(gameCode, playerId);
-        io.to(game.code).emit("gameUpdated", game);
+      try {
+        const game = await joinGame(socket, gameCode, playerId);
+        if (game) {
+          joinSocketToGameRoom(gameCode, playerId);
+          io.to(game.code).emit("gameUpdated", game);
+        }
+      } catch (err) {
+        socket.emit("error", err);
+        return;
       }
     });
 
     socket.on("leaveGame", async () => {
-      const { gameCode, playerId } = playerSocketMap[socket.id];
+      if (!(socket.id in playerSocketMap)) {
+        console.error(`No player data found for socket ID: ${socket.id}`);
+        return;
+      }
 
-      const game = await leaveGame(gameCode, playerId);
-      removeSocketFromGameRoom(gameCode);
-      io.to(game.code).emit("gameUpdated", game);
+      const { playerId, gameCode } = playerSocketMap[socket.id];
+
+      try {
+        const game = await leaveGame(gameCode, playerId);
+        removeSocketFromGameRoom(gameCode);
+        io.to(game.code).emit("gameUpdated", game);
+      } catch (error) {
+        console.error("Error leaving game:", error);
+      }
     });
 
     socket.on("startGame", async () => {
@@ -44,8 +58,7 @@ export const socketHandler = (io: Server) => {
       io.to(game.code).emit("gameUpdated", game);
     });
 
-    socket.on("startNewTurn", async () => {
-      const { gameCode, playerId } = playerSocketMap[socket.id];
+    socket.on("startNewTurn", async (gameCode: string, playerId: string) => {
       await startNewTurn(io, gameCode, playerId);
     });
 
