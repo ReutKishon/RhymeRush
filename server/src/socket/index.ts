@@ -4,7 +4,7 @@ import {
   joinGame,
   leaveGame,
   startGame,
-  startNewTurn,
+  startTurnTimer,
 } from "./gameHandlers";
 
 export const playerSocketMap: Record<
@@ -18,72 +18,82 @@ export const socketHandler = (io: Server) => {
     socket.on(
       "gameCreated",
       async (gameCode: string, gameCreatorId: string) => {
-        joinSocketToGameRoom(gameCode, gameCreatorId);
+        await joinSocketToGameRoom(gameCode, gameCreatorId);
       }
     );
 
     socket.on("joinGame", async (playerId: string, gameCode: string) => {
-      try {
-        const game = await joinGame(socket, gameCode, playerId);
-        if (game) {
-          joinSocketToGameRoom(gameCode, playerId);
-          io.to(game.code).emit("gameUpdated", game);
-        }
-      } catch (err) {
-        socket.emit("error", err);
-        return;
+      const joinedPlayer = await joinGame(gameCode, playerId);
+      console.log("joinedPlayer", joinedPlayer);
+      await joinSocketToGameRoom(gameCode, playerId);
+      if (joinedPlayer) {
+        console.log("testjoined");
+        io.to(gameCode).emit("playerJoined", joinedPlayer);
       }
     });
 
-    socket.on("leaveGame", async () => {
-      if (!(socket.id in playerSocketMap)) {
+    // socket.on("leaveGame", async () => {
+    //   console.log("test3");
+
+    //   if (!(socket.id in playerSocketMap)) {
+    //     console.error(`No player data found for socket ID: ${socket.id}`);
+    //     return;
+    //   }
+    //   console.log("test1");
+    //   const { playerId, gameCode } = playerSocketMap[socket.id];
+    //   console.log("test2");
+    //   await leaveGame(gameCode, playerId);
+    //   removeSocketFromGameRoom(gameCode);
+    //   io.to(gameCode).emit("playerLeft", playerId);
+    // });
+
+    socket.on("startGame", async () => {
+      try {
+        const { gameCode } = playerSocketMap[socket.id];
+
+        await startGame(gameCode);
+        io.to(gameCode).emit("gameStarted",);
+      } catch (err) {
+        console.error("Error starting game:", err);
+      }
+    });
+
+    socket.on("startTimer", async (gameCode: string, playerId: string) => {
+      await startTurnTimer(io, gameCode, playerId);
+    });
+
+    socket.on("addSentence", async (sentence: string) => {
+      try {
+        const { gameCode, playerId } = playerSocketMap[socket.id];
+        await addSentence(io, gameCode, playerId, sentence);
+      } catch (err) {
+        console.error("Error adding sentence:", err);
+      }
+    });
+
+    socket.on("disconnect", async () => {
+      const playerData = playerSocketMap[socket.id];
+      if (!playerData) {
         console.error(`No player data found for socket ID: ${socket.id}`);
         return;
       }
 
-      const { playerId, gameCode } = playerSocketMap[socket.id];
-
-      try {
-        const game = await leaveGame(gameCode, playerId);
-        removeSocketFromGameRoom(gameCode);
-        io.to(game.code).emit("gameUpdated", game);
-      } catch (error) {
-        console.error("Error leaving game:", error);
-      }
-    });
-
-    socket.on("startGame", async () => {
-      const { gameCode } = playerSocketMap[socket.id];
-      const game = await startGame(gameCode);
-      io.to(game.code).emit("gameUpdated", game);
-    });
-
-    socket.on("startNewTurn", async (gameCode: string, playerId: string) => {
-      await startNewTurn(io, gameCode, playerId);
-    });
-
-    socket.on("addSentence", async (sentence: string) => {
       const { gameCode, playerId } = playerSocketMap[socket.id];
-      await addSentence(io, gameCode, playerId, sentence);
-    });
+      await removeSocketFromGameRoom(gameCode);
+      await leaveGame(gameCode, playerId);
 
-    socket.on("disconnect", async () => {
-      const { gameCode, playerId } = playerSocketMap[socket.id];
-      removeSocketFromGameRoom(gameCode);
-      const game = await leaveGame(gameCode, playerId);
-      if (game) {
-        io.to(game.code).emit("gameUpdated", game);
-      }
+      io.to(gameCode).emit("playerLeft", playerId);
+
       console.log("A client disconnected");
     });
 
-    const joinSocketToGameRoom = (gameCode: string, playerId: string) => {
-      socket.join(gameCode);
+    const joinSocketToGameRoom = async (gameCode: string, playerId: string) => {
+      await socket.join(gameCode);
       playerSocketMap[socket.id] = { playerId, gameCode };
     };
 
-    const removeSocketFromGameRoom = (gameCode: string) => {
-      socket.leave(gameCode);
+    const removeSocketFromGameRoom = async (gameCode: string) => {
+      await socket.leave(gameCode);
       delete playerSocketMap[socket.id];
     };
   });

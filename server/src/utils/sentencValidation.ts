@@ -45,12 +45,11 @@ export async function isTwoWordsRhyme(prompt: string): Promise<boolean> {
   return result === "yes";
 }
 
-export async function isRelatedToTopic(prompt: string): Promise<boolean> {
+export async function RelatedToTopicPrompt(prompt: string): Promise<boolean> {
   const content =
     "You are an assistant that checks if a sentence is related to a topic. Respond only with 'yes' or 'no'.";
   const response = await callChatGPT(content, prompt);
   const result = response.data.choices[0].message.content;
-  console.log("isRelatedToTopic:", result);
   return result === "yes";
 }
 
@@ -67,10 +66,10 @@ export const sentencesAreRhyme = async (
   return await isTwoWordsRhyme(prompt);
 };
 
-export const relatedToTopic = async (
+export const isRelatedToTopic = async (
   topic: string,
   sentence: string
 ): Promise<boolean> => {
   const prompt = `topic:${topic},sentence:${sentence}`;
-  return await isRelatedToTopic(prompt);
+  return await RelatedToTopicPrompt(prompt);
 };

@@ -1,7 +1,7 @@
 import axios from "axios";
 import {
   GameBase as Game,
-  PlayerBase as Player,
+  Player as Player,
   User,
 } from "../../../shared/types/gameTypes";
 
@@ -23,17 +23,15 @@ api.interceptors.request.use(
   }
 );
 
-export const createGame = async (gameCreatorId: string): Promise<string> => {
+export const createGame = async (gameCreatorId: string): Promise<Game> => {
   try {
     console.log("Creating new game1");
     const response = await api.post(`/game`, {
       gameCreatorId,
     });
-    const gameCode = response.data.data.gameCode;
+    const game = response.data.data.game;
 
-    console.log("Creating new game with code " + gameCode);
-
-    return gameCode;
+    return game;
   } catch (err) {
     throw err;
   }

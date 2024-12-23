@@ -6,55 +6,41 @@ import {
 } from "../controllers/gameController";
 import redisClient from "../redisClient";
 import { Server, Socket } from "socket.io";
-import { Game } from "../types/gameTypes";
-import { PlayerBase, Sentence } from "../../../shared/types/gameTypes";
+import { GameBase, Player, Sentence } from "../../../shared/types/gameTypes";
 
 let intervalId: NodeJS.Timeout | null = null;
 
 export const leaveGame = async (gameCode: string, playerId: string) => {
   const game = await getGameFromRedis(gameCode);
 
-  if (playerId in game.players) {
-    delete game.players[playerId];
-  }
-
+  game.players = game.players.filter((p) => p.id != playerId);
   await redisClient.set(`game:${gameCode}`, JSON.stringify(game));
-
-  return game;
 };
 
-export const joinGame = async (
-  socket: Socket,
-  gameCode: string,
-  playerId: string
-) => {
+export const joinGame = async (gameCode: string, playerId: string) => {
   const game = await getGameFromRedis(gameCode);
-  if (!(playerId in game.players)) {
-    game.turnOrder.push(playerId);
-
-    game.players[playerId] = await createPlayer(playerId);
+  if (!getPlayer(game, playerId)) {
+    const joinedPlayer = await createPlayer(playerId);
+    game.players.push(joinedPlayer);
 
     await redisClient.set(`game:${gameCode}`, JSON.stringify(game));
-    return game;
+    return joinedPlayer;
   }
   return null;
 };
 
 export const startGame = async (gameCode: string) => {
   const game = await getGameFromRedis(gameCode);
-
   game.isActive = true;
   await redisClient.set(`game:${gameCode}`, JSON.stringify(game));
-  return game;
 };
 
-export const startNewTurn = async (
+export const startTurnTimer = async (
   io: Server,
   gameCode: string,
   playerId: string
 ) => {
   let timer = 30;
-  console.log("turnStarted", playerId);
   const game = await getGameFromRedis(gameCode);
   startTimer(io, timer, game, playerId);
 };
@@ -68,40 +54,44 @@ export const addSentence = async (
   const game = await getGameFromRedis(gameCode);
 
   // Check if it's the player's turn
-  if (playerId != game.turnOrder[game.currentTurnIndex]) {
+  if (playerId != game.currentPlayerId) {
     //TODO: return error message
   }
 
   // Validate if the sentence meets the required criteria
   const sentenceIsValid = await isSentenceValid(game, sentence);
   console.log("sentenceIsValid", sentenceIsValid);
+
   if (sentenceIsValid) {
-    await addSentenceToSong(game, playerId, sentence);
+    await addSentenceToSong(game, playerId, sentence, io);
   } else {
     stopTimer();
-    await loosingHandler(io, "invalidInput", game.players[playerId]);
+    await loosingHandler("invalidInput", playerId, game, io);
   }
-
-  await checkForWinnerAndUpdateGame(io, game);
 };
 
 const addSentenceToSong = async (
-  gameData: Game,
+  game: GameBase,
   playerId: string,
-  sentence: string
+  sentence: string,
+  io: Server
 ) => {
   const sentenceData: Sentence = {
     content: sentence,
     playerId,
   };
 
-  gameData.lyrics.push(sentenceData);
+  game.lyrics.push(sentenceData);
+  nextTurn(game);
+  await redisClient.set(`game:${game.code}`, JSON.stringify(game));
+  io.to(game.code).emit("lyricsUpdated", sentenceData);
+  io.to(game.code).emit("nextTurn", game.players[game.currentTurnIndex].id);
 };
 
 const startTimer = (
   io: Server,
   timer: number,
-  game: Game,
+  game: GameBase,
   playerId: string
 ) => {
   if (intervalId) {
@@ -116,9 +106,7 @@ const startTimer = (
     } else {
       clearInterval(intervalId);
       intervalId = null;
-      console.log("timeExpired: " + game.players[playerId],playerId)
-      await loosingHandler(io, "timeExpired", game.players[playerId]);
-      await checkForWinnerAndUpdateGame(io, game);
+      await loosingHandler("timeExpired", playerId, game, io);
     }
   }, 1000);
 };
@@ -131,25 +119,29 @@ const stopTimer = () => {
 };
 
 const loosingHandler = async (
-  io: Server,
   reason: "invalidInput" | "timeExpired",
-  player: PlayerBase
+  playerId: string,
+  game: GameBase,
+  io: Server
 ) => {
+  const player = getPlayer(game, playerId);
   player.active = false;
-  io.emit(reason, player.name);
-};
-
-const checkForWinnerAndUpdateGame = async (io: Server, game: Game) => {
   const activePlayers = Object.values(game.players).filter(
     (player) => player.active
   );
-  console.log(activePlayers);
+  player.rank = activePlayers.length;
 
-  if (activePlayers.length === 1) {
+  // end of the game
+  if (player.rank == 1) {
     game.winnerPlayerId = activePlayers[0].id;
   } else {
     nextTurn(game);
+    io.to(game.code).emit("nextTurn", game.players[game.currentTurnIndex].id);
   }
+  io.emit(reason, player.id, player.rank);
   await redisClient.set(`game:${game.code}`, JSON.stringify(game));
-  io.to(game.code).emit("gameUpdated", game);
+};
+
+const getPlayer = (game: GameBase, playerId: string) => {
+  return game.players.find((p) => p.id == playerId);
 };

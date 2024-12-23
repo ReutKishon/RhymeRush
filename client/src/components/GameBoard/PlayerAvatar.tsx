@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo } from "react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
-import { PlayerBase } from "../../../../shared/types/gameTypes";
+import { Player } from "../../../../shared/types/gameTypes";
 import { socket } from "../../services";
 import { adjustColorTone, getColorById } from "../../utils/colorGenerator";
 import { Box, Typography } from "@mui/material";
 import useAppStore from "../../store/useStore";
 
 interface PlayerProps {
-  player: PlayerBase;
+  player: Player;
   isPlayerTurn: boolean;
   timer: number | null;
   setTimer: (timer: number) => void;
@@ -28,7 +28,7 @@ const PlayerAvatar = ({
       console.log(`PlayerAvatar rendered for player: ${player.name}`);
 
       setTimer(30); // Reset the timer to 30 for the current player
-      socket.emit("startNewTurn", gameCode, player.id);
+      socket.emit("startTimer", gameCode, player.id);
     }
   }, [isPlayerTurn, player.id, setTimer]);
 

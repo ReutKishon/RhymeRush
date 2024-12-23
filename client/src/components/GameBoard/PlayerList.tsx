@@ -4,16 +4,14 @@ import useAppStore from "../../store/useStore";
 import { Box } from "@mui/material";
 
 const PlayerList = () => {
-  const { game, timer, setTimer } = useAppStore((state) => state);
-
-  const players = useMemo(() => {
-    return Object.values(game.players);
-  }, [game.players]);
-
+  const { timer, setTimer } = useAppStore((state) => state);
+  const players = useAppStore((state) => state.game.players);
+  const gameIsActive = useAppStore((state) => state.game.isActive);
+  const currentPlayerId = useAppStore((state) => state.game.currentPlayerId);
+  // console.log("players: ", players);
   const playerComponents = useMemo(() => {
     return players.map((player) => {
-      const isPlayerTurn =
-        game.isActive && game.turnOrder[game.currentTurnIndex] === player.id;
+      const isPlayerTurn = gameIsActive && currentPlayerId === player.id;
 
       return (
         <PlayerAvatar
@@ -25,7 +23,7 @@ const PlayerList = () => {
         />
       );
     });
-  }, [players, game.turnOrder, game.currentTurnIndex, game.isActive, timer]);
+  }, [gameIsActive, timer, players]);
 
   return (
     <Box

@@ -7,14 +7,16 @@ const CreateGameModal = () => {
   const { user } = useAppStore((state) => state);
   const [gameCode, setGameCode] = useState("");
   const navigate = useNavigate();
+  const { addPlayer } = useAppStore((state) => state);
 
   useEffect(() => {
     const createNewGame = async () => {
       try {
-        const gameCode = await api.createGame(user.id);
-        socket.emit("gameCreated", gameCode, user.id);
-        console.log(gameCode);
-        setGameCode(gameCode);
+        const game = await api.createGame(user.id);
+        socket.emit("gameCreated", game.code, user.id);
+
+        addPlayer(game.players[0]);
+        setGameCode(game.code);
       } catch (err) {
         console.error("Error creating game:", err);
       }

@@ -2,8 +2,7 @@ import React from "react";
 import useAppStore from "../../store/useStore";
 import { Typography } from "@mui/material";
 
-const Topic = () => {
-  const { game } = useAppStore((state) => state);
+const Topic = ({ topic }: { topic: string }) => {
 
   return (
     <Typography
@@ -17,7 +16,7 @@ const Topic = () => {
         color: "#ff4d4d",
       }}
     >
-      {game.topic}
+      {topic}
     </Typography>
   );
 };

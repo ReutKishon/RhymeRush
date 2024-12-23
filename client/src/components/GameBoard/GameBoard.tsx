@@ -11,21 +11,22 @@ import useSocketEvents from "../../hooks/useSocketEvents.ts";
 import GameOverModal from "./modals/GameOverModal.tsx";
 import { api } from "../../services/index.ts";
 import useAppStore from "../../store/useStore.ts";
-import GameEndModal from "./modals/GameEndModal.tsx";
 import { Box } from "@mui/material";
 import useGameOverModal from "../../hooks/useGameOverModal.ts";
+import GameResultsModal from "./modals/GameResultsModal.tsx";
 
 const GameBoard = () => {
   const { gameCode } = useParams<{ gameCode: string }>();
-  const { setGame, setGameCode } = useAppStore((state) => state);
+  const { setGame, setGameCode, game } = useAppStore((state) => state);
+  const [showResultsModal, setShowResultsModal] = useState<boolean>(false);
 
-  const {
-    showGameOverModal,
-    losingPlayerName,
-    losingReason,
-    triggerGameOverModal,
-    hideGameOverModal,
-  } = useGameOverModal();
+  // const {
+  //   showGameOverModal,
+  //   losingPlayerName,
+  //   losingReason,
+  //   triggerGameOverModal,
+  //   hideGameOverModal,
+  // } = useGameOverModal();
 
   useEffect(() => {
     const fetchGame = async () => {
@@ -42,7 +43,7 @@ const GameBoard = () => {
     fetchGame();
   }, [gameCode]);
 
-  useSocketEvents({ triggerGameOverModal });
+  useSocketEvents({ setShowResultsModal });
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
       {/* Top Section - Start Button and Topic */}
@@ -54,10 +55,9 @@ const GameBoard = () => {
           p: 3,
         }}
       >
-        <Topic />
+        <Topic topic={game.topic} />
         <StartGameButton />
       </Box>
-
       {/* Middle Section - SongLyrics (Centered in the middle of the page) */}
       <Box
         sx={{
@@ -82,12 +82,13 @@ const GameBoard = () => {
       >
         <SentenceInput />
       </Box>
-      <GameOverModal
+      {/* <GameOverModal
         show={showGameOverModal}
         player={losingPlayerName}
         reason={losingReason}
         onClose={hideGameOverModal}
-      />
+      /> */}
+      <GameResultsModal showModal={showResultsModal} />
     </Box>
   );
 };

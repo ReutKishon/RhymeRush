@@ -1,44 +1,72 @@
 import { useEffect } from "react";
 import socket from "../services/socket";
-import { GameBase as Game, PlayerBase } from "../../../shared/types/gameTypes";
+import {
+  GameBase as Game,
+  Player,
+  Sentence,
+} from "../../../shared/types/gameTypes";
 import useStore from "../store/useStore";
 
 interface SocketEventsProps {
-  // setShowGameOverModal: (show: boolean) => void;
-  // setShowWinningModal: (show: boolean) => void;
-  // setGameOverContent: (reason: string) => void;
-  triggerGameOverModal: (playerName: string, reason: string) => void;
+  // triggerGameOverModal: (playerName: string, reason: string) => void;
+  // triggerGameResultsModal: () => void;
+  setShowResultsModal: (show: boolean) => void;
 }
-const useSocketEvents = ({
-  triggerGameOverModal
-}: SocketEventsProps) => {
-  const { setGame, setTimer, gameCode } = useStore((state) => state);
+const useSocketEvents = ({ setShowResultsModal }: SocketEventsProps) => {
+  const {
+    setTimer,
+    gameCode,
+    addPlayer,
+    removePlayer,
+    addSentence,
+    setCurrentPlayerId,
+    setPlayerAsLoser,
+    setIsActive,
+    game,
+  } = useStore((state) => state);
 
   useEffect(() => {
-    socket.on("gameUpdated", (gameData: Game) => {
-      // if (gameData.winnerPlayerId) {
-      //   console.log("winner: ", gameData.winnerPlayerId);
-      //   setShowWinningModal(true);
-      //   return;
-      // }
-      console.log("gameUpdated: ", gameData);
-      setGame(gameData);
+    socket.on("gameStarted", () => {
+      setIsActive(true);
+    });
+
+    socket.on("playerJoined", (player: Player) => {
+      console.log("Player joined", player);
+      addPlayer(player);
+    });
+
+    socket.on("playerLeft", (playerId: string) => {
+      removePlayer(playerId);
+    });
+
+    socket.on("lyricsUpdated", (sentence: Sentence) => {
+      addSentence(sentence);
     });
 
     socket.on("timerUpdate", (timer: number) => {
       setTimer(timer);
     });
 
-    socket.on("timeExpired", (playerName: string) => {
-      triggerGameOverModal(playerName, "Time expired");
+    socket.on("nextTurn", (playerId: string) => {
+      setCurrentPlayerId(playerId);
     });
 
-    socket.on("invalidInput", (playerName: string) => {
-      triggerGameOverModal(playerName, "Invalid sentence");
+    socket.on("timeExpired", (player: Player) => {
+      setPlayerAsLoser(player.id, player.rank);
+      // triggerGameOverModal(playerName, "Time expired");
+    });
+
+    socket.on("invalidInput", (player: Player) => {
+      setPlayerAsLoser(player.id, player.rank);
+      // triggerGameOverModal(playerName, "Invalid sentence");
     });
 
     return () => {
-      socket.off("gameUpdated");
+      socket.off("gameStarted");
+      socket.off("playerJoined");
+      socket.off("playerLeft");
+      socket.off("lyricsUpdated");
+      socket.off("nextTurn");
       socket.off("timeExpired");
       socket.off("timerUpdate");
       socket.off("invalidInput");

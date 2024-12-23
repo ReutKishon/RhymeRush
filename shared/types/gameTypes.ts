@@ -7,10 +7,11 @@ export interface User {
   id: string;
 }
 
-export interface PlayerBase {
+export interface Player {
   id: string;
   name: string;
   active: boolean;
+  rank: number;
 }
 
 export interface Song {
@@ -23,8 +24,8 @@ export interface Song {
 export interface GameBase {
   code: string;
   topic: string;
-  players: Record<string, PlayerBase>;
-  turnOrder: string[]; // By their ids
+  players: Player[];
+  // turnOrder: string[]; // By their ids
   currentTurnIndex: number;
   isActive: boolean;
   currentPlayerId: string;
