@@ -39,6 +39,10 @@ const useSocketEvents = ({ setShowResultsModal }: SocketEventsProps) => {
       removePlayer(playerId);
     });
 
+    socket.on("updateloosing", (playerId: string, rank: number) => {
+      setPlayerAsLoser(playerId, rank);
+    });
+
     socket.on("lyricsUpdated", (sentence: Sentence) => {
       addSentence(sentence);
     });
@@ -59,6 +63,11 @@ const useSocketEvents = ({ setShowResultsModal }: SocketEventsProps) => {
     socket.on("invalidInput", (player: Player) => {
       setPlayerAsLoser(player.id, player.rank);
       // triggerGameOverModal(playerName, "Invalid sentence");
+    });
+
+    socket.on("gameEnd", () => {
+      console.log("gameEnd");
+      setShowResultsModal(true);
     });
 
     return () => {

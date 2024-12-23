@@ -32,7 +32,8 @@ const SongLyrics = () => {
               marginBottom: 2, // Adds space between each sentence
             }}
           >
-            {game.players[sentence.playerId]?.name}: {sentence.content}
+            {game.players.find((p) => p.id === sentence.playerId)?.name}:{" "}
+            {sentence.content}
           </Typography>
         ))}
       </Box>

@@ -17,8 +17,7 @@ interface GameResultsModalProps {
 }
 const GameResultsModal = ({ showModal }: GameResultsModalProps) => {
   const navigate = useNavigate();
-  const { game } = useAppStore((state) => state);
-
+  const players = useAppStore((state) => state.game.players);
   const onClose = () => {
     navigate("/home");
   };
@@ -55,7 +54,7 @@ const GameResultsModal = ({ showModal }: GameResultsModalProps) => {
         </Typography>
 
         <List sx={{ maxHeight: 200, overflowY: "auto" }}>
-          {game.players
+          {players
             .sort((a, b) => a.rank - b.rank)
             .map((player) => (
               <ListItem key={player.id}>

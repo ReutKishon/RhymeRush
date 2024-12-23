@@ -131,9 +131,12 @@ const loosingHandler = async (
   );
   player.rank = activePlayers.length;
 
+  io.to(game.code).emit("updateloosing", player.id, player.rank);
+
   // end of the game
   if (player.rank == 1) {
     game.winnerPlayerId = activePlayers[0].id;
+    io.to(game.code).emit("gameEnd");
   } else {
     nextTurn(game);
     io.to(game.code).emit("nextTurn", game.players[game.currentTurnIndex].id);
