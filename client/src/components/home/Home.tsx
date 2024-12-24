@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import useAppStore from "../../store/useStore";
-import { Box, Typography } from "@mui/material";
+import { Box } from "@mui/material";
 import { Button } from "pixel-retroui";
 import CreateGameModal from "./CreateGameModal";
 import JoinGameModal from "./JoinGameModal";
+import logo from "../../assets/images/RhymeRushLogo-removebg-preview.png";
 const Home = () => {
   const navigate = useNavigate();
   const [showCreateGameModal, setShowCreateGameModal] = useState(false);
@@ -41,6 +41,18 @@ const Home = () => {
         alignItems: "center",
       }}
     >
+      <Box
+        sx={{
+          position: "absolute",
+          top: "10%", // Adjust the top spacing as needed
+          display: "flex",
+          justifyContent: "center",
+          width: "100%",
+        }}
+      >
+        <img className="w-70 h-auto" src={logo} alt="Rhyme Rush Logo" />
+      </Box>
+
       <Box
         sx={{
           position: "absolute",

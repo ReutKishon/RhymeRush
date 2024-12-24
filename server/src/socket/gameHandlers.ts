@@ -30,9 +30,13 @@ export const joinGame = async (gameCode: string, playerId: string) => {
 };
 
 export const startGame = async (gameCode: string) => {
-  const game = await getGameFromRedis(gameCode);
-  game.isActive = true;
-  await redisClient.set(`game:${gameCode}`, JSON.stringify(game));
+  try {
+    const game = await getGameFromRedis(gameCode);
+    game.isActive = true;
+    await redisClient.set(`game:${gameCode}`, JSON.stringify(game));
+  } catch (err) {
+    console.error("Error starting game:", err);
+  }
 };
 
 export const startTurnTimer = async (
@@ -59,7 +63,7 @@ export const addSentence = async (
   }
 
   // Validate if the sentence meets the required criteria
-  const sentenceIsValid = true //await isSentenceValid(game, sentence);
+  const sentenceIsValid = true; //await isSentenceValid(game, sentence);
   console.log("sentenceIsValid", sentenceIsValid);
 
   if (sentenceIsValid) {

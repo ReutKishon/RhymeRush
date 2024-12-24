@@ -2,7 +2,6 @@ import React, { useEffect, useMemo } from "react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import { Player } from "../../../../shared/types/gameTypes";
 import { socket } from "../../services";
-import { adjustColorTone, getColorById } from "../../utils/colorGenerator";
 import { Box, Typography } from "@mui/material";
 import useAppStore from "../../store/useStore";
 
@@ -20,8 +19,6 @@ const PlayerAvatar = ({
   setTimer,
 }: PlayerProps) => {
   const { gameCode } = useAppStore((state) => state);
-
-  const avatarColor = useMemo(() => getColorById(player.id), [player.id]);
 
   useEffect(() => {
     if (isPlayerTurn) {
@@ -42,9 +39,9 @@ const PlayerAvatar = ({
         <CircularProgressbar
           value={(timer / 30) * 100}
           styles={buildStyles({
-            pathColor: adjustColorTone(avatarColor, 0.7),
-            trailColor: avatarColor,
-            backgroundColor: avatarColor,
+            pathColor: "white",
+            trailColor: player.color,
+            backgroundColor: player.color,
             strokeLinecap: "round",
             textColor: "white",
             textSize: "0px",
@@ -58,7 +55,7 @@ const PlayerAvatar = ({
             width: "100%",
             height: "100%",
             borderRadius: "50%",
-            backgroundColor: avatarColor,
+            backgroundColor: player.color,
           }}
         />
       )}
@@ -73,7 +70,7 @@ const PlayerAvatar = ({
           fontSize: "14px", // Equivalent to text-sm in Tailwind
         }}
       >
-        <Typography>{player.name}</Typography>
+        <Typography color="white">{player.name}</Typography>
       </Box>
     </div>
   );

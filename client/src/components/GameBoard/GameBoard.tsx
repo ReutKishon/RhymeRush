@@ -80,7 +80,7 @@ const GameBoard = () => {
         <SentenceInput />
       </Box>
 
-      {/* <GameResultsModal showModal={showResultsModal} /> */}
+      <GameResultsModal showModal={showResultsModal} />
     </Box>
   );
 };

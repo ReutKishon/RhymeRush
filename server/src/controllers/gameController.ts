@@ -13,6 +13,7 @@ import {
 import { CustomRequest } from "types/appTypes";
 import UserModel from "../models/userModel";
 import SongModel from "../models/songModel";
+import { getColorById } from "../utils/colorGenerator";
 
 export const getGameFromRedis = async (gameCode: string) => {
   console.log("getGameFromRedis :", gameCode);
@@ -49,6 +50,7 @@ export const createPlayer = async (playerId: string): Promise<Player> => {
     name: user.username,
     active: true,
     rank: 0,
+    color: getColorById(playerId),
   };
   return player;
 };

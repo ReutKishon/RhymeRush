@@ -17,12 +17,24 @@ const SongLyrics = () => {
         ref={scrollRef}
         className="overflow-y-auto scrollbar-hide w-full h-full text-center"
       >
-        {game.lyrics.map((sentence, index) => (
-          <p key={index} className="text-black font-bold text-xl mb-2">
-            {game.players.find((p) => p.id === sentence.playerId)?.name}:{" "}
-            {sentence.content}
-          </p>
-        ))}
+        {game.lyrics.map((sentence, index) => {
+          const player = game.players.find((p) => p.id === sentence.playerId);
+          const textColor = player?.color;
+
+          return (
+            <p key={index} className="text-sm md:text-xl mb-2">
+              <span
+                style={{
+                  color: textColor,
+                  marginRight: "8px",
+                }}
+              >
+                {player?.name}:
+              </span>
+              <span className="text-black">{sentence.content}</span>
+            </p>
+          );
+        })}
       </div>
     </div>
   );

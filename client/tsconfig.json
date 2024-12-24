@@ -6,7 +6,7 @@
         "@/*": ["src/*"]
       }
     },
-    "include": ["src/*/*.tsx", "global.d.ts"],
+    "include": ["src/*/*.tsx", "react-app-env.d.ts"],
     "exclude": ["node_modules"]
   }
   

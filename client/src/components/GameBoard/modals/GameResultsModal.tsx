@@ -11,6 +11,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { Player } from "../../../../../shared/types/gameTypes";
 import useAppStore from "../../../store/useStore";
+import { Popup } from "pixel-retroui";
 
 interface GameResultsModalProps {
   showModal: boolean;
@@ -23,35 +24,20 @@ const GameResultsModal = ({ showModal }: GameResultsModalProps) => {
   };
 
   return (
-    <Modal
-      open={showModal}
+    <Popup
+      isOpen={showModal}
       onClose={onClose}
-      aria-labelledby="game-results-title"
-      aria-describedby="game-results-description"
+      bg="#fefcd0"
+      baseBg="#de1f38"
+      textColor="black"
+      borderColor="black"
+      className="w-full"
     >
-      <Box
-        sx={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: 400,
-          bgcolor: "background.paper",
-          borderRadius: 2,
-          boxShadow: 24,
-          p: 4,
-          textAlign: "center",
-        }}
-      >
+      <div>
         {/* Title */}
-        <Typography id="game-results-title" variant="h4" sx={{ mb: 2 }}>
-          Game Over! 🏁
-        </Typography>
+        <h4 className="mb-2">Game Over 🏁</h4>
 
         {/* Player Rankings */}
-        <Typography variant="subtitle1" sx={{ mb: 2 }}>
-          Final Standings:
-        </Typography>
 
         <List sx={{ maxHeight: 200, overflowY: "auto" }}>
           {players
@@ -65,17 +51,8 @@ const GameResultsModal = ({ showModal }: GameResultsModalProps) => {
               </ListItem>
             ))}
         </List>
-
-        <Button
-          onClick={onClose}
-          variant="contained"
-          color="primary"
-          sx={{ mt: 2, width: "100%" }}
-        >
-          Close
-        </Button>
-      </Box>
-    </Modal>
+      </div>
+    </Popup>
   );
 };
 

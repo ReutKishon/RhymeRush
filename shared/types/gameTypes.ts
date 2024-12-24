@@ -12,6 +12,7 @@ export interface Player {
   name: string;
   active: boolean;
   rank: number;
+  color: string;
 }
 
 export interface Song {
