@@ -1,9 +1,14 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import useAppStore from "../../store/useStore";
-import { Box, Typography, Button } from "@mui/material";
+import { Box, Typography } from "@mui/material";
+import { Button } from "pixel-retroui";
+import CreateGameModal from "./CreateGameModal";
+import JoinGameModal from "./JoinGameModal";
 const Home = () => {
   const navigate = useNavigate();
+  const [showCreateGameModal, setShowCreateGameModal] = useState(false);
+  const [showJoinGameModal, setShowJoinGameModal] = useState(false);
 
   useEffect(() => {
     if (!localStorage.getItem("authToken")) {
@@ -12,11 +17,11 @@ const Home = () => {
   }, [navigate]);
 
   const handleCreateGame = () => {
-    navigate(`/create-game`);
+    setShowCreateGameModal(true);
   };
 
   const handleJoinGame = () => {
-    navigate(`/join-game`);
+    setShowJoinGameModal(true);
   };
 
   const handleMySongs = () => {
@@ -43,61 +48,48 @@ const Home = () => {
           right: 16,
         }}
       >
-        <Button
-          onClick={handleMySongs}
-          variant="contained"
-          sx={{
-            backgroundColor: "#22c55e", // Tailwind's green-500
-            "&:hover": { backgroundColor: "#16a34a" }, // Tailwind's green-600
-            color: "white",
-            borderRadius: 1,
-            px: 2,
-            py: 1,
-          }}
-        >
-          My Songs
-        </Button>
+        <Button onClick={handleMySongs}>My Songs</Button>
       </Box>
       <Box
         sx={{
-          p: 4,
-          width: "24rem",
-          textAlign: "center",
+          width: "30%",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "16px",
         }}
       >
         <Button
+          style={{ width: "70%" }}
           onClick={handleCreateGame}
-          variant="contained"
-          sx={{
-            backgroundColor: "#669999",
-            "&:hover": { backgroundColor: "#16a34a" }, // Tailwind's green-600
-            color: "white",
-            borderRadius: 4,
-            px: 2,
-            py: 1,
-            width: "100%",
-            mb: 2,
-          }}
+          bg="#fefcd0"
+          textColor="black"
+          borderColor="black"
+          shadow="#c381b5"
         >
           Create New Game
         </Button>
 
         <Button
+          style={{ width: "70%" }}
           onClick={handleJoinGame}
-          variant="contained"
-          sx={{
-            backgroundColor: "#00e6ac",
-            "&:hover": { backgroundColor: "#00e6ac" },
-            color: "white",
-            borderRadius: 4,
-            px: 2,
-            py: 1,
-            width: "100%",
-          }}
+          bg="#c7f5a4"
+          textColor="black"
+          borderColor="black"
+          shadow="#c381b5"
         >
           Join Game
         </Button>
       </Box>
+
+      <CreateGameModal
+        showModal={showCreateGameModal}
+        setShowModal={setShowCreateGameModal}
+      />
+      <JoinGameModal
+        showModal={showJoinGameModal}
+        setShowModal={setShowJoinGameModal}
+      />
     </Box>
   );
 };

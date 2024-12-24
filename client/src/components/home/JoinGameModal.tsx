@@ -2,8 +2,14 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { socket, api } from "../../services";
 import useAppStore from "../../store/useStore.ts";
+import { Popup } from "pixel-retroui";
+import { Box } from "@mui/material";
 
-const JoinGameModal = () => {
+interface JoinGameModalProps {
+  showModal: boolean;
+  setShowModal: (show: boolean) => void;
+}
+const JoinGameModal = ({ showModal, setShowModal }: JoinGameModalProps) => {
   const [gameCode, setGameCode] = useState("");
   const { user } = useAppStore((state) => state);
   const navigate = useNavigate();
@@ -13,7 +19,7 @@ const JoinGameModal = () => {
       return;
     }
     try {
-      socket.emit("joinGame",user.id, gameCode);
+      socket.emit("joinGame", user.id, gameCode);
       navigate(`/game/${gameCode}`);
     } catch (err) {
       console.log(err);
@@ -25,25 +31,36 @@ const JoinGameModal = () => {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white rounded-lg shadow-lg p-6 w-96">
-        <h2 className="text-xl font-bold mb-4">Join A Game</h2>
-        <div className="mb-4">
-          <input
-            type="text"
-            value={gameCode}
-            onChange={handleGameCodeChange}
-            className="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100"
-          />
-        </div>
-        <button
-          onClick={handleEnterGame}
-          className="bg-green-500 text-white rounded px-4 py-2 hover:bg-green-600 w-full mb-2"
-        >
-          Enter Game
-        </button>
-      </div>
-    </div>
+    showModal && (
+      <Box className="fixed inset-0 flex items-center justify-center">
+        <Box className="w-[400px] h-[300px]">
+          <Popup
+            isOpen={showModal}
+            onClose={() => setShowModal(false)}
+            bg="#fefcd0"
+            baseBg="#c381b5"
+            textColor="black"
+            borderColor="black"
+          >
+            <h2 className="text-xl font-bold mb-4">Join A Game</h2>
+            <div className="mb-4">
+              <input
+                type="text"
+                value={gameCode}
+                onChange={handleGameCodeChange}
+                className="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100"
+              />
+            </div>
+            <button
+              onClick={handleEnterGame}
+              className="bg-[#8bd98f] text-black rounded px-4 py-2 hover:bg-green-600 w-full mb-2"
+            >
+              Enter Game
+            </button>
+          </Popup>
+        </Box>
+      </Box>
+    )
   );
 };
 

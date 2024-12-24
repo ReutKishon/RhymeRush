@@ -1,7 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+@import 'pixel-retroui/dist/index.css';
 
 .scrollbar-hidden::-webkit-scrollbar {
     display: none;
@@ -33,3 +33,15 @@
     animation: shrink-grow 2s infinite ease-in-out;
   }
   
+  body {
+    background-color: #e3d1df; /* Replace with your desired color */
+    margin: 0;                /* Removes default margins */
+    padding: 0;               /* Removes default paddings */
+    
+}
+
+.modal-size {
+  width: 400px;
+  height: 300px;
+  
+}
