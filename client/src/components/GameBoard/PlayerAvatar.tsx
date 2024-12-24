@@ -33,14 +33,10 @@ const PlayerAvatar = ({
   }, [isPlayerTurn, player.id, setTimer]);
 
   return (
-    <Box
-      sx={{
-        position: "relative",
-        width: 112,
-        height: 112,
-        transition: "all 1s",
-        ...(isPlayerTurn && { transform: "scale(1.1)" }), // Example to show player turn
-      }}
+    <div
+      className={`relative w-[70px] h-[70px] sm:w-[112px] sm:h-[112px] transition-all duration-1000 ${
+        isPlayerTurn ? "transform scale-110" : ""
+      }`}
     >
       {timer ? (
         <CircularProgressbar
@@ -79,7 +75,7 @@ const PlayerAvatar = ({
       >
         <Typography>{player.name}</Typography>
       </Box>
-    </Box>
+    </div>
   );
 };
 

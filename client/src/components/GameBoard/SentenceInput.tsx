@@ -33,18 +33,13 @@ const SentenceInput = () => {
   };
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        width: "50%",
-        gap: 2,
-      }}
-    >
+    <div className="flex w-[95%] sm:w-[50%] gap-4 items-center">
       <Input
         placeholder="Type a new line"
         onChange={handleSentenceChange}
         disabled={!isUserTurn}
         className="w-full h-[50px] text-[18px]"
+        value={sentence}
       />
 
       <LuSendHorizontal
@@ -52,7 +47,7 @@ const SentenceInput = () => {
         onClick={handleSentenceSubmit}
         size={50}
       />
-    </Box>
+    </div>
   );
 };
 

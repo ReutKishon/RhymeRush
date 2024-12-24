@@ -58,9 +58,10 @@ const Home = () => {
           alignItems: "center",
           gap: "16px",
         }}
+        className="w-full sm:w-2/3 md:w-1/2 lg:w-1/3 xl:w-1/4 mx-auto p-4"
       >
         <Button
-          style={{ width: "70%" }}
+          className="w-[70%] sx:"
           onClick={handleCreateGame}
           bg="#fefcd0"
           textColor="black"

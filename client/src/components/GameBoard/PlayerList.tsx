@@ -26,18 +26,9 @@ const PlayerList = () => {
   }, [gameIsActive, timer, players]);
 
   return (
-    <Box
-      sx={{
-        width: "20%",
-        display: "flex",
-        justifyContent: "center",
-        flexDirection: "column",
-        alignItems: "center",
-        gap: 2,
-      }}
-    >
+    <div className="flex sm:flex-col justify-center items-center gap-4">
       {playerComponents}
-    </Box>
+    </div>
   );
 };
 

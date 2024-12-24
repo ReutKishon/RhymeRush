@@ -50,7 +50,7 @@ const GameBoard = () => {
         }}
       >
         <h2
-          className="text-2xl text-center mb-4 ml-20"
+          className="text-l sm:text-2xl text-center mb-4 ml-10"
           style={{ fontWeight: "bold", width: "90%" }}
         >
           {game.topic}
@@ -58,17 +58,15 @@ const GameBoard = () => {
         <StartGameButton />
       </Box>
       {/* Middle Section - SongLyrics (Centered in the middle of the page) */}
-      <Box
-        sx={{
-          flex: 1, // Allow the middle section to take the remaining space
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <PlayerList />
-        <SongLyrics />
-      </Box>
+      <div className="flex-1 flex flex-col sm:flex-row items-center gap-4">
+        <div className="flex-shrink-0 flex-grow-0 basis-[10%]">
+          <PlayerList />
+        </div>
+        <div className="flex basis-[90%] flex items-center justify-center max-h-[400px] h-full mt-10">
+          <SongLyrics />
+        </div>
+      </div>
+
       {/* Bottom Section - Sentence Input */}
       <Box
         sx={{
@@ -82,7 +80,7 @@ const GameBoard = () => {
         <SentenceInput />
       </Box>
 
-      <GameResultsModal showModal={showResultsModal} />
+      {/* <GameResultsModal showModal={showResultsModal} /> */}
     </Box>
   );
 };

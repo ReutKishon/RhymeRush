@@ -26,6 +26,11 @@ const JoinGameModal = ({ showModal, setShowModal }: JoinGameModalProps) => {
     }
   };
 
+  const onCloseModal = () => {
+    setGameCode("");
+    setShowModal(false);
+  };
+
   const handleGameCodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setGameCode(event.target.value);
   };
@@ -33,10 +38,10 @@ const JoinGameModal = ({ showModal, setShowModal }: JoinGameModalProps) => {
   return (
     showModal && (
       <Box className="fixed inset-0 flex items-center justify-center">
-        <Box className="w-[400px] h-[300px]">
+        <Box className="w-[70%] max-w-[400px] h-[300px] sm:w-[80%] sm:h-[250px] md:w-[70%] md:h-[300px] lg:w-[60%] lg:h-[350px] xl:w-[50%] xl:h-[400px]">
           <Popup
             isOpen={showModal}
-            onClose={() => setShowModal(false)}
+            onClose={onCloseModal}
             bg="#fefcd0"
             baseBg="#c381b5"
             textColor="black"

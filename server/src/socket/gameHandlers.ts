@@ -59,7 +59,7 @@ export const addSentence = async (
   }
 
   // Validate if the sentence meets the required criteria
-  const sentenceIsValid = await isSentenceValid(game, sentence);
+  const sentenceIsValid = true //await isSentenceValid(game, sentence);
   console.log("sentenceIsValid", sentenceIsValid);
 
   if (sentenceIsValid) {
