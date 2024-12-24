@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { socket, api } from "../../services";
 import useAppStore from "../../store/useStore.ts";
-import { Button, Popup } from "pixel-retroui";
+import { Popup } from "pixel-retroui";
 import { Box } from "@mui/material";
 
 interface CreateGameModalProps {

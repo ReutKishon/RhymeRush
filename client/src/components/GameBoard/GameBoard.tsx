@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from "react";
-import {
-  PlayerList,
-  SentenceInput,
-  SongLyrics,
-  StartGameButton,
-  Topic,
-} from "./";
+import { PlayerList, SentenceInput, SongLyrics, StartGameButton } from "./";
 import { useParams } from "react-router-dom";
 import useSocketEvents from "../../hooks/useSocketEvents.ts";
 import GameOverModal from "./modals/GameOverModal.tsx";
@@ -55,7 +49,12 @@ const GameBoard = () => {
           p: 3,
         }}
       >
-        <Topic topic={game.topic} />
+        <h2
+          className="text-2xl text-center mb-4 ml-20"
+          style={{ fontWeight: "bold", width: "90%" }}
+        >
+          {game.topic}
+        </h2>
         <StartGameButton />
       </Box>
       {/* Middle Section - SongLyrics (Centered in the middle of the page) */}
@@ -82,12 +81,7 @@ const GameBoard = () => {
       >
         <SentenceInput />
       </Box>
-      {/* <GameOverModal
-        show={showGameOverModal}
-        player={losingPlayerName}
-        reason={losingReason}
-        onClose={hideGameOverModal}
-      /> */}
+
       <GameResultsModal showModal={showResultsModal} />
     </Box>
   );

@@ -1,7 +1,7 @@
 import React from "react";
 import { socket, api } from "../../services";
 import useAppStore from "../../store/useStore.ts";
-import { Button } from "@mui/material";
+import { Button } from "pixel-retroui";
 
 const StartGameButton = () => {
   const { user, game } = useAppStore((state) => state);
@@ -19,18 +19,13 @@ const StartGameButton = () => {
 
   return (
     <Button
+      bg="#c7f5a4"
+      textColor="#30210b"
+      borderColor="#30210b"
+      shadow="#30210b"
       onClick={onStartGamePress}
-      sx={{
-        width: "8%",
-        height: "10%",
-        padding: 2,
-        backgroundColor: "#ffcccc",
-        color: "white",
-        borderRadius: 1,
-        "&:hover": {
-          backgroundColor: "#ffcccc",
-        },
-      }}
+      style={{ width: "10%" }}
+      className="w-100 py-2 border rounded"
     >
       Start
     </Button>
