@@ -10,7 +10,7 @@ interface CreateGameModalProps {
   setShowModal: (show: boolean) => void;
 }
 const CreateGameModal = ({ showModal, setShowModal }: CreateGameModalProps) => {
-  const { user, addPlayer } = useAppStore((state) => state);
+  const { user, addPlayer, reset } = useAppStore((state) => state);
   const [gameCode, setGameCode] = useState("");
   const navigate = useNavigate();
 
@@ -35,6 +35,7 @@ const CreateGameModal = ({ showModal, setShowModal }: CreateGameModalProps) => {
     if (!gameCode) {
       return;
     }
+    reset();
     navigate(`/game/${gameCode}`);
   };
 

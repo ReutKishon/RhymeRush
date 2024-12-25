@@ -8,7 +8,7 @@ const PlayerList = () => {
   const players = useAppStore((state) => state.game.players);
   const gameIsActive = useAppStore((state) => state.game.isActive);
   const currentPlayerId = useAppStore((state) => state.game.currentPlayerId);
-  // console.log("players: ", players);
+  console.log("players: ", players);
   const playerComponents = useMemo(() => {
     return players.map((player) => {
       const isPlayerTurn = gameIsActive && currentPlayerId === player.id;

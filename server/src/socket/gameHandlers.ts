@@ -5,8 +5,8 @@ import {
   nextTurn,
 } from "../controllers/gameController";
 import redisClient from "../redisClient";
-import { Server, Socket } from "socket.io";
-import { GameBase, Player, Sentence } from "../../../shared/types/gameTypes";
+import { Server } from "socket.io";
+import { GameBase, Sentence } from "../../../shared/types/gameTypes";
 
 let intervalId: NodeJS.Timeout | null = null;
 
@@ -18,6 +18,9 @@ export const leaveGame = async (gameCode: string, playerId: string) => {
 };
 
 export const joinGame = async (gameCode: string, playerId: string) => {
+  if (!playerId) {
+    console.error("player id is null!!");
+  }
   const game = await getGameFromRedis(gameCode);
   if (!getPlayer(game, playerId)) {
     const joinedPlayer = await createPlayer(playerId);
@@ -129,13 +132,14 @@ const loosingHandler = async (
   io: Server
 ) => {
   const player = getPlayer(game, playerId);
+
   player.active = false;
   const activePlayers = Object.values(game.players).filter(
     (player) => player.active
   );
   player.rank = activePlayers.length;
 
-  io.to(game.code).emit("updateloosing", player.id, player.rank);
+  io.to(game.code).emit("updatelosing", reason, player);
 
   // end of the game
   if (player.rank == 1) {
@@ -145,7 +149,7 @@ const loosingHandler = async (
     nextTurn(game);
     io.to(game.code).emit("nextTurn", game.players[game.currentTurnIndex].id);
   }
-  io.emit(reason, player.id, player.rank);
+  // io.emit(reason, player.id, player.rank);
   await redisClient.set(`game:${game.code}`, JSON.stringify(game));
 };
 

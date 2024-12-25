@@ -2,25 +2,29 @@ import React, { useEffect, useState } from "react";
 import { PlayerList, SentenceInput, SongLyrics, StartGameButton } from "./";
 import { useParams } from "react-router-dom";
 import useSocketEvents from "../../hooks/useSocketEvents.ts";
-import GameOverModal from "./modals/GameOverModal.tsx";
 import { api } from "../../services/index.ts";
 import useAppStore from "../../store/useStore.ts";
 import { Box } from "@mui/material";
-import useGameOverModal from "../../hooks/useGameOverModal.ts";
 import GameResultsModal from "./modals/GameResultsModal.tsx";
+import LosingModal from "./modals/LosingModal.tsx";
 
 const GameBoard = () => {
   const { gameCode } = useParams<{ gameCode: string }>();
   const { setGame, setGameCode, game } = useAppStore((state) => state);
   const [showResultsModal, setShowResultsModal] = useState<boolean>(false);
+  const [showLosingModal, setShowLosingModal] = useState<boolean>(false);
+  const [loserPlayerName, setLoserPlayerName] = useState<string>("");
+  const [loosingReason, setLoosingReason] = useState<string>("");
 
-  // const {
-  //   showGameOverModal,
-  //   losingPlayerName,
-  //   losingReason,
-  //   triggerGameOverModal,
-  //   hideGameOverModal,
-  // } = useGameOverModal();
+  const setLoosingDetails = (
+    showLosingModal: boolean,
+    playerName: string,
+    reason: string
+  ) => {
+    setShowLosingModal(showLosingModal);
+    setLoserPlayerName(playerName);
+    setLoosingReason(reason);
+  };
 
   useEffect(() => {
     const fetchGame = async () => {
@@ -37,7 +41,7 @@ const GameBoard = () => {
     fetchGame();
   }, [gameCode]);
 
-  useSocketEvents({ setShowResultsModal });
+  useSocketEvents({ setShowResultsModal, setLoosingDetails });
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
       {/* Top Section - Start Button and Topic */}
@@ -80,6 +84,12 @@ const GameBoard = () => {
         <SentenceInput />
       </Box>
 
+      <LosingModal
+        showModal={showLosingModal}
+        onClose={() => setShowLosingModal(false)}
+        reason={loosingReason}
+        playerName={loserPlayerName}
+      />
       <GameResultsModal showModal={showResultsModal} />
     </Box>
   );

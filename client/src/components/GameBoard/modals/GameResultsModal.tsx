@@ -1,15 +1,6 @@
 import React from "react";
-import {
-  Modal,
-  Box,
-  Typography,
-  Button,
-  List,
-  ListItem,
-  ListItemText,
-} from "@mui/material";
+import { List, ListItem, ListItemText } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { Player } from "../../../../../shared/types/gameTypes";
 import useAppStore from "../../../store/useStore";
 import { Popup } from "pixel-retroui";
 

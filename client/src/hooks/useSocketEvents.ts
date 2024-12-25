@@ -11,8 +11,16 @@ interface SocketEventsProps {
   // triggerGameOverModal: (playerName: string, reason: string) => void;
   // triggerGameResultsModal: () => void;
   setShowResultsModal: (show: boolean) => void;
+  setLoosingDetails: (
+    showLooserModal: boolean,
+    playerName: string,
+    reason: string
+  ) => void;
 }
-const useSocketEvents = ({ setShowResultsModal }: SocketEventsProps) => {
+const useSocketEvents = ({
+  setShowResultsModal,
+  setLoosingDetails,
+}: SocketEventsProps) => {
   const {
     setTimer,
     gameCode,
@@ -39,9 +47,13 @@ const useSocketEvents = ({ setShowResultsModal }: SocketEventsProps) => {
       removePlayer(playerId);
     });
 
-    socket.on("updateloosing", (playerId: string, rank: number) => {
-      setPlayerAsLoser(playerId, rank);
-    });
+    socket.on(
+      "updatelosing",
+      (reason: string, player: Player) => {
+        setPlayerAsLoser(player?.id, player?.rank);
+        setLoosingDetails(true, player?.name, reason);
+      }
+    );
 
     socket.on("lyricsUpdated", (sentence: Sentence) => {
       addSentence(sentence);
@@ -55,16 +67,6 @@ const useSocketEvents = ({ setShowResultsModal }: SocketEventsProps) => {
       setCurrentPlayerId(playerId);
     });
 
-    socket.on("timeExpired", (player: Player) => {
-      setPlayerAsLoser(player.id, player.rank);
-      // triggerGameOverModal(playerName, "Time expired");
-    });
-
-    socket.on("invalidInput", (player: Player) => {
-      setPlayerAsLoser(player.id, player.rank);
-      // triggerGameOverModal(playerName, "Invalid sentence");
-    });
-
     socket.on("gameEnd", () => {
       console.log("gameEnd");
       setShowResultsModal(true);
@@ -76,9 +78,8 @@ const useSocketEvents = ({ setShowResultsModal }: SocketEventsProps) => {
       socket.off("playerLeft");
       socket.off("lyricsUpdated");
       socket.off("nextTurn");
-      socket.off("timeExpired");
       socket.off("timerUpdate");
-      socket.off("invalidInput");
+      socket.off("updateloosing");
     };
   }, [gameCode]);
 };

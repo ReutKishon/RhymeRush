@@ -71,7 +71,8 @@ export const socketHandler = (io: Server) => {
       }
     });
 
-    socket.on("disconnect", async () => {
+    socket.on("disconnect", async (reason) => {
+      console.log(`Socket disconnected. Reason: ${reason}`);
       const playerData = playerSocketMap[socket.id];
       if (!playerData) {
         console.error(`No player data found for socket ID: ${socket.id}`);

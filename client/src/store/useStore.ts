@@ -22,23 +22,25 @@ interface AppState {
   setIsActive: (isActive: boolean) => void;
   setGameCode: (gameCode: string) => void;
   setTimer: (timer: number) => void;
+  reset: () => void;
 }
+
+const initialGameState: Game = {
+  code: "",
+  topic: "",
+  players: [],
+  currentTurnIndex: 0,
+  isActive: false,
+  currentPlayerId: "",
+  lyrics: [],
+  winnerPlayerId: "",
+  gameCreatorId: "",
+  songId: "",
+};
 
 const useAppStore = create<AppState>((set) => ({
   gameCode: "",
-  game: {
-    code: "",
-    topic: "",
-    players: [],
-    turnOrder: [],
-    currentTurnIndex: 0,
-    isActive: false,
-    currentPlayerId: "",
-    lyrics: [],
-    winnerPlayerId: "",
-    gameCreatorId: "",
-    songId: "",
-  },
+  game: { ...initialGameState },
   user: {
     username: "",
     score: 0,
@@ -87,6 +89,12 @@ const useAppStore = create<AppState>((set) => ({
   setGame: (game: Game) => set(() => ({ game })),
   setGameCode: (gameCode: string) => set(() => ({ gameCode })),
   setTimer: (timer: number) => set(() => ({ timer })),
+  reset: () =>
+    set({
+      gameCode: "",
+      game: { ...initialGameState },
+      timer: 30,
+    }),
 }));
 
 export default useAppStore;

@@ -11,7 +11,7 @@ interface JoinGameModalProps {
 }
 const JoinGameModal = ({ showModal, setShowModal }: JoinGameModalProps) => {
   const [gameCode, setGameCode] = useState("");
-  const { user } = useAppStore((state) => state);
+  const { user, reset } = useAppStore((state) => state);
   const navigate = useNavigate();
 
   const handleEnterGame = async () => {
@@ -20,6 +20,7 @@ const JoinGameModal = ({ showModal, setShowModal }: JoinGameModalProps) => {
     }
     try {
       socket.emit("joinGame", user.id, gameCode);
+      reset();
       navigate(`/game/${gameCode}`);
     } catch (err) {
       console.log(err);
