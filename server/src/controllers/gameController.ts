@@ -1,9 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { v4 as uuidv4 } from "uuid";
 import catchAsync from "../utils/catchAsync";
 import redisClient from "../redisClient";
 import generateSongTopic from "../utils/generateTopic";
-import { getUserInfo } from "./authController";
 import { AppError } from "../../../shared/utils/appError";
 import { GameBase, Player, Song } from "../../../shared/types/gameTypes";
 import {
@@ -43,40 +41,38 @@ export const isSentenceValid = async (
   return true;
 };
 
-export const createPlayer = async (playerId: string): Promise<Player> => {
-  const user = await getUserInfo(playerId);
+export const createPlayer = async (userName: string): Promise<Player> => {
+  // const user = await getUserInfo(playerId);
   const player = {
-    id: playerId,
-    name: user.username,
+    id: userName,
+    name: userName,
     active: true,
     rank: 0,
-    color: getColorById(playerId),
+    color: getColorById(userName),
   };
   return player;
 };
 
 export const createGame = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { gameCreatorId } = req.body;
+    const { uniqueCode, userName } = req.body;
 
-    if (!gameCreatorId) {
+    if (!userName) {
       return next(new AppError("a game must be created by a player!", 401));
     }
 
-    const gameCreator = await createPlayer(req.body.gameCreatorId);
-    const uniqueCode = uuidv4();
+    const gameCreator = await createPlayer(userName);
 
     const game: GameBase = {
       code: uniqueCode.slice(0, 12),
       topic: generateSongTopic(),
       players: [gameCreator],
-      // turnOrder: [gameCreator.id],
       currentTurnIndex: 0,
       isActive: false,
       currentPlayerId: gameCreator.id,
       lyrics: [],
       winnerPlayerId: null,
-      gameCreatorId: gameCreatorId,
+      gameCreatorId: gameCreator.id,
       songId: uniqueCode,
     };
     await redisClient.set(`game:${game.code}`, JSON.stringify(game));

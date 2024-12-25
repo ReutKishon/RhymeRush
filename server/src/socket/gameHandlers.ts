@@ -17,13 +17,13 @@ export const leaveGame = async (gameCode: string, playerId: string) => {
   await redisClient.set(`game:${gameCode}`, JSON.stringify(game));
 };
 
-export const joinGame = async (gameCode: string, playerId: string) => {
-  if (!playerId) {
-    console.error("player id is null!!");
+export const joinGame = async (gameCode: string, userName: string) => {
+  if (!userName) {
+    console.error("userName is null!!");
   }
   const game = await getGameFromRedis(gameCode);
-  if (!getPlayer(game, playerId)) {
-    const joinedPlayer = await createPlayer(playerId);
+  if (!getPlayer(game, userName)) {
+    const joinedPlayer = await createPlayer(userName);
     game.players.push(joinedPlayer);
 
     await redisClient.set(`game:${gameCode}`, JSON.stringify(game));

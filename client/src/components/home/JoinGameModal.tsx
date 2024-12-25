@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { socket, api } from "../../services";
 import useAppStore from "../../store/useStore.ts";
-import { Popup } from "pixel-retroui";
+import { Popup,Input } from "pixel-retroui";
 import { Box } from "@mui/material";
 
 interface JoinGameModalProps {
@@ -11,15 +11,17 @@ interface JoinGameModalProps {
 }
 const JoinGameModal = ({ showModal, setShowModal }: JoinGameModalProps) => {
   const [gameCode, setGameCode] = useState("");
-  const { user, reset } = useAppStore((state) => state);
+  const [userName, setUserName] = useState("");
+
+  const { reset } = useAppStore((state) => state);
   const navigate = useNavigate();
 
   const handleEnterGame = async () => {
-    if (gameCode.trim() === "") {
+    if (gameCode.trim() === "" || userName.trim() === "") {
       return;
     }
     try {
-      socket.emit("joinGame", user.id, gameCode);
+      socket.emit("joinGame", userName, gameCode);
       reset();
       navigate(`/game/${gameCode}`);
     } catch (err) {
@@ -27,13 +29,18 @@ const JoinGameModal = ({ showModal, setShowModal }: JoinGameModalProps) => {
     }
   };
 
-  const onCloseModal = () => {
-    setGameCode("");
-    setShowModal(false);
+  const handleUserNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setUserName(event.target.value);
   };
 
   const handleGameCodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setGameCode(event.target.value);
+  };
+
+
+  const onCloseModal = () => {
+    setGameCode("");
+    setShowModal(false);
   };
 
   return (
@@ -49,8 +56,19 @@ const JoinGameModal = ({ showModal, setShowModal }: JoinGameModalProps) => {
             borderColor="black"
           >
             <h2 className="text-xl font-bold mb-4">Join A Game</h2>
+
             <div className="mb-4">
-              <input
+              <Input
+              placeholder="Enter your username"
+                type="text"
+                onChange={handleUserNameChange}
+                value={userName}
+                className="w-full border border-gray-300 rounded py-2 pl-4"
+              />
+            </div>
+            <div className="mb-4">
+              <Input
+              placeholder="Enter a game code"
                 type="text"
                 value={gameCode}
                 onChange={handleGameCodeChange}

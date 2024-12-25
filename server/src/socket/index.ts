@@ -22,10 +22,10 @@ export const socketHandler = (io: Server) => {
       }
     );
 
-    socket.on("joinGame", async (playerId: string, gameCode: string) => {
-      const joinedPlayer = await joinGame(gameCode, playerId);
+    socket.on("joinGame", async (userName: string, gameCode: string) => {
+      const joinedPlayer = await joinGame(gameCode, userName);
       console.log("joinedPlayer", joinedPlayer);
-      await joinSocketToGameRoom(gameCode, playerId);
+      await joinSocketToGameRoom(gameCode, userName);
       if (joinedPlayer) {
         console.log("testjoined");
         io.to(gameCode).emit("playerJoined", joinedPlayer);

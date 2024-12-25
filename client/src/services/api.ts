@@ -4,6 +4,7 @@ import {
   Player as Player,
   User,
 } from "../../../shared/types/gameTypes";
+import socket from "./socket";
 
 const api = axios.create({
   baseURL: process.env.REACT_APP_API_BASE_URL,
@@ -23,13 +24,18 @@ api.interceptors.request.use(
   }
 );
 
-export const createGame = async (gameCreatorId: string): Promise<Game> => {
+export const createGame = async (
+  gameCode: string,
+  userName: string
+): Promise<Game> => {
   try {
-    console.log("Creating new game1");
+    console.log("Creating new game");
     const response = await api.post(`/game`, {
-      gameCreatorId,
+      uniqueCode:gameCode,
+      userName,
     });
     const game = response.data.data.game;
+    socket.emit("gameCreated", gameCode, userName);
 
     return game;
   } catch (err) {
