@@ -10,15 +10,17 @@ interface AppState {
   game: Game;
   gameCode: string;
   user: User;
+  userName: string;
   timer: number;
+  setUserName: (userName: string) => void;
   setUser: (user: User) => void;
   setGame: (game: Game) => void;
   addPlayer: (player: Player) => void;
   removePlayer: (playerId: string) => void;
-  setPlayerAsLoser: (playerId: string, rank: number) => void;
+  setPlayerAsLoser: (playerName: string, rank: number) => void;
   addSentence: (sentence: Sentence) => void;
-  setCurrentPlayerId: (playerId: string) => void;
-  setWinnerPlayerId: (playerId: string) => void;
+  setCurrentPlayerName: (playerName: string) => void;
+  setWinnerPlayerName: (playerName: string) => void;
   setIsActive: (isActive: boolean) => void;
   setGameCode: (gameCode: string) => void;
   setTimer: (timer: number) => void;
@@ -31,14 +33,15 @@ const initialGameState: Game = {
   players: [],
   currentTurnIndex: 0,
   isActive: false,
-  currentPlayerId: "",
+  currentPlayerName: "",
   lyrics: [],
-  winnerPlayerId: "",
-  gameCreatorId: "",
+  winnerPlayerName: "",
+  gameCreatorName: "",
   songId: "",
 };
 
 const useAppStore = create<AppState>((set) => ({
+  userName: "",
   gameCode: "",
   game: { ...initialGameState },
   user: {
@@ -50,39 +53,42 @@ const useAppStore = create<AppState>((set) => ({
     songs: [],
   },
   timer: 30,
+  setUserName: (userName: string) => set(() => ({ userName })),
   setUser: (user: User) => set(() => ({ user })),
   addPlayer: (player: Player) =>
     set((state) => ({
       game: { ...state.game, players: [...state.game.players, player] },
     })),
-  removePlayer: (playerId: string) =>
+  removePlayer: (playerName: string) =>
     set((state) => ({
       game: {
         ...state.game,
-        players: state.game.players.filter((p) => p.id !== playerId),
+        players: state.game.players.filter((p) => p.name !== playerName),
       },
     })),
   addSentence: (sentence: Sentence) =>
     set((state) => ({
       game: { ...state.game, lyrics: [...state.game.lyrics, sentence] },
     })),
-  setCurrentPlayerId: (playerId: string) =>
-    set((state) => ({ game: { ...state.game, currentPlayerId: playerId } })),
-  setWinnerPlayerId: (playerId) =>
+  setCurrentPlayerName: (playerName: string) =>
     set((state) => ({
-      game: { ...state.game, winnerPlayerId: playerId },
+      game: { ...state.game, currentPlayerName: playerName },
+    })),
+  setWinnerPlayerName: (playerId) =>
+    set((state) => ({
+      game: { ...state.game, winnerPlayerName: playerId },
     })),
   setIsActive: (isActive) =>
     set((state) => ({
       game: { ...state.game, isActive },
     })),
-  setPlayerAsLoser: (playerId: string, rank: number) =>
+  setPlayerAsLoser: (playerName: string, rank: number) =>
     set((state) => ({
       game: {
         ...state.game,
         isActive: false,
         players: state.game.players.map((player) =>
-          player.id === playerId ? { ...player, rank } : player
+          player.name === playerName ? { ...player, rank } : player
         ),
       },
     })),

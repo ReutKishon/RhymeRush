@@ -97,7 +97,7 @@ const Home = () => {
 
       <CreateGameModal
         showModal={showCreateGameModal}
-        onClose={() => setShowCreateGameModal(false)}
+        setShowModal={setShowCreateGameModal}
       />
       <JoinGameModal
         showModal={showJoinGameModal}

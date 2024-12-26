@@ -14,7 +14,6 @@ import SongModel from "../models/songModel";
 import { getColorById } from "../utils/colorGenerator";
 
 export const getGameFromRedis = async (gameCode: string) => {
-  console.log("getGameFromRedis :", gameCode);
   const gameDataString = await redisClient.get(`game:${gameCode}`);
   if (!gameDataString) {
     throw new AppError(`Game with code ${gameCode} does not exist!`, 404);
@@ -41,14 +40,13 @@ export const isSentenceValid = async (
   return true;
 };
 
-export const createPlayer = async (userName: string): Promise<Player> => {
+export const createPlayer = async (playerName: string): Promise<Player> => {
   // const user = await getUserInfo(playerId);
   const player = {
-    id: userName,
-    name: userName,
+    name: playerName,
     active: true,
     rank: 0,
-    color: getColorById(userName),
+    color: getColorById(playerName),
   };
   return player;
 };
@@ -69,10 +67,10 @@ export const createGame = catchAsync(
       players: [gameCreator],
       currentTurnIndex: 0,
       isActive: false,
-      currentPlayerId: gameCreator.id,
+      currentPlayerName: gameCreator.name,
       lyrics: [],
-      winnerPlayerId: null,
-      gameCreatorId: gameCreator.id,
+      winnerPlayerName: null,
+      gameCreatorName: gameCreator.name,
       songId: uniqueCode,
     };
     await redisClient.set(`game:${game.code}`, JSON.stringify(game));

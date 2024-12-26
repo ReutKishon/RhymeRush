@@ -18,7 +18,7 @@ const SongLyrics = () => {
         className="overflow-y-auto scrollbar-hide w-full h-full text-center"
       >
         {game.lyrics.map((sentence, index) => {
-          const player = game.players.find((p) => p.id === sentence.playerId);
+          const player = game.players.find((p) => p.name === sentence.playerName);
           const textColor = player?.color;
 
           return (

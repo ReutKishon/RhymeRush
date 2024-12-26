@@ -25,9 +25,9 @@ const PlayerAvatar = ({
       console.log(`PlayerAvatar rendered for player: ${player.name}`);
 
       setTimer(30); // Reset the timer to 30 for the current player
-      socket.emit("startTimer", gameCode, player.id);
+      socket.emit("startTimer", gameCode, player.name);
     }
-  }, [isPlayerTurn, player.id, setTimer]);
+  }, [isPlayerTurn, player.name, setTimer]);
 
   return (
     <div

@@ -9,9 +9,9 @@ import { Input } from "pixel-retroui";
 const SentenceInput = () => {
   const [sentence, setSentence] = useState<string>("");
   const [error, setError] = useState<string>("");
-  const { user, game } = useAppStore((state) => state);
+  const { game,userName } = useAppStore((state) => state);
 
-  const isUserTurn = game.isActive && game.currentPlayerId === user.id;
+  const isUserTurn = game.isActive && game.currentPlayerName === userName;
 
   const handleSentenceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSentence(e.target.value);

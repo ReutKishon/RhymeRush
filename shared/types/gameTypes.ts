@@ -8,7 +8,6 @@ export interface User {
 }
 
 export interface Player {
-  id: string;
   name: string;
   active: boolean;
   rank: number;
@@ -29,16 +28,16 @@ export interface GameBase {
   // turnOrder: string[]; // By their ids
   currentTurnIndex: number;
   isActive: boolean;
-  currentPlayerId: string;
+  currentPlayerName: string;
   lyrics: Sentence[];
-  winnerPlayerId: string;
-  gameCreatorId: string;
+  winnerPlayerName: string;
+  gameCreatorName: string;
   songId: string;
 }
 
 export interface Sentence {
   content: string;
-  playerId: string;
+  playerName: string;
 }
 
 type UserInput = Omit<User, "_id">;

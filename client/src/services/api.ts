@@ -31,11 +31,11 @@ export const createGame = async (
   try {
     console.log("Creating new game");
     const response = await api.post(`/game`, {
-      uniqueCode:gameCode,
+      uniqueCode: gameCode,
       userName,
     });
-    const game = response.data.data.game;
-    socket.emit("gameCreated", gameCode, userName);
+    const game: Game = response.data.data.game;
+    socket.emit("gameCreated", game.code, userName);
 
     return game;
   } catch (err) {

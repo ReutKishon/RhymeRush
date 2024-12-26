@@ -27,7 +27,6 @@ export const socketHandler = (io: Server) => {
       console.log("joinedPlayer", joinedPlayer);
       await joinSocketToGameRoom(gameCode, userName);
       if (joinedPlayer) {
-        console.log("testjoined");
         io.to(gameCode).emit("playerJoined", joinedPlayer);
       }
     });
@@ -58,8 +57,8 @@ export const socketHandler = (io: Server) => {
       }
     });
 
-    socket.on("startTimer", async (gameCode: string, playerId: string) => {
-      await startTurnTimer(io, gameCode, playerId);
+    socket.on("startTimer", async (gameCode: string, playerName: string) => {
+      await startTurnTimer(io, gameCode, playerName);
     });
 
     socket.on("addSentence", async (sentence: string) => {

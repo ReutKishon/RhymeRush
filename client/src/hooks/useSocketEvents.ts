@@ -27,7 +27,7 @@ const useSocketEvents = ({
     addPlayer,
     removePlayer,
     addSentence,
-    setCurrentPlayerId,
+    setCurrentPlayerName: setCurrentPlayerId,
     setPlayerAsLoser,
     setIsActive,
     game,
@@ -50,7 +50,7 @@ const useSocketEvents = ({
     socket.on(
       "updatelosing",
       (reason: string, player: Player) => {
-        setPlayerAsLoser(player?.id, player?.rank);
+        setPlayerAsLoser(player?.name, player?.rank);
         setLoosingDetails(true, player?.name, reason);
       }
     );
@@ -63,8 +63,8 @@ const useSocketEvents = ({
       setTimer(timer);
     });
 
-    socket.on("nextTurn", (playerId: string) => {
-      setCurrentPlayerId(playerId);
+    socket.on("nextTurn", (playerName: string) => {
+      setCurrentPlayerId(playerName);
     });
 
     socket.on("gameEnd", () => {

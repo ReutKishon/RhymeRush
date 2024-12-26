@@ -10,26 +10,27 @@ import { GameBase, Sentence } from "../../../shared/types/gameTypes";
 
 let intervalId: NodeJS.Timeout | null = null;
 
-export const leaveGame = async (gameCode: string, playerId: string) => {
+export const leaveGame = async (gameCode: string, playerName: string) => {
   const game = await getGameFromRedis(gameCode);
 
-  game.players = game.players.filter((p) => p.id != playerId);
+  game.players = game.players.filter((p) => p.name != playerName);
   await redisClient.set(`game:${gameCode}`, JSON.stringify(game));
 };
 
-export const joinGame = async (gameCode: string, userName: string) => {
-  if (!userName) {
-    console.error("userName is null!!");
+export const joinGame = async (gameCode: string, playerName: string) => {
+  if (!playerName) {
+    console.error("playerName is null!!");
   }
   const game = await getGameFromRedis(gameCode);
-  if (!getPlayer(game, userName)) {
-    const joinedPlayer = await createPlayer(userName);
-    game.players.push(joinedPlayer);
-
-    await redisClient.set(`game:${gameCode}`, JSON.stringify(game));
-    return joinedPlayer;
+  const playerInGame = getPlayer(game, playerName);
+  if (playerInGame) {
+    throw new Error("Name is already taken!");
   }
-  return null;
+  const joinedPlayer = await createPlayer(playerName);
+  game.players.push(joinedPlayer);
+
+  await redisClient.set(`game:${gameCode}`, JSON.stringify(game));
+  return joinedPlayer;
 };
 
 export const startGame = async (gameCode: string) => {
@@ -55,14 +56,14 @@ export const startTurnTimer = async (
 export const addSentence = async (
   io: Server,
   gameCode: string,
-  playerId: string,
+  playerName: string,
   sentence: string
 ) => {
   const game = await getGameFromRedis(gameCode);
 
   // Check if it's the player's turn
-  if (playerId != game.currentPlayerId) {
-    //TODO: return error message
+  if (playerName != game.players[game.currentTurnIndex].name) {
+    throw new Error("It's not your turn!");
   }
 
   // Validate if the sentence meets the required criteria
@@ -70,36 +71,36 @@ export const addSentence = async (
   console.log("sentenceIsValid", sentenceIsValid);
 
   if (sentenceIsValid) {
-    await addSentenceToSong(game, playerId, sentence, io);
+    await addSentenceToSong(game, playerName, sentence, io);
   } else {
     stopTimer();
-    await loosingHandler("invalidInput", playerId, game, io);
+    await loosingHandler("invalidInput", playerName, game, io);
   }
 };
 
 const addSentenceToSong = async (
   game: GameBase,
-  playerId: string,
+  playerName: string,
   sentence: string,
   io: Server
 ) => {
   const sentenceData: Sentence = {
     content: sentence,
-    playerId,
+    playerName: playerName,
   };
 
   game.lyrics.push(sentenceData);
   nextTurn(game);
   await redisClient.set(`game:${game.code}`, JSON.stringify(game));
   io.to(game.code).emit("lyricsUpdated", sentenceData);
-  io.to(game.code).emit("nextTurn", game.players[game.currentTurnIndex].id);
+  io.to(game.code).emit("nextTurn", game.players[game.currentTurnIndex].name);
 };
 
 const startTimer = (
   io: Server,
   timer: number,
   game: GameBase,
-  playerId: string
+  playerName: string
 ) => {
   if (intervalId) {
     clearInterval(intervalId);
@@ -113,7 +114,7 @@ const startTimer = (
     } else {
       clearInterval(intervalId);
       intervalId = null;
-      await loosingHandler("timeExpired", playerId, game, io);
+      await loosingHandler("timeExpired", playerName, game, io);
     }
   }, 1000);
 };
@@ -143,16 +144,16 @@ const loosingHandler = async (
 
   // end of the game
   if (player.rank == 1) {
-    game.winnerPlayerId = activePlayers[0].id;
+    game.winnerPlayerName = activePlayers[0].name;
     io.to(game.code).emit("gameEnd");
   } else {
     nextTurn(game);
-    io.to(game.code).emit("nextTurn", game.players[game.currentTurnIndex].id);
+    io.to(game.code).emit("nextTurn", game.players[game.currentTurnIndex].name);
   }
   // io.emit(reason, player.id, player.rank);
   await redisClient.set(`game:${game.code}`, JSON.stringify(game));
 };
 
-const getPlayer = (game: GameBase, playerId: string) => {
-  return game.players.find((p) => p.id == playerId);
+const getPlayer = (game: GameBase, playerName: string) => {
+  return game.players.find((p) => p.name == playerName);
 };

@@ -34,7 +34,7 @@ const GameResultsModal = ({ showModal }: GameResultsModalProps) => {
           {players
             .sort((a, b) => a.rank - b.rank)
             .map((player) => (
-              <ListItem key={player.id}>
+              <ListItem key={player.name}>
                 <ListItemText
                   primary={`${player.rank + 1}. ${player.name}`}
                   secondary={player.rank === 0 ? "🏆 Winner" : null}

@@ -4,19 +4,21 @@ import { api } from "../../services";
 import { Input, Popup } from "pixel-retroui";
 import { Box } from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
+import useAppStore from "../../store/useStore";
 
 interface CreateGameModalProps {
   showModal: boolean;
-  onClose: () => void;
+  setShowModal: (show: boolean) => void;
 }
 
-const CreateGameModal = ({ showModal, onClose }: CreateGameModalProps) => {
+const CreateGameModal = ({ showModal, setShowModal }: CreateGameModalProps) => {
   const [currentStep, setCurrentStep] = useState<
     "enterUsername" | "gameCreated"
   >("enterUsername");
   const [username, setUsername] = useState("");
   const [gameCode, setGameCode] = useState("");
   const navigate = useNavigate();
+  const { setUserName, addPlayer } = useAppStore((state) => state);
 
   const handleCreateGame = async () => {
     if (!username.trim()) {
@@ -25,14 +27,21 @@ const CreateGameModal = ({ showModal, onClose }: CreateGameModalProps) => {
     }
     const generatedCode = uuidv4();
     const game = await api.createGame(generatedCode, username);
+
     setGameCode(game.code);
     setCurrentStep("gameCreated");
   };
 
   const handleEnterGame = () => {
     console.log(`Game Code: ${gameCode}, Username: ${username}`);
+    setUserName(username);
     navigate(`/game/${gameCode}`);
   };
+  const onClose = () => {
+    setShowModal(false);
+    setCurrentStep("enterUsername");
+  };
+
   return (
     showModal && (
       <Box className="fixed inset-0 flex items-center justify-center">
@@ -93,5 +102,4 @@ const CreateGameModal = ({ showModal, onClose }: CreateGameModalProps) => {
     )
   );
 };
-
 export default CreateGameModal;

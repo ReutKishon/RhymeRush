@@ -7,15 +7,14 @@ const PlayerList = () => {
   const { timer, setTimer } = useAppStore((state) => state);
   const players = useAppStore((state) => state.game.players);
   const gameIsActive = useAppStore((state) => state.game.isActive);
-  const currentPlayerId = useAppStore((state) => state.game.currentPlayerId);
-  console.log("players: ", players);
+  const currentPlayerName = useAppStore((state) => state.game.currentPlayerName);
   const playerComponents = useMemo(() => {
     return players.map((player) => {
-      const isPlayerTurn = gameIsActive && currentPlayerId === player.id;
+      const isPlayerTurn = gameIsActive && currentPlayerName === player.name;
 
       return (
         <PlayerAvatar
-          key={player.id}
+          key={player.name}
           player={player}
           isPlayerTurn={isPlayerTurn}
           timer={isPlayerTurn ? timer : null}
