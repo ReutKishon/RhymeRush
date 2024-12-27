@@ -22,7 +22,7 @@ const PlayerList = () => {
         />
       );
     });
-  }, [gameIsActive, timer, players]);
+  }, [currentPlayerName,gameIsActive, timer, players]);
 
   return (
     <div className="flex sm:flex-col justify-center items-center gap-4">

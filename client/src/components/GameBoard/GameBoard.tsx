@@ -7,25 +7,16 @@ import useAppStore from "../../store/useStore.ts";
 import { Box } from "@mui/material";
 import GameResultsModal from "./modals/GameResultsModal.tsx";
 import LosingModal from "./modals/LosingModal.tsx";
+import LosingAlert from "./modals/LosingAlert.tsx";
 
 const GameBoard = () => {
   const { gameCode } = useParams<{ gameCode: string }>();
-  const { setGame, setGameCode, game } = useAppStore((state) => state);
+  const { setGame, setGameCode, game, userName, currentLoserName,reset } =
+    useAppStore((state) => state);
   const [showResultsModal, setShowResultsModal] = useState<boolean>(false);
-  const [showLosingModal, setShowLosingModal] = useState<boolean>(false);
-  const [loserPlayerName, setLoserPlayerName] = useState<string>("");
-  const [loosingReason, setLoosingReason] = useState<string>("");
-
-  const setLoosingDetails = (
-    showLosingModal: boolean,
-    playerName: string,
-    reason: string
-  ) => {
-    setShowLosingModal(showLosingModal);
-    setLoserPlayerName(playerName);
-    setLoosingReason(reason);
-  };
-
+  const [showLosingModal, setShowLosingModal] = useState<boolean>(
+    userName === currentLoserName
+  );
   useEffect(() => {
     const fetchGame = async () => {
       try {
@@ -38,10 +29,11 @@ const GameBoard = () => {
         console.error("Failed to fetch game details: ", err);
       }
     };
+    reset()
     fetchGame();
   }, [gameCode]);
 
-  useSocketEvents({ setShowResultsModal, setLoosingDetails });
+  useSocketEvents({ setShowResultsModal, setShowLosingModal });
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
       {/* Top Section - Start Button and Topic */}
@@ -70,7 +62,6 @@ const GameBoard = () => {
           <SongLyrics />
         </div>
       </div>
-
       {/* Bottom Section - Sentence Input */}
       <Box
         sx={{
@@ -84,13 +75,11 @@ const GameBoard = () => {
         <SentenceInput />
       </Box>
 
-      <LosingModal
-        showModal={showLosingModal}
-        onClose={() => setShowLosingModal(false)}
-        reason={loosingReason}
-        playerName={loserPlayerName}
-      />
-      <GameResultsModal showModal={showResultsModal} />
+      <LosingModal />
+
+      <LosingAlert />
+
+      {/* <GameResultsModal showModal={showResultsModal} /> */}
     </Box>
   );
 };

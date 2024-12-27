@@ -8,18 +8,12 @@ import {
 import useStore from "../store/useStore";
 
 interface SocketEventsProps {
-  // triggerGameOverModal: (playerName: string, reason: string) => void;
-  // triggerGameResultsModal: () => void;
   setShowResultsModal: (show: boolean) => void;
-  setLoosingDetails: (
-    showLooserModal: boolean,
-    playerName: string,
-    reason: string
-  ) => void;
+  setShowLosingModal: (show: boolean) => void;
 }
 const useSocketEvents = ({
   setShowResultsModal,
-  setLoosingDetails,
+  setShowLosingModal,
 }: SocketEventsProps) => {
   const {
     setTimer,
@@ -30,7 +24,6 @@ const useSocketEvents = ({
     setCurrentPlayerName: setCurrentPlayerId,
     setPlayerAsLoser,
     setIsActive,
-    game,
   } = useStore((state) => state);
 
   useEffect(() => {
@@ -47,13 +40,10 @@ const useSocketEvents = ({
       removePlayer(playerId);
     });
 
-    socket.on(
-      "updatelosing",
-      (reason: string, player: Player) => {
-        setPlayerAsLoser(player?.name, player?.rank);
-        setLoosingDetails(true, player?.name, reason);
-      }
-    );
+    socket.on("updatelosing", (player: Player, reason: string) => {
+      console.log("Player lost", player)
+      setPlayerAsLoser(player.name, player.rank, reason);
+    });
 
     socket.on("lyricsUpdated", (sentence: Sentence) => {
       addSentence(sentence);
@@ -64,6 +54,7 @@ const useSocketEvents = ({
     });
 
     socket.on("nextTurn", (playerName: string) => {
+      console.log("Next turn", playerName);
       setCurrentPlayerId(playerName);
     });
 

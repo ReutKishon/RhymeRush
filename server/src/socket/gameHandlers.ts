@@ -18,8 +18,6 @@ export const leaveGame = async (gameCode: string, playerName: string) => {
   await redisClient.set(`game:${gameCode}`, JSON.stringify(game));
 };
 
-
-
 export const startGame = async (gameCode: string) => {
   try {
     const game = await getGameFromRedis(gameCode);
@@ -127,7 +125,7 @@ const loosingHandler = async (
   );
   player.rank = activePlayers.length;
 
-  io.to(game.code).emit("updatelosing", reason, player);
+  io.to(game.code).emit("updatelosing", player, reason);
 
   // end of the game
   if (player.rank == 1) {

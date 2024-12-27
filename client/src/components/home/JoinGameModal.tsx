@@ -25,7 +25,6 @@ const JoinGameModal = ({ showModal, setShowModal }: JoinGameModalProps) => {
     }
     try {
       await api.joinGame(gameCode, userNameInput);
-      reset();
       setUserName(userNameInput);
       navigate(`/game/${gameCode}`);
     } catch (err) {

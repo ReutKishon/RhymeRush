@@ -8,6 +8,8 @@ import {
 
 interface AppState {
   game: Game;
+  currentLoserName: string;
+  losingReason: string;
   gameCode: string;
   user: User;
   userName: string;
@@ -17,7 +19,7 @@ interface AppState {
   setGame: (game: Game) => void;
   addPlayer: (player: Player) => void;
   removePlayer: (playerId: string) => void;
-  setPlayerAsLoser: (playerName: string, rank: number) => void;
+  setPlayerAsLoser: (playerName: string, rank: number, reason: string) => void;
   addSentence: (sentence: Sentence) => void;
   setCurrentPlayerName: (playerName: string) => void;
   setWinnerPlayerName: (playerName: string) => void;
@@ -53,6 +55,8 @@ const useAppStore = create<AppState>((set) => ({
     songs: [],
   },
   timer: 30,
+  currentLoserName: "",
+  losingReason: "",
   setUserName: (userName: string) => set(() => ({ userName })),
   setUser: (user: User) => set(() => ({ user })),
   addPlayer: (player: Player) =>
@@ -82,24 +86,30 @@ const useAppStore = create<AppState>((set) => ({
     set((state) => ({
       game: { ...state.game, isActive },
     })),
-  setPlayerAsLoser: (playerName: string, rank: number) =>
+  setPlayerAsLoser: (playerName: string, rank: number, reason: string) =>
     set((state) => ({
       game: {
         ...state.game,
-        isActive: false,
         players: state.game.players.map((player) =>
-          player.name === playerName ? { ...player, rank } : player
+          player.name === playerName
+            ? { ...player, rank, active: false }
+            : player
         ),
       },
+      currentLoserName: playerName,
+      losingReason: reason,
     })),
   setGame: (game: Game) => set(() => ({ game })),
   setGameCode: (gameCode: string) => set(() => ({ gameCode })),
   setTimer: (timer: number) => set(() => ({ timer })),
+
   reset: () =>
     set({
       gameCode: "",
       game: { ...initialGameState },
       timer: 30,
+      currentLoserName: "",
+      losingReason: "",
     }),
 }));
 

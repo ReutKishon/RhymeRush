@@ -1,36 +1,34 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Typography, Box } from "@mui/material";
-import { Popup } from "pixel-retroui";
+import { Button, Popup } from "pixel-retroui";
+import { useNavigate } from "react-router-dom";
+import useAppStore from "../../../store/useStore";
 
-interface GameOverModalProps {
-  showModal: boolean;
-  playerName: string;
-  reason: string;
-  onClose: () => void;
-}
+// interface GameOverModalProps {
+//   setShowModal: (show: boolean) => void;
+// }
 
-const LosingModal = ({
-  showModal,
-  playerName,
-  reason,
-  onClose,
-}: GameOverModalProps) => {
+const LosingModal = () => {
+  const { losingReason, currentLoserName, userName } = useAppStore(
+    (state) => state
+  );
+  const [showModal, setShowModal] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if (showModal) {
-      const timer = setTimeout(() => {
-        onClose();
-      }, 5000); // Close modal after 3 seconds
+    setShowModal(userName === currentLoserName);
+  }, [currentLoserName]);
 
-      // Cleanup timer on unmount or if showModal changes
-      return () => clearTimeout(timer);
-    }
-  }, [showModal, onClose]);
-
+  const handleStayInGame = () => {
+    setShowModal(false);
+  };
+  const handleLeaveGame = () => {
+    navigate(`/home`);
+  };
   return (
     <Popup
       isOpen={showModal}
-      onClose={onClose}
+      onClose={handleStayInGame}
       bg="#fefcd0"
       baseBg="#de1f38"
       textColor="black"
@@ -46,11 +44,31 @@ const LosingModal = ({
         justifyContent="center"
       >
         <Typography variant="h6" gutterBottom>
-          Player: <strong>{playerName}</strong>
+          <strong>You lose the game!</strong>
         </Typography>
         <Typography variant="body1">
-          Reason: <strong>{reason}</strong>
+          <strong>{losingReason}</strong>
         </Typography>
+        <Button
+          className="w-[70%] sx:"
+          onClick={handleStayInGame}
+          bg="#fefcd0"
+          textColor="black"
+          borderColor="black"
+          shadow="#c381b5"
+        >
+          Stay in the game
+        </Button>
+        <Button
+          className="w-[70%] sx:"
+          onClick={handleLeaveGame}
+          bg="#fefcd0"
+          textColor="black"
+          borderColor="black"
+          shadow="#c381b5"
+        >
+          Leave the game
+        </Button>
       </Box>
     </Popup>
   );
