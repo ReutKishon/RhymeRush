@@ -1,11 +1,11 @@
 import { Server, Socket } from "socket.io";
 import {
   addSentence,
-  joinGame,
   leaveGame,
   startGame,
   startTurnTimer,
 } from "./gameHandlers";
+import { Player } from "../../../shared/types/gameTypes";
 
 export const playerSocketMap: Record<
   string,
@@ -22,15 +22,6 @@ export const socketHandler = (io: Server) => {
       }
     );
 
-    socket.on("joinGame", async (userName: string, gameCode: string) => {
-      const joinedPlayer = await joinGame(gameCode, userName);
-      console.log("joinedPlayer", joinedPlayer);
-      await joinSocketToGameRoom(gameCode, userName);
-      if (joinedPlayer) {
-        io.to(gameCode).emit("playerJoined", joinedPlayer);
-      }
-    });
-
     // socket.on("leaveGame", async () => {
     //   console.log("test3");
 
@@ -46,12 +37,22 @@ export const socketHandler = (io: Server) => {
     //   io.to(gameCode).emit("playerLeft", playerId);
     // });
 
+    // io.to(game.code).emit("playerJoined", joinedPlayer);
+
+    socket.on(
+      "playerJoined",
+      async (gameCode: string, playerJoined: Player) => {
+        joinSocketToGameRoom(gameCode, playerJoined.name);
+        io.to(gameCode).emit("playerJoined", playerJoined);
+      }
+    );
+
     socket.on("startGame", async () => {
       try {
         const { gameCode } = playerSocketMap[socket.id];
 
         await startGame(gameCode);
-        io.to(gameCode).emit("gameStarted",);
+        io.to(gameCode).emit("gameStarted");
       } catch (err) {
         console.error("Error starting game:", err);
       }

@@ -43,6 +43,26 @@ export const createGame = async (
   }
 };
 
+export const joinGame = async (
+  gameCode: string,
+  userName: string
+): Promise<void> => {
+  try {
+    console.log("Joining game");
+    const response = await api.patch(`/game/${gameCode}/${userName}`, {
+      userName,
+      gameCode,
+    });
+    if (response.status === 201) {
+      const joinedPlayer = response.data.data.joinedPlayer;
+      socket.emit("playerJoined", gameCode, joinedPlayer);
+    }
+  } catch (err) {
+    console.log(err)
+    throw err;
+  }
+};
+
 export const startGame = async (gameCode: string) => {
   try {
     await api.patch(`/game/${gameCode}/start`);

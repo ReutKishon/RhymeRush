@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { socket, api } from "../../services";
+import { api, socket } from "../../services";
 import useAppStore from "../../store/useStore.ts";
 import { Popup, Input } from "pixel-retroui";
 import { Box } from "@mui/material";
@@ -9,24 +9,28 @@ interface JoinGameModalProps {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
 }
+
 const JoinGameModal = ({ showModal, setShowModal }: JoinGameModalProps) => {
   const [gameCode, setGameCode] = useState("");
   const [userNameInput, setUserNameInput] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const { reset, setUserName } = useAppStore((state) => state);
   const navigate = useNavigate();
 
   const handleEnterGame = async () => {
     if (gameCode.trim() === "" || userNameInput.trim() === "") {
+      setErrorMessage("missing a game code or a username");
       return;
     }
     try {
-      socket.emit("joinGame", userNameInput, gameCode);
+      await api.joinGame(gameCode, userNameInput);
       reset();
       setUserName(userNameInput);
       navigate(`/game/${gameCode}`);
     } catch (err) {
-      console.log(err);
+      setErrorMessage(err.response.data.message);
+      return;
     }
   };
 
@@ -75,6 +79,9 @@ const JoinGameModal = ({ showModal, setShowModal }: JoinGameModalProps) => {
                 className="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100"
               />
             </div>
+            {errorMessage && (
+              <p className="text-red-600 text-sm mb-2">{errorMessage}</p>
+            )}
             <button
               onClick={handleEnterGame}
               className="bg-[#8bd98f] text-black rounded px-4 py-2 hover:bg-green-600 w-full mb-2"

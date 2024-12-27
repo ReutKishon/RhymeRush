@@ -12,12 +12,11 @@ import { CustomRequest } from "types/appTypes";
 import UserModel from "../models/userModel";
 import SongModel from "../models/songModel";
 import { getColorById } from "../utils/colorGenerator";
+import { io } from "../app";
 
 export const getGameFromRedis = async (gameCode: string) => {
   const gameDataString = await redisClient.get(`game:${gameCode}`);
-  if (!gameDataString) {
-    throw new AppError(`Game with code ${gameCode} does not exist!`, 404);
-  }
+
   return JSON.parse(gameDataString) as GameBase;
 };
 
@@ -77,6 +76,32 @@ export const createGame = catchAsync(
     res.status(201).json({
       status: "success",
       data: { game },
+    });
+  }
+);
+
+export const joinGame = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const { userName, gameCode } = req.params;
+
+    const game = await getGameFromRedis(gameCode);
+    if (!game) {
+      return next(
+        new AppError("Invalid game code or the game does not exist.", 404)
+      );
+    }
+
+    if (game.players.find((p) => p.name === userName)) {
+      return next(new AppError(`${userName} is already taken!`, 401));
+    }
+
+    const joinedPlayer = await createPlayer(userName);
+    game.players.push(joinedPlayer);
+
+    await redisClient.set(`game:${game.code}`, JSON.stringify(game));
+    res.status(201).json({
+      status: "success",
+      data: { joinedPlayer },
     });
   }
 );

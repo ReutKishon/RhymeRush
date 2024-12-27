@@ -7,6 +7,7 @@ import {
 import redisClient from "../redisClient";
 import { Server } from "socket.io";
 import { GameBase, Sentence } from "../../../shared/types/gameTypes";
+import { UserNameError } from "../utils/errors";
 
 let intervalId: NodeJS.Timeout | null = null;
 
@@ -17,21 +18,7 @@ export const leaveGame = async (gameCode: string, playerName: string) => {
   await redisClient.set(`game:${gameCode}`, JSON.stringify(game));
 };
 
-export const joinGame = async (gameCode: string, playerName: string) => {
-  if (!playerName) {
-    console.error("playerName is null!!");
-  }
-  const game = await getGameFromRedis(gameCode);
-  const playerInGame = getPlayer(game, playerName);
-  if (playerInGame) {
-    throw new Error("Name is already taken!");
-  }
-  const joinedPlayer = await createPlayer(playerName);
-  game.players.push(joinedPlayer);
 
-  await redisClient.set(`game:${gameCode}`, JSON.stringify(game));
-  return joinedPlayer;
-};
 
 export const startGame = async (gameCode: string) => {
   try {
