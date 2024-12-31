@@ -11,12 +11,10 @@ import LosingAlert from "./modals/LosingAlert.tsx";
 
 const GameBoard = () => {
   const { gameCode } = useParams<{ gameCode: string }>();
-  const { setGame, setGameCode, game, userName, currentLoserName,reset } =
+  const { setGame, setGameCode, game,reset } =
     useAppStore((state) => state);
   const [showResultsModal, setShowResultsModal] = useState<boolean>(false);
-  const [showLosingModal, setShowLosingModal] = useState<boolean>(
-    userName === currentLoserName
-  );
+ 
   useEffect(() => {
     const fetchGame = async () => {
       try {
@@ -33,7 +31,7 @@ const GameBoard = () => {
     fetchGame();
   }, [gameCode]);
 
-  useSocketEvents({ setShowResultsModal, setShowLosingModal });
+  useSocketEvents({ setShowResultsModal });
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
       {/* Top Section - Start Button and Topic */}
@@ -79,7 +77,7 @@ const GameBoard = () => {
 
       <LosingAlert />
 
-      {/* <GameResultsModal showModal={showResultsModal} /> */}
+      <GameResultsModal showModal={showResultsModal} />
     </Box>
   );
 };

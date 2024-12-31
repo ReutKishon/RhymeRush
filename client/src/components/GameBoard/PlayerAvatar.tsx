@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useState } from "react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import { Player } from "../../../../shared/types/gameTypes";
 import { socket } from "../../services";
@@ -8,26 +8,35 @@ import useAppStore from "../../store/useStore";
 interface PlayerProps {
   player: Player;
   isPlayerTurn: boolean;
-  timer: number | null;
-  setTimer: (timer: number) => void;
 }
 
-const PlayerAvatar = ({
-  player,
-  isPlayerTurn,
-  timer,
-  setTimer,
-}: PlayerProps) => {
-  const { gameCode } = useAppStore((state) => state);
+const PlayerAvatar = ({ player, isPlayerTurn }: PlayerProps) => {
+  const [timer, setTimer] = useState<number | null>(null);
 
   useEffect(() => {
-    if (isPlayerTurn) {
-      console.log(`PlayerAvatar rendered for player: ${player.name}`);
+    let intervalId: number | null = null;
 
-      setTimer(30); // Reset the timer to 30 for the current player
-      socket.emit("startTimer", gameCode, player.name);
+    if (isPlayerTurn) {
+      setTimer(30);
+
+      intervalId = setInterval(() => {
+        setTimer((prev) => {
+          if (prev && prev > 0) {
+            return prev - 1;
+          } else {
+            clearInterval(intervalId!);
+            return null;
+          }
+        });
+      }, 1000);
+    } else {
+      setTimer(null);
     }
-  }, [isPlayerTurn, player.name, setTimer]);
+
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [isPlayerTurn]);
 
   return (
     <div

@@ -33,6 +33,7 @@ export interface GameBase {
   winnerPlayerName: string;
   gameCreatorName: string;
   songId: string;
+  currentTimerId: NodeJS.Timeout;
 }
 
 export interface Sentence {

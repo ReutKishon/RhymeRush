@@ -13,6 +13,7 @@ import UserModel from "../models/userModel";
 import SongModel from "../models/songModel";
 import { getColorById } from "../utils/colorGenerator";
 import { io } from "../app";
+import { handlePlayerLoss } from "../socket/gameHandlers";
 
 export const getGameFromRedis = async (gameCode: string) => {
   const gameDataString = await redisClient.get(`game:${gameCode}`);
@@ -71,6 +72,7 @@ export const createGame = catchAsync(
       winnerPlayerName: null,
       gameCreatorName: gameCreator.name,
       songId: uniqueCode,
+      currentTimerId: undefined,
     };
     await redisClient.set(`game:${game.code}`, JSON.stringify(game));
     res.status(201).json({
@@ -124,38 +126,6 @@ export const getGameInfo = catchAsync(async (req: CustomRequest, res, next) => {
   });
 });
 
-export const nextTurn = (gameData: GameBase) => {
-  const getNextActivePlayerIndex = (
-    startIndex: number,
-    endIndex?: number
-  ): number => {
-    return (
-      gameData.players
-        ?.slice(startIndex, endIndex)
-        .findIndex((p) => p.active) ?? -1
-    );
-  };
-
-  // Find the next active player, starting from the currentTurnIndex
-  let nextActivePlayerIndex = getNextActivePlayerIndex(
-    gameData.currentTurnIndex + 1
-  );
-
-  if (nextActivePlayerIndex !== -1) {
-    gameData.currentTurnIndex =
-      gameData.currentTurnIndex + 1 + nextActivePlayerIndex;
-  } else {
-    // No active player found in the slice, search from the beginning
-    nextActivePlayerIndex = getNextActivePlayerIndex(
-      0,
-      gameData.currentTurnIndex
-    );
-
-    if (nextActivePlayerIndex !== -1) {
-      gameData.currentTurnIndex = nextActivePlayerIndex;
-    }
-  }
-};
 
 export const getAllGames = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {

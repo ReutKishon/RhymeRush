@@ -13,7 +13,6 @@ interface AppState {
   gameCode: string;
   user: User;
   userName: string;
-  timer: number;
   setUserName: (userName: string) => void;
   setUser: (user: User) => void;
   setGame: (game: Game) => void;
@@ -25,7 +24,6 @@ interface AppState {
   setWinnerPlayerName: (playerName: string) => void;
   setIsActive: (isActive: boolean) => void;
   setGameCode: (gameCode: string) => void;
-  setTimer: (timer: number) => void;
   reset: () => void;
 }
 
@@ -54,7 +52,6 @@ const useAppStore = create<AppState>((set) => ({
     id: "",
     songs: [],
   },
-  timer: 30,
   currentLoserName: "",
   losingReason: "",
   setUserName: (userName: string) => set(() => ({ userName })),
@@ -101,13 +98,10 @@ const useAppStore = create<AppState>((set) => ({
     })),
   setGame: (game: Game) => set(() => ({ game })),
   setGameCode: (gameCode: string) => set(() => ({ gameCode })),
-  setTimer: (timer: number) => set(() => ({ timer })),
-
   reset: () =>
     set({
       gameCode: "",
       game: { ...initialGameState },
-      timer: 30,
       currentLoserName: "",
       losingReason: "",
     }),

@@ -1,10 +1,5 @@
 import { Server, Socket } from "socket.io";
-import {
-  addSentence,
-  leaveGame,
-  startGame,
-  startTurnTimer,
-} from "./gameHandlers";
+import { addSentence, leaveGame, startGame } from "./gameHandlers";
 import { Player } from "../../../shared/types/gameTypes";
 
 export const playerSocketMap: Record<
@@ -50,16 +45,12 @@ export const socketHandler = (io: Server) => {
     socket.on("startGame", async () => {
       try {
         const { gameCode } = playerSocketMap[socket.id];
-
-        await startGame(gameCode);
+        console.log("startGame");
+        await startGame(gameCode, io);
         io.to(gameCode).emit("gameStarted");
       } catch (err) {
         console.error("Error starting game:", err);
       }
-    });
-
-    socket.on("startTimer", async (gameCode: string, playerName: string) => {
-      await startTurnTimer(io, gameCode, playerName);
     });
 
     socket.on("addSentence", async (sentence: string) => {

@@ -9,14 +9,11 @@ import useStore from "../store/useStore";
 
 interface SocketEventsProps {
   setShowResultsModal: (show: boolean) => void;
-  setShowLosingModal: (show: boolean) => void;
 }
 const useSocketEvents = ({
   setShowResultsModal,
-  setShowLosingModal,
 }: SocketEventsProps) => {
   const {
-    setTimer,
     gameCode,
     addPlayer,
     removePlayer,
@@ -41,7 +38,7 @@ const useSocketEvents = ({
     });
 
     socket.on("updatelosing", (player: Player, reason: string) => {
-      console.log("Player lost", player)
+      console.log("player lost", player);
       setPlayerAsLoser(player.name, player.rank, reason);
     });
 
@@ -49,11 +46,8 @@ const useSocketEvents = ({
       addSentence(sentence);
     });
 
-    socket.on("timerUpdate", (timer: number) => {
-      setTimer(timer);
-    });
 
-    socket.on("nextTurn", (playerName: string) => {
+    socket.on("startNewTurn", (playerName: string) => {
       console.log("Next turn", playerName);
       setCurrentPlayerId(playerName);
     });
@@ -69,8 +63,7 @@ const useSocketEvents = ({
       socket.off("playerLeft");
       socket.off("lyricsUpdated");
       socket.off("nextTurn");
-      socket.off("timerUpdate");
-      socket.off("updateloosing");
+      socket.off("updatelosing");
     };
   }, [gameCode]);
 };

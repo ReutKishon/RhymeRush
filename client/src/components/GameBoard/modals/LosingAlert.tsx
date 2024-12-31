@@ -2,10 +2,6 @@ import React, { useEffect, useState } from "react";
 import Alert from "@mui/material/Alert";
 import useAppStore from "../../../store/useStore";
 
-// interface LosingAlertProps {
-//   loserName: string;
-//   onClose: () => void; // Callback for when the alert is removed
-// }
 
 const LosingAlert = () => {
   const { currentLoserName, userName } = useAppStore((state) => state);
