@@ -1,8 +1,11 @@
-import { getGameFromRedis } from "../controllers/gameController";
+import {
+  getGameFromRedis,
+  isSentenceValid,
+} from "../controllers/gameController";
 import redisClient from "../redisClient";
-import { Server } from "socket.io";
-import { GameBase, Sentence } from "../../../shared/types/gameTypes";
+import { Player, Sentence } from "../../../shared/types/gameTypes";
 import { io } from "../app";
+import { Game } from "types/gameTypes";
 
 export const leaveGame = async (gameCode: string, playerName: string) => {
   const game = await getGameFromRedis(gameCode);
@@ -11,7 +14,7 @@ export const leaveGame = async (gameCode: string, playerName: string) => {
   await redisClient.set(`game:${gameCode}`, JSON.stringify(game));
 };
 
-export const startGame = async (gameCode: string, io: Server) => {
+export const startGame = async (gameCode: string) => {
   try {
     const game = await getGameFromRedis(gameCode);
     game.isActive = true;
@@ -22,17 +25,24 @@ export const startGame = async (gameCode: string, io: Server) => {
   }
 };
 
+const stopTimer = (game: Game) => {
+  if (game.currentTimerId) {
+    clearTimeout(game.currentTimerId);
+    game.currentTimerId = undefined; // Reset the timer ID
+  }
+};
+
 export const addSentence = async (
-  io: Server,
   gameCode: string,
   playerName: string,
   sentence: string
 ) => {
   const game = await getGameFromRedis(gameCode);
+  stopTimer(game);
 
-  if (game.currentTimerId) {
-    clearTimeout(game.currentTimerId);
-    game.currentTimerId = undefined; // Reset the timer ID
+  const player = getPlayer(game, playerName);
+  if (!player) {
+    throw new Error("Player doesn't exist!");
   }
 
   // Check if it's the player's turn
@@ -41,29 +51,30 @@ export const addSentence = async (
   }
 
   // Validate if the sentence meets the required criteria
-  const sentenceIsValid = true; //await isSentenceValid(game, sentence);
+  const sentenceIsValid = await isSentenceValid(game, sentence);
   console.log("sentenceIsValid", sentenceIsValid);
 
   if (sentenceIsValid) {
-    await addSentenceToSong(game, playerName, sentence, io);
+    await addSentenceToSong(game, player, sentence);
   } else {
-    await handlePlayerLoss("invalidInput", playerName, gameCode, io);
+    await handlePlayerLoss("invalidInput", player, game);
+  }
+  if (!game.winnerPlayerName) {
+    nextTurn(game);
+    startTurn(game);
   }
 
-  nextTurn(game);
-  startTurn(game);
   await redisClient.set(`game:${game.code}`, JSON.stringify(game));
 };
 
 const addSentenceToSong = async (
-  game: GameBase,
-  playerName: string,
-  sentence: string,
-  io: Server
+  game: Game,
+  player: Player,
+  sentence: string
 ) => {
   const sentenceData: Sentence = {
     content: sentence,
-    playerName: playerName,
+    player,
   };
 
   game.lyrics.push(sentenceData);
@@ -73,18 +84,14 @@ const addSentenceToSong = async (
 
 export const handlePlayerLoss = async (
   reason: "invalidInput" | "timeExpired",
-  playerId: string,
-  gameCode: string,
-  io: Server
+  player: Player,
+  game: Game
 ) => {
-  const game = await getGameFromRedis(gameCode);
-  const player = getPlayer(game, playerId);
-
   player.active = false;
   const activePlayers = Object.values(game.players).filter(
     (player) => player.active
   );
-  console.log("active players: " + activePlayers);
+  console.log("active players: " + JSON.stringify(activePlayers, null, 2));
   player.rank = activePlayers.length;
   io.to(game.code).emit("updatelosing", player, reason);
 
@@ -92,16 +99,18 @@ export const handlePlayerLoss = async (
   if (player.rank == 1) {
     game.winnerPlayerName = activePlayers[0].name;
     setTimeout(() => {
+      stopTimer(game);
       io.to(game.code).emit("gameEnd");
     }, 4000);
   }
+  await redisClient.set(`game:${game.code}`, JSON.stringify(game));
 };
 
-const getPlayer = (game: GameBase, playerName: string) => {
+const getPlayer = (game: Game, playerName: string) => {
   return game.players.find((p) => p.name == playerName);
 };
 
-export const nextTurn = (game: GameBase) => {
+export const nextTurn = (game: Game) => {
   const getNextActivePlayerIndex = (
     startIndex: number,
     endIndex?: number
@@ -128,10 +137,11 @@ export const nextTurn = (game: GameBase) => {
   }
 };
 
-const startTurn = (game: GameBase) => {
-  const currentPlayerName = game.players[game.currentTurnIndex].name;
-  io.to(game.code).emit("startNewTurn", currentPlayerName);
-  const TIMER_DURATION = 30 * 1000; // 30 seconds
+const startTurn = (game: Game) => {
+  const currentPlayer = game.players[game.currentTurnIndex];
+  io.to(game.code).emit("UpdateCurrentPlayer", currentPlayer.name);
+
+  const TIMER_DURATION = 32 * 1000; // 30 seconds
 
   if (game.currentTimerId) {
     clearTimeout(game.currentTimerId);
@@ -139,10 +149,10 @@ const startTurn = (game: GameBase) => {
 
   game.currentTimerId = setTimeout(() => {
     console.log("timerExpired");
-    handlePlayerLoss("timeExpired", currentPlayerName, game.code, io);
-    if (!game.winnerPlayerName) {
-      nextTurn(game);
-      startTurn(game);
-    }
+    handlePlayerLoss("timeExpired", currentPlayer, game);
+    // Move to the next turn
+    nextTurn(game);
+    // Start the new turn
+    startTurn(game);
   }, TIMER_DURATION);
 };

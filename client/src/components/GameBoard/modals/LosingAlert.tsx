@@ -14,8 +14,6 @@ const LosingAlert = () => {
 
   useEffect(() => {
     setShowAlert(currentLoserName !== "" && currentLoserName !== userName);
-    console.log("Alert");
-    // Start fade-out effect after 4 seconds and remove alert after 5 seconds
     const timeout = setTimeout(() => setShowAlert(false), 4000);
 
     return () => {

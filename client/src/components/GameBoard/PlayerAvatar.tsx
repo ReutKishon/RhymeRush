@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { CircularProgressbar, buildStyles } from "react-circular-progressbar";
 import { Player } from "../../../../shared/types/gameTypes";
-import { socket } from "../../services";
 import { Box, Typography } from "@mui/material";
-import useAppStore from "../../store/useStore";
 
 interface PlayerProps {
   player: Player;
@@ -42,7 +40,7 @@ const PlayerAvatar = ({ player, isPlayerTurn }: PlayerProps) => {
     <div
       className={`relative w-[70px] h-[70px] sm:w-[112px] sm:h-[112px] transition-all duration-1000 ${
         isPlayerTurn ? "transform scale-110" : ""
-      }`}
+      } ${!player.active ? "opacity-70" : ""}`}
     >
       {timer ? (
         <CircularProgressbar
@@ -68,6 +66,7 @@ const PlayerAvatar = ({ player, isPlayerTurn }: PlayerProps) => {
           }}
         />
       )}
+
       <Box
         sx={{
           position: "absolute",

@@ -15,7 +15,7 @@ const JoinGameModal = ({ showModal, setShowModal }: JoinGameModalProps) => {
   const [userNameInput, setUserNameInput] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const { reset, setUserName } = useAppStore((state) => state);
+  const { setUserName } = useAppStore((state) => state);
   const navigate = useNavigate();
 
   const handleEnterGame = async () => {

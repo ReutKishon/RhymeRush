@@ -25,7 +25,6 @@ export interface GameBase {
   code: string;
   topic: string;
   players: Player[];
-  // turnOrder: string[]; // By their ids
   currentTurnIndex: number;
   isActive: boolean;
   currentPlayerName: string;
@@ -33,12 +32,11 @@ export interface GameBase {
   winnerPlayerName: string;
   gameCreatorName: string;
   songId: string;
-  currentTimerId: NodeJS.Timeout;
 }
 
 export interface Sentence {
   content: string;
-  playerName: string;
+  player: Player;
 }
 
 type UserInput = Omit<User, "_id">;

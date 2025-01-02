@@ -1,17 +1,22 @@
-import React, { useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import useAppStore from "../../store/useStore.ts";
-import { api, socket } from "../../services";
+import { socket } from "../../services";
 import { LuSendHorizontal } from "react-icons/lu";
-import Button from "@mui/material/Button";
-import { Box, TextField } from "@mui/material";
 import { Input } from "pixel-retroui";
 
-const SentenceInput = () => {
+const SentenceInput = memo(() => {
   const [sentence, setSentence] = useState<string>("");
+  const [isUserTurn, setIsUserTurn] = useState<boolean>();
   const [error, setError] = useState<string>("");
-  const { game,userName } = useAppStore((state) => state);
+  const gameIsActive = useAppStore((state) => state.game.isActive);
+  const currentPlayerName = useAppStore(
+    (state) => state.game.currentPlayerName
+  );
+  const userName = useAppStore((state) => state.userName);
 
-  const isUserTurn = game.isActive && game.currentPlayerName === userName;
+  useEffect(() => {
+    setIsUserTurn(gameIsActive && currentPlayerName === userName);
+  }, [gameIsActive,currentPlayerName]);
 
   const handleSentenceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSentence(e.target.value);
@@ -47,8 +52,9 @@ const SentenceInput = () => {
         onClick={handleSentenceSubmit}
         size={50}
       />
+      {error && <p className="text-red-600 text-sm mb-2">{error}</p>}
     </div>
   );
-};
+});
 
 export default SentenceInput;

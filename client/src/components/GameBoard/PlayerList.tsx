@@ -3,11 +3,12 @@ import { PlayerAvatar } from "../GameBoard";
 import useAppStore from "../../store/useStore";
 
 const PlayerList = () => {
-  const players = useAppStore((state) => state.game.players);
-  const gameIsActive = useAppStore((state) => state.game.isActive);
-  const currentPlayerName = useAppStore(
-    (state) => state.game.currentPlayerName
-  );
+  const {
+    players,
+    isActive: gameIsActive,
+    currentPlayerName,
+  } = useAppStore((state) => state.game);
+
   const playerComponents = useMemo(() => {
     console.log("players:", players);
     return players.map((player) => {

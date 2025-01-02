@@ -18,14 +18,14 @@ const CreateGameModal = ({ showModal, setShowModal }: CreateGameModalProps) => {
   const [username, setUsername] = useState("");
   const [gameCode, setGameCode] = useState("");
   const navigate = useNavigate();
-  const { setUserName, addPlayer } = useAppStore((state) => state);
+  const { setUserName } = useAppStore((state) => state);
 
   const handleCreateGame = async () => {
     if (!username.trim()) {
       alert("Please enter a username");
       return;
     }
-    const generatedCode = uuidv4();
+    const generatedCode = uuidv4(); //TODO: move the generated code to the backend?
     const game = await api.createGame(generatedCode, username);
 
     setGameCode(game.code);

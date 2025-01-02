@@ -14,18 +14,21 @@ import SongModel from "../models/songModel";
 import { getColorById } from "../utils/colorGenerator";
 import { io } from "../app";
 import { handlePlayerLoss } from "../socket/gameHandlers";
+import { Game } from "../types/gameTypes";
 
 export const getGameFromRedis = async (gameCode: string) => {
   const gameDataString = await redisClient.get(`game:${gameCode}`);
 
-  return JSON.parse(gameDataString) as GameBase;
+  return JSON.parse(gameDataString) as Game;
 };
 
 export const isSentenceValid = async (
-  game: GameBase,
+  game: Game,
   sentence: string
 ): Promise<boolean> => {
+  console.log("isSentenceValid1");
   if (sentence.split(" ").length < 5) return false;
+  console.log("isSentenceValid2");
 
   const relatedToTopic = await isRelatedToTopic(game.topic, sentence);
   console.log("relatedToTopic :", relatedToTopic);
@@ -61,7 +64,7 @@ export const createGame = catchAsync(
 
     const gameCreator = await createPlayer(userName);
 
-    const game: GameBase = {
+    const game: Game = {
       code: uniqueCode.slice(0, 12),
       topic: generateSongTopic(),
       players: [gameCreator],
@@ -72,7 +75,7 @@ export const createGame = catchAsync(
       winnerPlayerName: null,
       gameCreatorName: gameCreator.name,
       songId: uniqueCode,
-      currentTimerId: undefined,
+      currentTimerId: null,
     };
     await redisClient.set(`game:${game.code}`, JSON.stringify(game));
     res.status(201).json({

@@ -1,15 +1,15 @@
-import React, { useEffect, useRef } from "react";
+import React, { memo, useEffect, useRef } from "react";
 import useAppStore from "../../store/useStore";
 
-const SongLyrics = () => {
-  const { game } = useAppStore((state) => state);
+const SongLyrics = memo(() => {
+  const lyrics = useAppStore((state) => state.game.lyrics);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [game.lyrics]);
+  }, [lyrics]);
 
   return (
     <div className="flex flex-col w-full h-full overflow-hidden justify-center items-center">
@@ -17,9 +17,9 @@ const SongLyrics = () => {
         ref={scrollRef}
         className="overflow-y-auto scrollbar-hide w-full h-full text-center"
       >
-        {game.lyrics.map((sentence, index) => {
-          const player = game.players.find((p) => p.name === sentence.playerName);
-          const textColor = player?.color;
+        {lyrics.map((sentence, index) => {
+          const sentenceAuthor = sentence.player;
+          const textColor = sentenceAuthor.color;
 
           return (
             <p key={index} className="text-sm md:text-xl mb-2">
@@ -29,7 +29,7 @@ const SongLyrics = () => {
                   marginRight: "8px",
                 }}
               >
-                {player?.name}:
+                {sentenceAuthor.name}:
               </span>
               <span className="text-black">{sentence.content}</span>
             </p>
@@ -38,6 +38,6 @@ const SongLyrics = () => {
       </div>
     </div>
   );
-};
+});
 
 export default SongLyrics;

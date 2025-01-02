@@ -12,7 +12,6 @@ const StartGameButton = () => {
       Object.keys(game.players).length === 1 ||
       userName !== game.gameCreatorName
     ) {
-      console.log("isa ive")
       return;
     }
     console.log("onStartGamePress")

@@ -1,13 +1,8 @@
 import { create } from "zustand";
-import {
-  User,
-  GameBase as Game,
-  Player,
-  Sentence,
-} from "../../../shared/types/gameTypes";
+import { User, Player, Sentence, GameBase } from "../../../shared/types/gameTypes";
 
 interface AppState {
-  game: Game;
+  game: GameBase;
   currentLoserName: string;
   losingReason: string;
   gameCode: string;
@@ -15,19 +10,19 @@ interface AppState {
   userName: string;
   setUserName: (userName: string) => void;
   setUser: (user: User) => void;
-  setGame: (game: Game) => void;
+  setGame: (game: GameBase) => void;
   addPlayer: (player: Player) => void;
   removePlayer: (playerId: string) => void;
   setPlayerAsLoser: (playerName: string, rank: number, reason: string) => void;
   addSentence: (sentence: Sentence) => void;
   setCurrentPlayerName: (playerName: string) => void;
   setWinnerPlayerName: (playerName: string) => void;
-  setIsActive: (isActive: boolean) => void;
+  setGameIsActive: (isActive: boolean) => void;
   setGameCode: (gameCode: string) => void;
   reset: () => void;
 }
 
-const initialGameState: Game = {
+const initialGameState: GameBase = {
   code: "",
   topic: "",
   players: [],
@@ -79,7 +74,7 @@ const useAppStore = create<AppState>((set) => ({
     set((state) => ({
       game: { ...state.game, winnerPlayerName: playerId },
     })),
-  setIsActive: (isActive) =>
+  setGameIsActive: (isActive) =>
     set((state) => ({
       game: { ...state.game, isActive },
     })),
@@ -87,7 +82,7 @@ const useAppStore = create<AppState>((set) => ({
     set((state) => ({
       game: {
         ...state.game,
-        players: state.game.players.map((player) =>
+        players: state.game.players.map((player:Player) =>
           player.name === playerName
             ? { ...player, rank, active: false }
             : player
@@ -96,7 +91,7 @@ const useAppStore = create<AppState>((set) => ({
       currentLoserName: playerName,
       losingReason: reason,
     })),
-  setGame: (game: Game) => set(() => ({ game })),
+  setGame: (game: GameBase) => set(() => ({ game })),
   setGameCode: (gameCode: string) => set(() => ({ gameCode })),
   reset: () =>
     set({

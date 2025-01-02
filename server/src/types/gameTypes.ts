@@ -5,8 +5,7 @@ import { GameBase, Player } from "../../../shared/types/gameTypes";
 //   socketId: string;
 // }
 
-// export interface Game extends GameBase {
-//   players: Record<string, Player>;
-//   // turnTimerId: NodeJS.Timeout | null;
-// }
+export interface Game extends GameBase {
+    currentTimerId: NodeJS.Timeout | null;
+}
 

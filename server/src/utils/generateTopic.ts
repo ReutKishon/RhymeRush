@@ -1,14 +1,16 @@
 function generateSongTopic(): string {
   const topics = [
-    "Love and Relationships",
-    "Adventure and Exploration",
-    "Overcoming Challenges",
-    "Friendship and Support",
-    "Dreams and Ambitions",
-    "Nature and Environment",
-    "Celebration and Joy",
-    "Sadness and Loss",
-    "Inspirational Journeys",
+    "אהבה נכזבת",
+    "געגוע לילדות",
+    "פרידה כואבת",
+    "שוויון ואחדות",
+    "מערכת יחסים סוערת",
+    "חיפוש משמעות בחיים",
+    "התמודדות עם לחצי היום-יום",
+    "הרצון לברוח משגרה אינטנסיבית",
+    "התחלה חדשה",
+    "געגוע לבן/בת הזוג הרחוק/ה",
+    "בדידות"
   ];
   const randomIndex = Math.floor(Math.random() * topics.length);
   return topics[randomIndex];

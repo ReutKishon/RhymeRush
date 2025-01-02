@@ -46,7 +46,7 @@ export const socketHandler = (io: Server) => {
       try {
         const { gameCode } = playerSocketMap[socket.id];
         console.log("startGame");
-        await startGame(gameCode, io);
+        await startGame(gameCode);
         io.to(gameCode).emit("gameStarted");
       } catch (err) {
         console.error("Error starting game:", err);
@@ -56,7 +56,7 @@ export const socketHandler = (io: Server) => {
     socket.on("addSentence", async (sentence: string) => {
       try {
         const { gameCode, playerId } = playerSocketMap[socket.id];
-        await addSentence(io, gameCode, playerId, sentence);
+        await addSentence(gameCode, playerId, sentence);
       } catch (err) {
         console.error("Error adding sentence:", err);
       }

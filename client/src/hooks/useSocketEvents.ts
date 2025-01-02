@@ -6,13 +6,12 @@ import {
   Sentence,
 } from "../../../shared/types/gameTypes";
 import useStore from "../store/useStore";
+import { io } from "socket.io-client";
 
 interface SocketEventsProps {
   setShowResultsModal: (show: boolean) => void;
 }
-const useSocketEvents = ({
-  setShowResultsModal,
-}: SocketEventsProps) => {
+const useSocketEvents = ({ setShowResultsModal }: SocketEventsProps) => {
   const {
     gameCode,
     addPlayer,
@@ -20,12 +19,12 @@ const useSocketEvents = ({
     addSentence,
     setCurrentPlayerName: setCurrentPlayerId,
     setPlayerAsLoser,
-    setIsActive,
+    setGameIsActive,
   } = useStore((state) => state);
 
   useEffect(() => {
     socket.on("gameStarted", () => {
-      setIsActive(true);
+      setGameIsActive(true);
     });
 
     socket.on("playerJoined", (player: Player) => {
@@ -46,14 +45,14 @@ const useSocketEvents = ({
       addSentence(sentence);
     });
 
-
-    socket.on("startNewTurn", (playerName: string) => {
+    socket.on("UpdateCurrentPlayer", (playerName: string) => {
       console.log("Next turn", playerName);
       setCurrentPlayerId(playerName);
     });
 
     socket.on("gameEnd", () => {
       console.log("gameEnd");
+      setGameIsActive(false);
       setShowResultsModal(true);
     });
 

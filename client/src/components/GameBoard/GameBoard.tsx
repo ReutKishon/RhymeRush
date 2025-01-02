@@ -11,27 +11,32 @@ import LosingAlert from "./modals/LosingAlert.tsx";
 
 const GameBoard = () => {
   const { gameCode } = useParams<{ gameCode: string }>();
-  const { setGame, setGameCode, game,reset } =
-    useAppStore((state) => state);
+  const { setGame, setGameCode, reset } = useAppStore(
+    (state) => state
+  );
+  const [topic, setTopic] = useState<string>();
+
   const [showResultsModal, setShowResultsModal] = useState<boolean>(false);
- 
+
   useEffect(() => {
     const fetchGame = async () => {
       try {
         if (gameCode) {
           const game = await api.fetchGameData(gameCode);
           setGame(game);
-          setGameCode(gameCode);
+          setGameCode(gameCode); //TODO: remove gameCode state and use the field in game
+          setTopic(game.topic);
         }
       } catch (err) {
         console.error("Failed to fetch game details: ", err);
       }
     };
-    reset()
+    reset();
     fetchGame();
   }, [gameCode]);
 
   useSocketEvents({ setShowResultsModal });
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
       {/* Top Section - Start Button and Topic */}
@@ -47,7 +52,7 @@ const GameBoard = () => {
           className="text-l sm:text-2xl text-center mb-4 ml-10"
           style={{ fontWeight: "bold", width: "90%" }}
         >
-          {game.topic}
+          {topic}
         </h2>
         <StartGameButton />
       </Box>

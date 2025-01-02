@@ -4,10 +4,6 @@ import { Button, Popup } from "pixel-retroui";
 import { useNavigate } from "react-router-dom";
 import useAppStore from "../../../store/useStore";
 
-// interface GameOverModalProps {
-//   setShowModal: (show: boolean) => void;
-// }
-
 const LosingModal = () => {
   const { losingReason, currentLoserName, userName } = useAppStore(
     (state) => state
