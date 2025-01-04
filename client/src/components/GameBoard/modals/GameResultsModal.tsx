@@ -16,7 +16,7 @@ const GameResultsModal = ({ showModal }: GameResultsModalProps) => {
     navigate("/home");
   };
 
-  const sortedPlayers = [...players].sort((a, b) => a.rank - b.rank);
+  const sortedPlayers = [...players].sort((a, b) => a.score - b.score);
 
   if (isGameActive) {
     return null;
@@ -42,8 +42,8 @@ const GameResultsModal = ({ showModal }: GameResultsModalProps) => {
           {sortedPlayers.map((player) => (
             <ListItem key={player.name}>
               <ListItemText
-                primary={`${player.rank + 1}. ${player.name}`}
-                secondary={player.rank === 0 ? "🏆 Winner" : null}
+                primary={`${player.score + 1}. ${player.name}`}
+                secondary={player.score === 0 ? "🏆 Winner" : null}
               />
             </ListItem>
           ))}

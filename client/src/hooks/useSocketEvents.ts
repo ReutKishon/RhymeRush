@@ -6,19 +6,18 @@ import {
   Sentence,
 } from "../../../shared/types/gameTypes";
 import useStore from "../store/useStore";
-import { io } from "socket.io-client";
 
 interface SocketEventsProps {
   setShowResultsModal: (show: boolean) => void;
 }
 const useSocketEvents = ({ setShowResultsModal }: SocketEventsProps) => {
   const {
-    gameCode,
+    game: { code },
     addPlayer,
     removePlayer,
     addSentence,
     setCurrentPlayerName: setCurrentPlayerId,
-    setPlayerAsLoser,
+    setPlayerScore,
     setGameIsActive,
   } = useStore((state) => state);
 
@@ -36,9 +35,8 @@ const useSocketEvents = ({ setShowResultsModal }: SocketEventsProps) => {
       removePlayer(playerId);
     });
 
-    socket.on("updatelosing", (player: Player, reason: string) => {
-      console.log("player lost", player);
-      setPlayerAsLoser(player.name, player.rank, reason);
+    socket.on("updatePlayerScore", (playerName: string, score: number) => {
+      setPlayerScore(playerName, score);
     });
 
     socket.on("lyricsUpdated", (sentence: Sentence) => {
@@ -50,8 +48,8 @@ const useSocketEvents = ({ setShowResultsModal }: SocketEventsProps) => {
       setCurrentPlayerId(playerName);
     });
 
-    socket.on("gameEnd", () => {
-      console.log("gameEnd");
+    socket.on("gameOver", () => {
+      console.log("gameOver");
       setGameIsActive(false);
       setShowResultsModal(true);
     });
@@ -62,9 +60,10 @@ const useSocketEvents = ({ setShowResultsModal }: SocketEventsProps) => {
       socket.off("playerLeft");
       socket.off("lyricsUpdated");
       socket.off("nextTurn");
-      socket.off("updatelosing");
+      socket.off("updatePlayerScore");
+      socket.off("UpdateCurrentPlayer");
     };
-  }, [gameCode]);
+  }, [code]);
 };
 
 export default useSocketEvents;

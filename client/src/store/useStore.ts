@@ -1,25 +1,25 @@
 import { create } from "zustand";
-import { User, Player, Sentence, GameBase } from "../../../shared/types/gameTypes";
+import {
+  User,
+  Player,
+  Sentence,
+  GameBase,
+} from "../../../shared/types/gameTypes";
 
 interface AppState {
   game: GameBase;
-  currentLoserName: string;
-  losingReason: string;
-  gameCode: string;
   user: User;
-  userName: string;
-  setUserName: (userName: string) => void;
+  setUserName: (name: string) => void;
   setUser: (user: User) => void;
   setGame: (game: GameBase) => void;
   addPlayer: (player: Player) => void;
   removePlayer: (playerId: string) => void;
-  setPlayerAsLoser: (playerName: string, rank: number, reason: string) => void;
+  setPlayerScore: (playerName: string, score: number) => void;
   addSentence: (sentence: Sentence) => void;
   setCurrentPlayerName: (playerName: string) => void;
-  setWinnerPlayerName: (playerName: string) => void;
   setGameIsActive: (isActive: boolean) => void;
   setGameCode: (gameCode: string) => void;
-  reset: () => void;
+  resetGame: () => void;
 }
 
 const initialGameState: GameBase = {
@@ -37,7 +37,6 @@ const initialGameState: GameBase = {
 
 const useAppStore = create<AppState>((set) => ({
   userName: "",
-  gameCode: "",
   game: { ...initialGameState },
   user: {
     username: "",
@@ -47,9 +46,9 @@ const useAppStore = create<AppState>((set) => ({
     id: "",
     songs: [],
   },
-  currentLoserName: "",
-  losingReason: "",
-  setUserName: (userName: string) => set(() => ({ userName })),
+  setUserName: (username) => {
+    set((state) => ({ user: { ...state.user, username } }));
+  },
   setUser: (user: User) => set(() => ({ user })),
   addPlayer: (player: Player) =>
     set((state) => ({
@@ -70,35 +69,26 @@ const useAppStore = create<AppState>((set) => ({
     set((state) => ({
       game: { ...state.game, currentPlayerName: playerName },
     })),
-  setWinnerPlayerName: (playerId) =>
-    set((state) => ({
-      game: { ...state.game, winnerPlayerName: playerId },
-    })),
+
   setGameIsActive: (isActive) =>
     set((state) => ({
       game: { ...state.game, isActive },
     })),
-  setPlayerAsLoser: (playerName: string, rank: number, reason: string) =>
+  setPlayerScore: (playerName: string, score: number) =>
     set((state) => ({
       game: {
         ...state.game,
-        players: state.game.players.map((player:Player) =>
-          player.name === playerName
-            ? { ...player, rank, active: false }
-            : player
+        players: state.game.players.map((player: Player) =>
+          player.name === playerName ? { ...player, score } : player
         ),
       },
-      currentLoserName: playerName,
-      losingReason: reason,
     })),
   setGame: (game: GameBase) => set(() => ({ game })),
-  setGameCode: (gameCode: string) => set(() => ({ gameCode })),
-  reset: () =>
+  setGameCode: (gameCode: string) =>
+    set((state) => ({ game: { ...state.game, code: gameCode } })),
+  resetGame: () =>
     set({
-      gameCode: "",
       game: { ...initialGameState },
-      currentLoserName: "",
-      losingReason: "",
     }),
 }));
 

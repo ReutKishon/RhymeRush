@@ -4,17 +4,20 @@ import useAppStore from "../../store/useStore.ts";
 import { Button } from "pixel-retroui";
 
 const StartGameButton = () => {
-  const { userName, game } = useAppStore((state) => state);
+  const {
+    user: { username },
+    game,
+  } = useAppStore((state) => state);
 
   const onStartGamePress = () => {
     if (
       game.isActive ||
       Object.keys(game.players).length === 1 ||
-      userName !== game.gameCreatorName
+      username !== game.gameCreatorName
     ) {
       return;
     }
-    console.log("onStartGamePress")
+    console.log("onStartGamePress");
     socket.emit("startGame");
   };
 

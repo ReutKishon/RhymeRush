@@ -12,8 +12,6 @@ import { CustomRequest } from "types/appTypes";
 import UserModel from "../models/userModel";
 import SongModel from "../models/songModel";
 import { getColorById } from "../utils/colorGenerator";
-import { io } from "../app";
-import { handlePlayerLoss } from "../socket/gameHandlers";
 import { Game } from "../types/gameTypes";
 
 export const getGameFromRedis = async (gameCode: string) => {
@@ -48,7 +46,7 @@ export const createPlayer = async (playerName: string): Promise<Player> => {
   const player = {
     name: playerName,
     active: true,
-    rank: 0,
+    score: 0,
     color: getColorById(playerName),
   };
   return player;

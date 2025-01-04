@@ -6,14 +6,11 @@ import { api } from "../../services/index.ts";
 import useAppStore from "../../store/useStore.ts";
 import { Box } from "@mui/material";
 import GameResultsModal from "./modals/GameResultsModal.tsx";
-import LosingModal from "./modals/LosingModal.tsx";
-import LosingAlert from "./modals/LosingAlert.tsx";
+// import LosingAlert from "./modals/LosingAlert.tsx";
 
 const GameBoard = () => {
   const { gameCode } = useParams<{ gameCode: string }>();
-  const { setGame, setGameCode, reset } = useAppStore(
-    (state) => state
-  );
+  const { setGame, setGameCode, resetGame } = useAppStore((state) => state);
   const [topic, setTopic] = useState<string>();
 
   const [showResultsModal, setShowResultsModal] = useState<boolean>(false);
@@ -31,7 +28,7 @@ const GameBoard = () => {
         console.error("Failed to fetch game details: ", err);
       }
     };
-    reset();
+    resetGame();
     fetchGame();
   }, [gameCode]);
 
@@ -78,9 +75,7 @@ const GameBoard = () => {
         <SentenceInput />
       </Box>
 
-      <LosingModal />
-
-      <LosingAlert />
+      {/* <LosingAlert /> */}
 
       <GameResultsModal showModal={showResultsModal} />
     </Box>

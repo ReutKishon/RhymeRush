@@ -8,15 +8,14 @@ const SentenceInput = memo(() => {
   const [sentence, setSentence] = useState<string>("");
   const [isUserTurn, setIsUserTurn] = useState<boolean>();
   const [error, setError] = useState<string>("");
-  const gameIsActive = useAppStore((state) => state.game.isActive);
-  const currentPlayerName = useAppStore(
-    (state) => state.game.currentPlayerName
-  );
-  const userName = useAppStore((state) => state.userName);
+  const {
+    game: { isActive: gameIsActive, currentPlayerName },
+    user: { username },
+  } = useAppStore((state) => state);
 
   useEffect(() => {
-    setIsUserTurn(gameIsActive && currentPlayerName === userName);
-  }, [gameIsActive,currentPlayerName]);
+    setIsUserTurn(gameIsActive && currentPlayerName === username);
+  }, [gameIsActive, currentPlayerName]);
 
   const handleSentenceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSentence(e.target.value);

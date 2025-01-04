@@ -10,7 +10,7 @@ export interface User {
 export interface Player {
   name: string;
   active: boolean;
-  rank: number;
+  score: number;
   color: string;
 }
 

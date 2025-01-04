@@ -1,5 +1,5 @@
 import { Server, Socket } from "socket.io";
-import { addSentence, leaveGame, startGame } from "./gameHandlers";
+import { handleAddSentenceSubmit, leaveGame, startGame } from "./gameHandlers";
 import { Player } from "../../../shared/types/gameTypes";
 
 export const playerSocketMap: Record<
@@ -45,7 +45,6 @@ export const socketHandler = (io: Server) => {
     socket.on("startGame", async () => {
       try {
         const { gameCode } = playerSocketMap[socket.id];
-        console.log("startGame");
         await startGame(gameCode);
         io.to(gameCode).emit("gameStarted");
       } catch (err) {
@@ -56,11 +55,12 @@ export const socketHandler = (io: Server) => {
     socket.on("addSentence", async (sentence: string) => {
       try {
         const { gameCode, playerId } = playerSocketMap[socket.id];
-        await addSentence(gameCode, playerId, sentence);
+        await handleAddSentenceSubmit(gameCode, playerId, sentence);
       } catch (err) {
         console.error("Error adding sentence:", err);
       }
     });
+    
 
     socket.on("disconnect", async (reason) => {
       console.log(`Socket disconnected. Reason: ${reason}`);
