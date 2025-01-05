@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api, socket } from "../../services";
-import useAppStore from "../../store/useStore.ts";
+import useAppStore from "../../store/useStore";
 import { Popup, Input } from "pixel-retroui";
 import { Box } from "@mui/material";
 
@@ -27,7 +27,7 @@ const JoinGameModal = ({ showModal, setShowModal }: JoinGameModalProps) => {
       await api.joinGame(gameCode, userNameInput);
       setUserName(userNameInput);
       navigate(`/game/${gameCode}`);
-    } catch (err) {
+    } catch (err: any) {
       setErrorMessage(err.response.data.message);
       return;
     }

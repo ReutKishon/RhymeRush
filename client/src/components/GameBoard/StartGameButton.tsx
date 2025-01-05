@@ -1,6 +1,6 @@
 import React from "react";
 import { socket, api } from "../../services";
-import useAppStore from "../../store/useStore.ts";
+import useAppStore from "../../store/useStore";
 import { Button } from "pixel-retroui";
 
 const StartGameButton = () => {

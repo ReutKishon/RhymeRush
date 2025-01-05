@@ -1,12 +1,20 @@
 {
-    "compilerOptions": {
-      "strict": true,
-      "baseUrl": "./",
-      "paths": {
-        "@/*": ["src/*"]
-      }
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "strict": true,
+    "baseUrl": "src",
+    "paths": {
+      "@/*": ["*"]
     },
-    "include": ["src/*/*.tsx", "react-app-env.d.ts"],
-    "exclude": ["node_modules"]
-  }
-  
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowSyntheticDefaultImports": true,
+    "noImplicitAny": false
+  },
+  "include": ["src/**/*.tsx", "src/**/*.ts", "react-app-env.d.ts"],
+  "exclude": ["node_modules"]
+}

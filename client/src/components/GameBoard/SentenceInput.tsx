@@ -1,5 +1,5 @@
 import React, { memo, useEffect, useState } from "react";
-import useAppStore from "../../store/useStore.ts";
+import useAppStore from "../../store/useStore";
 import { socket } from "../../services";
 import { LuSendHorizontal } from "react-icons/lu";
 import { Input } from "pixel-retroui";

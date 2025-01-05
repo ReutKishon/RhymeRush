@@ -4,17 +4,12 @@ import { Box } from "@mui/material";
 import { Button } from "pixel-retroui";
 import CreateGameModal from "./CreateGameModal";
 import JoinGameModal from "./JoinGameModal";
-import logo from "../../assets/images/RhymeRushLogo-removebg-preview.png";
+import logo from "assets/images/RhymeRushLogo-removebg-preview.png";
 const Home = () => {
   const navigate = useNavigate();
   const [showCreateGameModal, setShowCreateGameModal] = useState(false);
   const [showJoinGameModal, setShowJoinGameModal] = useState(false);
 
-  // useEffect(() => {
-  //   if (!localStorage.getItem("authToken")) {
-  //     navigate("/login");
-  //   }
-  // }, [navigate]);
 
   const handleCreateGame = () => {
     setShowCreateGameModal(true);
@@ -24,53 +19,15 @@ const Home = () => {
     setShowJoinGameModal(true);
   };
 
-  const handleMySongs = () => {
-    navigate(`/my-songs`);
-  };
+  // const handleMySongs = () => {
+  //   navigate(`/my-songs`);
+  // };
 
   return (
-    <Box
-      sx={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100%",
-        height: "100%",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Box
-        sx={{
-          position: "absolute",
-          top: "10%", // Adjust the top spacing as needed
-          display: "flex",
-          justifyContent: "center",
-          width: "100%",
-        }}
-      >
-        <img className="w-70 h-auto" src={logo} alt="Rhyme Rush Logo" />
-      </Box>
-
-      <Box
-        sx={{
-          position: "absolute",
-          top: 16,
-          right: 16,
-        }}
-      >
-        <Button onClick={handleMySongs}>My Songs</Button>
-      </Box>
-      <Box
-        sx={{
-          width: "30%",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: "16px",
-        }}
-        className="w-full sm:w-2/3 md:w-1/2 lg:w-1/3 xl:w-1/4 mx-auto p-4"
+    <div className="flex h-screen flex-col p-2 items-center justify-center gap-4">
+      <img className="w-32" src={logo} alt="Rhyme Rush Logo" />
+      <div
+        className="flex flex-col w-2/3 items-center gap-4"
       >
         <Button
           className="w-[70%] sx:"
@@ -93,7 +50,7 @@ const Home = () => {
         >
           Join Game
         </Button>
-      </Box>
+      </div>
 
       <CreateGameModal
         showModal={showCreateGameModal}
@@ -103,7 +60,7 @@ const Home = () => {
         showModal={showJoinGameModal}
         setShowModal={setShowJoinGameModal}
       />
-    </Box>
+    </div>
   );
 };
 

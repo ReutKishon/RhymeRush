@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { PlayerList, SentenceInput, SongLyrics, StartGameButton } from "./";
 import { useParams } from "react-router-dom";
-import useSocketEvents from "../../hooks/useSocketEvents.ts";
-import { api } from "../../services/index.ts";
-import useAppStore from "../../store/useStore.ts";
+import useSocketEvents from "../../hooks/useSocketEvents";
+import { api } from "../../services/index";
+import useAppStore from "../../store/useStore";
 import { Box } from "@mui/material";
-import GameResultsModal from "./modals/GameResultsModal.tsx";
-import GameTimer from "./GameTimer.tsx";
+import GameResultsModal from "./modals/GameResultsModal";
+import GameTimer from "./GameTimer";
 // import LosingAlert from "./modals/LosingAlert.tsx";
 
 const GameBoard = () => {

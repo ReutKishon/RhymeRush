@@ -24,7 +24,7 @@ const PlayerAvatar = ({ player, isPlayerTurn }: PlayerProps) => {
   const [timer, setTimer] = useState<number | null>(null);
 
   useEffect(() => {
-    let intervalId: number | null = null;
+    let intervalId: any
 
     if (isPlayerTurn) {
       setTimer(30);

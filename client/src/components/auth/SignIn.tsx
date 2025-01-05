@@ -31,7 +31,7 @@ const SignIn = () => {
       setUser(loggedUser);
 
       navigate("/home");
-    } catch (err) {
+    } catch (err: any) {
       setError(err);
     }
   };
