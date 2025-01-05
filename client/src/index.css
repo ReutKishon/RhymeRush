@@ -20,17 +20,16 @@
     animation: spin-border linear infinite;
   }
 
-  @keyframes shrink-grow {
-    0%, 100% {
-      transform: scale(1); /* Original size */
+  @keyframes growShrink {
+    0% {
+      transform: scale(2);
     }
     50% {
-      transform: scale(1.2); /* Grow slightly larger */
+      transform: scale(2.1); /* Grow the avatar */
     }
-  }
-  
-  .shrink-grow-animation {
-    animation: shrink-grow 2s infinite ease-in-out;
+    100% {
+      transform: scale(2); /* Shrink back */
+    }
   }
   
   body {

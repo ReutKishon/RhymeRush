@@ -4,10 +4,6 @@ import redisClient from "../redisClient";
 import generateSongTopic from "../utils/generateTopic";
 import { AppError } from "../../../shared/utils/appError";
 import { GameBase, Player, Song } from "../../../shared/types/gameTypes";
-import {
-  isRelatedToTopic,
-  sentencesAreRhyme,
-} from "../utils/sentencValidation";
 import { CustomRequest } from "types/appTypes";
 import UserModel from "../models/userModel";
 import SongModel from "../models/songModel";
@@ -18,27 +14,6 @@ export const getGameFromRedis = async (gameCode: string) => {
   const gameDataString = await redisClient.get(`game:${gameCode}`);
 
   return JSON.parse(gameDataString) as Game;
-};
-
-export const isSentenceValid = async (
-  game: Game,
-  sentence: string
-): Promise<boolean> => {
-  console.log("isSentenceValid1");
-  if (sentence.split(" ").length < 5) return false;
-  console.log("isSentenceValid2");
-
-  const relatedToTopic = await isRelatedToTopic(game.topic, sentence);
-  console.log("relatedToTopic :", relatedToTopic);
-  if (!relatedToTopic) return false;
-
-  if (game.lyrics.length > 0 && game.lyrics.length % 2 != 0) {
-    return await sentencesAreRhyme(
-      sentence,
-      game.lyrics[game.lyrics.length - 1].content
-    );
-  }
-  return true;
 };
 
 export const createPlayer = async (playerName: string): Promise<Player> => {
@@ -73,7 +48,7 @@ export const createGame = catchAsync(
       winnerPlayerName: null,
       gameCreatorName: gameCreator.name,
       songId: uniqueCode,
-      isTurnChanging:false,
+      isTurnChanging: false,
     };
     await redisClient.set(`game:${game.code}`, JSON.stringify(game));
     res.status(201).json({
@@ -126,7 +101,6 @@ export const getGameInfo = catchAsync(async (req: CustomRequest, res, next) => {
     data: { gameData },
   });
 });
-
 
 export const getAllGames = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {

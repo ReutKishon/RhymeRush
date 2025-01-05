@@ -3,6 +3,7 @@ import redisClient from "../redisClient";
 import { Player, Sentence } from "../../../shared/types/gameTypes";
 import { io } from "../app";
 import { Game } from "types/gameTypes";
+import { evaluateSentence } from "../utils/sentencValidation";
 
 const timerMap = new Map<string, NodeJS.Timeout>();
 
@@ -49,7 +50,7 @@ export const handleAddSentenceSubmit = async (
     throw new Error("It's not your turn!");
   }
 
-  player.score += getSentenceValue(game, sentence);
+  player.score += await getSentenceValue(game, sentence);
   io.to(game.code).emit("updatePlayerScore", playerName, player.score);
 
   await addSentenceToSong(game, player, sentence);
@@ -59,8 +60,16 @@ export const handleAddSentenceSubmit = async (
   await redisClient.set(`game:${game.code}`, JSON.stringify(game));
 };
 
-const getSentenceValue = (game: Game, sentence: string) => {
-  return 1;
+const getSentenceValue = async (game: Game, sentence: string) => {
+  const res = await evaluateSentence(game, sentence);
+  const assistantResponse = JSON.parse(res.choices[0].message.content);
+
+  // Get the final score
+  const finalScore = assistantResponse.finalScore;
+
+  console.log(finalScore); // Output: 8
+
+  return finalScore;
 };
 
 const addSentenceToSong = async (
