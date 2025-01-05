@@ -10,27 +10,46 @@ import Welcome from "./components/auth/Welcome";
 import SignUp from "./components/auth/SignUp";
 import SignIn from "./components/auth/SignIn";
 import "./index.css";
-import { jwtDecode } from "jwt-decode";
 import useAppStore from "./store/useStore";
 
 function App() {
+  const { setConnectionStatus, connectionStatus} = useAppStore((state) => state);
+  const state = useAppStore((state) => state);
+
   useEffect(() => {
-    return () => {
-      socket.off("connect");
-      socket.off("disconnect");
-    };
+      if (connectionStatus) return;
+      socket.on("connect", () => {
+        console.log("Connected to the server with ID:", socket.id);
+        setConnectionStatus(true);
+      });
+      socket.on("disconnect", () => {
+        setConnectionStatus(false);
+      });
+
+
+      if (socket.connected) {
+        console.log('Already connected');
+        setConnectionStatus(true);
+      } else {
+        console.log('Connecting to the server...');
+        socket.connect(); // Connect only if not already connected
+      }
+  
+      // Cleanup listeners when component is unmounted
+      return () => {
+        socket.off('connect');
+        socket.off('disconnect');
+      };
   }, []);
 
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Welcome />} />
-        <Route path="/signin" element={<SignIn />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/home" element={<Home />} />
-        <Route path="/my-songs" element={<Home />} />
+        <Route path="/" element={<Home />} />
         <Route path="/game/:gameCode" element={<GameBoard />} />
+
       </Routes>
+        <p>{JSON.stringify(state, null, 2)}</p>
     </BrowserRouter>
   );
 }

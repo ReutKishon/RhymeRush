@@ -1,14 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { CSSProperties, StyleHTMLAttributes, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box } from "@mui/material";
 import { Button } from "pixel-retroui";
 import CreateGameModal from "./CreateGameModal";
 import JoinGameModal from "./JoinGameModal";
 import logo from "assets/images/RhymeRushLogo-removebg-preview.png";
+import useAppStore from "store/useStore";
 const Home = () => {
   const navigate = useNavigate();
   const [showCreateGameModal, setShowCreateGameModal] = useState(false);
   const [showJoinGameModal, setShowJoinGameModal] = useState(false);
+  const { connectionStatus } = useAppStore((state) => state);
 
 
   const handleCreateGame = () => {
@@ -19,12 +21,16 @@ const Home = () => {
     setShowJoinGameModal(true);
   };
 
-  // const handleMySongs = () => {
-  //   navigate(`/my-songs`);
-  // };
+
+  const areaDisabledStyle: CSSProperties = {
+    pointerEvents: 'none',
+    opacity: 0.5,
+  }
 
   return (
-    <div className="flex h-screen flex-col p-2 items-center justify-center gap-4">
+    <div  className="flex h-screen flex-col p-2 items-center justify-center gap-4" 
+    style={connectionStatus ? {} : areaDisabledStyle}
+    >
       <img className="w-32" src={logo} alt="Rhyme Rush Logo" />
       <div
         className="flex flex-col w-2/3 items-center gap-4"
@@ -51,6 +57,10 @@ const Home = () => {
           Join Game
         </Button>
       </div>
+
+      <p className="text-center text-red-600">
+        {connectionStatus ? "" : "Connection lost. Try again later..."}
+      </p>
 
       <CreateGameModal
         showModal={showCreateGameModal}

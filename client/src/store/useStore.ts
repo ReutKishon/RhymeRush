@@ -9,6 +9,7 @@ import {
 interface AppState {
   game: GameBase;
   user: User;
+  connectionStatus: boolean;
   setUserName: (name: string) => void;
   setUser: (user: User) => void;
   setGame: (game: GameBase) => void;
@@ -20,6 +21,7 @@ interface AppState {
   setGameIsActive: (isActive: boolean) => void;
   setGameCode: (gameCode: string) => void;
   resetGame: () => void;
+  setConnectionStatus: (status: boolean) => void;
 }
 
 const initialGameState: GameBase = {
@@ -36,6 +38,7 @@ const initialGameState: GameBase = {
 };
 
 const useAppStore = create<AppState>((set) => ({
+  connectionStatus: false,
   userName: "",
   game: { ...initialGameState },
   user: {
@@ -90,6 +93,8 @@ const useAppStore = create<AppState>((set) => ({
     set({
       game: { ...initialGameState },
     }),
+  setConnectionStatus: (status: boolean) => set(() => ({ connectionStatus: status })),
+
 }));
 
 export default useAppStore;
