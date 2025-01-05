@@ -1,39 +1,49 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { socket, api } from "../../services";
+import { api, socket } from "../../services";
 import useAppStore from "../../store/useStore.ts";
-import { Popup } from "pixel-retroui";
+import { Popup, Input } from "pixel-retroui";
 import { Box } from "@mui/material";
 
 interface JoinGameModalProps {
   showModal: boolean;
   setShowModal: (show: boolean) => void;
 }
+
 const JoinGameModal = ({ showModal, setShowModal }: JoinGameModalProps) => {
   const [gameCode, setGameCode] = useState("");
-  const { user, reset } = useAppStore((state) => state);
+  const [userNameInput, setUserNameInput] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const { setUserName } = useAppStore((state) => state);
   const navigate = useNavigate();
 
   const handleEnterGame = async () => {
-    if (gameCode.trim() === "") {
+    if (gameCode.trim() === "" || userNameInput.trim() === "") {
+      setErrorMessage("missing a game code or a username");
       return;
     }
     try {
-      socket.emit("joinGame", user.id, gameCode);
-      reset();
+      await api.joinGame(gameCode, userNameInput);
+      setUserName(userNameInput);
       navigate(`/game/${gameCode}`);
     } catch (err) {
-      console.log(err);
+      setErrorMessage(err.response.data.message);
+      return;
     }
+  };
+
+  const handleUserNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setUserNameInput(event.target.value);
+  };
+
+  const handleGameCodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setGameCode(event.target.value);
   };
 
   const onCloseModal = () => {
     setGameCode("");
     setShowModal(false);
-  };
-
-  const handleGameCodeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setGameCode(event.target.value);
   };
 
   return (
@@ -49,14 +59,28 @@ const JoinGameModal = ({ showModal, setShowModal }: JoinGameModalProps) => {
             borderColor="black"
           >
             <h2 className="text-xl font-bold mb-4">Join A Game</h2>
+
             <div className="mb-4">
-              <input
+              <Input
+                placeholder="Enter your username"
+                type="text"
+                onChange={handleUserNameChange}
+                value={userNameInput}
+                className="w-full border border-gray-300 rounded py-2 pl-4"
+              />
+            </div>
+            <div className="mb-4">
+              <Input
+                placeholder="Enter a game code"
                 type="text"
                 value={gameCode}
                 onChange={handleGameCodeChange}
                 className="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100"
               />
             </div>
+            {errorMessage && (
+              <p className="text-red-600 text-sm mb-2">{errorMessage}</p>
+            )}
             <button
               onClick={handleEnterGame}
               className="bg-[#8bd98f] text-black rounded px-4 py-2 hover:bg-green-600 w-full mb-2"

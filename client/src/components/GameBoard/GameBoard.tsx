@@ -6,25 +6,15 @@ import { api } from "../../services/index.ts";
 import useAppStore from "../../store/useStore.ts";
 import { Box } from "@mui/material";
 import GameResultsModal from "./modals/GameResultsModal.tsx";
-import LosingModal from "./modals/LosingModal.tsx";
+import GameTimer from "./GameTimer.tsx";
+// import LosingAlert from "./modals/LosingAlert.tsx";
 
 const GameBoard = () => {
   const { gameCode } = useParams<{ gameCode: string }>();
-  const { setGame, setGameCode, game } = useAppStore((state) => state);
-  const [showResultsModal, setShowResultsModal] = useState<boolean>(false);
-  const [showLosingModal, setShowLosingModal] = useState<boolean>(false);
-  const [loserPlayerName, setLoserPlayerName] = useState<string>("");
-  const [loosingReason, setLoosingReason] = useState<string>("");
+  const { setGame, setGameCode, resetGame } = useAppStore((state) => state);
+  const [topic, setTopic] = useState<string>();
 
-  const setLoosingDetails = (
-    showLosingModal: boolean,
-    playerName: string,
-    reason: string
-  ) => {
-    setShowLosingModal(showLosingModal);
-    setLoserPlayerName(playerName);
-    setLoosingReason(reason);
-  };
+  const [showResultsModal, setShowResultsModal] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchGame = async () => {
@@ -32,16 +22,19 @@ const GameBoard = () => {
         if (gameCode) {
           const game = await api.fetchGameData(gameCode);
           setGame(game);
-          setGameCode(gameCode);
+          setGameCode(gameCode); //TODO: remove gameCode state and use the field in game
+          setTopic(game.topic);
         }
       } catch (err) {
         console.error("Failed to fetch game details: ", err);
       }
     };
+    resetGame();
     fetchGame();
   }, [gameCode]);
 
-  useSocketEvents({ setShowResultsModal, setLoosingDetails });
+  useSocketEvents({ setShowResultsModal });
+
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
       {/* Top Section - Start Button and Topic */}
@@ -57,9 +50,10 @@ const GameBoard = () => {
           className="text-l sm:text-2xl text-center mb-4 ml-10"
           style={{ fontWeight: "bold", width: "90%" }}
         >
-          {game.topic}
+          {topic}
         </h2>
         <StartGameButton />
+        <GameTimer setShowResultsModal />
       </Box>
       {/* Middle Section - SongLyrics (Centered in the middle of the page) */}
       <div className="flex-1 flex flex-col sm:flex-row items-center gap-4">
@@ -70,7 +64,6 @@ const GameBoard = () => {
           <SongLyrics />
         </div>
       </div>
-
       {/* Bottom Section - Sentence Input */}
       <Box
         sx={{
@@ -84,12 +77,8 @@ const GameBoard = () => {
         <SentenceInput />
       </Box>
 
-      <LosingModal
-        showModal={showLosingModal}
-        onClose={() => setShowLosingModal(false)}
-        reason={loosingReason}
-        playerName={loserPlayerName}
-      />
+      {/* <LosingAlert /> */}
+
       <GameResultsModal showModal={showResultsModal} />
     </Box>
   );

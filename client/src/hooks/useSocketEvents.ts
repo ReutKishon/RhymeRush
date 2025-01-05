@@ -8,34 +8,22 @@ import {
 import useStore from "../store/useStore";
 
 interface SocketEventsProps {
-  // triggerGameOverModal: (playerName: string, reason: string) => void;
-  // triggerGameResultsModal: () => void;
   setShowResultsModal: (show: boolean) => void;
-  setLoosingDetails: (
-    showLooserModal: boolean,
-    playerName: string,
-    reason: string
-  ) => void;
 }
-const useSocketEvents = ({
-  setShowResultsModal,
-  setLoosingDetails,
-}: SocketEventsProps) => {
+const useSocketEvents = ({ setShowResultsModal }: SocketEventsProps) => {
   const {
-    setTimer,
-    gameCode,
+    game: { code },
     addPlayer,
     removePlayer,
     addSentence,
-    setCurrentPlayerId,
-    setPlayerAsLoser,
-    setIsActive,
-    game,
+    setCurrentPlayerName: setCurrentPlayerId,
+    setPlayerScore,
+    setGameIsActive,
   } = useStore((state) => state);
 
   useEffect(() => {
     socket.on("gameStarted", () => {
-      setIsActive(true);
+      setGameIsActive(true);
     });
 
     socket.on("playerJoined", (player: Player) => {
@@ -47,28 +35,22 @@ const useSocketEvents = ({
       removePlayer(playerId);
     });
 
-    socket.on(
-      "updatelosing",
-      (reason: string, player: Player) => {
-        setPlayerAsLoser(player?.id, player?.rank);
-        setLoosingDetails(true, player?.name, reason);
-      }
-    );
+    socket.on("updatePlayerScore", (playerName: string, score: number) => {
+      setPlayerScore(playerName, score);
+    });
 
     socket.on("lyricsUpdated", (sentence: Sentence) => {
       addSentence(sentence);
     });
 
-    socket.on("timerUpdate", (timer: number) => {
-      setTimer(timer);
+    socket.on("updateCurrentPlayer", (playerName: string) => {
+      console.log("Next turn", playerName);
+      setCurrentPlayerId(playerName);
     });
 
-    socket.on("nextTurn", (playerId: string) => {
-      setCurrentPlayerId(playerId);
-    });
-
-    socket.on("gameEnd", () => {
-      console.log("gameEnd");
+    socket.on("gameOver", () => {
+      console.log("gameOver");
+      setGameIsActive(false);
       setShowResultsModal(true);
     });
 
@@ -78,10 +60,10 @@ const useSocketEvents = ({
       socket.off("playerLeft");
       socket.off("lyricsUpdated");
       socket.off("nextTurn");
-      socket.off("timerUpdate");
-      socket.off("updateloosing");
+      socket.off("updatePlayerScore");
+      socket.off("UpdateCurrentPlayer");
     };
-  }, [gameCode]);
+  }, [code]);
 };
 
 export default useSocketEvents;

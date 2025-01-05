@@ -1,11 +1,6 @@
 import { Server, Socket } from "socket.io";
-import {
-  addSentence,
-  joinGame,
-  leaveGame,
-  startGame,
-  startTurnTimer,
-} from "./gameHandlers";
+import { handleAddSentenceSubmit, leaveGame, startGame } from "./gameHandlers";
+import { Player } from "../../../shared/types/gameTypes";
 
 export const playerSocketMap: Record<
   string,
@@ -22,16 +17,6 @@ export const socketHandler = (io: Server) => {
       }
     );
 
-    socket.on("joinGame", async (playerId: string, gameCode: string) => {
-      const joinedPlayer = await joinGame(gameCode, playerId);
-      console.log("joinedPlayer", joinedPlayer);
-      await joinSocketToGameRoom(gameCode, playerId);
-      if (joinedPlayer) {
-        console.log("testjoined");
-        io.to(gameCode).emit("playerJoined", joinedPlayer);
-      }
-    });
-
     // socket.on("leaveGame", async () => {
     //   console.log("test3");
 
@@ -47,29 +32,35 @@ export const socketHandler = (io: Server) => {
     //   io.to(gameCode).emit("playerLeft", playerId);
     // });
 
+    // io.to(game.code).emit("playerJoined", joinedPlayer);
+
+    socket.on(
+      "playerJoined",
+      async (gameCode: string, playerJoined: Player) => {
+        joinSocketToGameRoom(gameCode, playerJoined.name);
+        io.to(gameCode).emit("playerJoined", playerJoined);
+      }
+    );
+
     socket.on("startGame", async () => {
       try {
         const { gameCode } = playerSocketMap[socket.id];
-
         await startGame(gameCode);
-        io.to(gameCode).emit("gameStarted",);
+        io.to(gameCode).emit("gameStarted");
       } catch (err) {
         console.error("Error starting game:", err);
       }
     });
 
-    socket.on("startTimer", async (gameCode: string, playerId: string) => {
-      await startTurnTimer(io, gameCode, playerId);
-    });
-
     socket.on("addSentence", async (sentence: string) => {
       try {
         const { gameCode, playerId } = playerSocketMap[socket.id];
-        await addSentence(io, gameCode, playerId, sentence);
+        await handleAddSentenceSubmit(gameCode, playerId, sentence);
       } catch (err) {
         console.error("Error adding sentence:", err);
       }
     });
+    
 
     socket.on("disconnect", async (reason) => {
       console.log(`Socket disconnected. Reason: ${reason}`);

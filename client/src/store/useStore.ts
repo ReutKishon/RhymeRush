@@ -1,45 +1,42 @@
 import { create } from "zustand";
 import {
   User,
-  GameBase as Game,
   Player,
   Sentence,
+  GameBase,
 } from "../../../shared/types/gameTypes";
 
 interface AppState {
-  game: Game;
-  gameCode: string;
+  game: GameBase;
   user: User;
-  timer: number;
+  setUserName: (name: string) => void;
   setUser: (user: User) => void;
-  setGame: (game: Game) => void;
+  setGame: (game: GameBase) => void;
   addPlayer: (player: Player) => void;
   removePlayer: (playerId: string) => void;
-  setPlayerAsLoser: (playerId: string, rank: number) => void;
+  setPlayerScore: (playerName: string, score: number) => void;
   addSentence: (sentence: Sentence) => void;
-  setCurrentPlayerId: (playerId: string) => void;
-  setWinnerPlayerId: (playerId: string) => void;
-  setIsActive: (isActive: boolean) => void;
+  setCurrentPlayerName: (playerName: string) => void;
+  setGameIsActive: (isActive: boolean) => void;
   setGameCode: (gameCode: string) => void;
-  setTimer: (timer: number) => void;
-  reset: () => void;
+  resetGame: () => void;
 }
 
-const initialGameState: Game = {
+const initialGameState: GameBase = {
   code: "",
   topic: "",
   players: [],
   currentTurnIndex: 0,
   isActive: false,
-  currentPlayerId: "",
+  currentPlayerName: "",
   lyrics: [],
-  winnerPlayerId: "",
-  gameCreatorId: "",
+  winnerPlayerName: "",
+  gameCreatorName: "",
   songId: "",
 };
 
 const useAppStore = create<AppState>((set) => ({
-  gameCode: "",
+  userName: "",
   game: { ...initialGameState },
   user: {
     username: "",
@@ -49,51 +46,49 @@ const useAppStore = create<AppState>((set) => ({
     id: "",
     songs: [],
   },
-  timer: 30,
+  setUserName: (username) => {
+    set((state) => ({ user: { ...state.user, username } }));
+  },
   setUser: (user: User) => set(() => ({ user })),
   addPlayer: (player: Player) =>
     set((state) => ({
       game: { ...state.game, players: [...state.game.players, player] },
     })),
-  removePlayer: (playerId: string) =>
+  removePlayer: (playerName: string) =>
     set((state) => ({
       game: {
         ...state.game,
-        players: state.game.players.filter((p) => p.id !== playerId),
+        players: state.game.players.filter((p) => p.name !== playerName),
       },
     })),
   addSentence: (sentence: Sentence) =>
     set((state) => ({
       game: { ...state.game, lyrics: [...state.game.lyrics, sentence] },
     })),
-  setCurrentPlayerId: (playerId: string) =>
-    set((state) => ({ game: { ...state.game, currentPlayerId: playerId } })),
-  setWinnerPlayerId: (playerId) =>
+  setCurrentPlayerName: (playerName: string) =>
     set((state) => ({
-      game: { ...state.game, winnerPlayerId: playerId },
+      game: { ...state.game, currentPlayerName: playerName },
     })),
-  setIsActive: (isActive) =>
+
+  setGameIsActive: (isActive) =>
     set((state) => ({
       game: { ...state.game, isActive },
     })),
-  setPlayerAsLoser: (playerId: string, rank: number) =>
+  setPlayerScore: (playerName: string, score: number) =>
     set((state) => ({
       game: {
         ...state.game,
-        isActive: false,
-        players: state.game.players.map((player) =>
-          player.id === playerId ? { ...player, rank } : player
+        players: state.game.players.map((player: Player) =>
+          player.name === playerName ? { ...player, score } : player
         ),
       },
     })),
-  setGame: (game: Game) => set(() => ({ game })),
-  setGameCode: (gameCode: string) => set(() => ({ gameCode })),
-  setTimer: (timer: number) => set(() => ({ timer })),
-  reset: () =>
+  setGame: (game: GameBase) => set(() => ({ game })),
+  setGameCode: (gameCode: string) =>
+    set((state) => ({ game: { ...state.game, code: gameCode } })),
+  resetGame: () =>
     set({
-      gameCode: "",
       game: { ...initialGameState },
-      timer: 30,
     }),
 }));
 

@@ -10,11 +10,11 @@ const Home = () => {
   const [showCreateGameModal, setShowCreateGameModal] = useState(false);
   const [showJoinGameModal, setShowJoinGameModal] = useState(false);
 
-  useEffect(() => {
-    if (!localStorage.getItem("authToken")) {
-      navigate("/login");
-    }
-  }, [navigate]);
+  // useEffect(() => {
+  //   if (!localStorage.getItem("authToken")) {
+  //     navigate("/login");
+  //   }
+  // }, [navigate]);
 
   const handleCreateGame = () => {
     setShowCreateGameModal(true);

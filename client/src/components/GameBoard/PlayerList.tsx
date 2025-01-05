@@ -1,29 +1,26 @@
 import React, { useMemo } from "react";
 import { PlayerAvatar } from "../GameBoard";
 import useAppStore from "../../store/useStore";
-import { Box } from "@mui/material";
 
 const PlayerList = () => {
-  const { timer, setTimer } = useAppStore((state) => state);
-  const players = useAppStore((state) => state.game.players);
-  const gameIsActive = useAppStore((state) => state.game.isActive);
-  const currentPlayerId = useAppStore((state) => state.game.currentPlayerId);
-  console.log("players: ", players);
-  const playerComponents = useMemo(() => {
-    return players.map((player) => {
-      const isPlayerTurn = gameIsActive && currentPlayerId === player.id;
+  const {
+    players,
+    isActive: gameIsActive,
+    currentPlayerName,
+  } = useAppStore((state) => state.game);
 
+  const playerComponents = useMemo(() => {
+    console.log("players:", players);
+    return players.map((player) => {
       return (
         <PlayerAvatar
-          key={player.id}
+          key={player.name}
           player={player}
-          isPlayerTurn={isPlayerTurn}
-          timer={isPlayerTurn ? timer : null}
-          setTimer={setTimer}
+          isPlayerTurn={gameIsActive && currentPlayerName === player.name}
         />
       );
     });
-  }, [gameIsActive, timer, players]);
+  }, [currentPlayerName, gameIsActive, players]);
 
   return (
     <div className="flex sm:flex-col justify-center items-center gap-4">

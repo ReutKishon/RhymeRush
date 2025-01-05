@@ -5,6 +5,7 @@ import {
   getGameInfo,
   saveSong,
   deleteAllGames,
+  joinGame,
 } from "../controllers/gameController";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import asyncHandler from "express-async-handler";
@@ -41,11 +42,13 @@ const protect = asyncHandler(async (req: CustomRequest, res, next) => {
   }
 });
 
-router.use(protect);
-router.route("/").post(createGame).get(getAllGames).delete(deleteAllGames);
+// router.use(protect);
+router.route("/")
+  .post(createGame)
+  .get(getAllGames)
+  .delete(deleteAllGames);
 router.route("/:gameCode").get(getGameInfo);
-// router.route("/:gameCode/start").patch(startGame);
-// router.route("/:gameCode/:playerId").patch(joinGame);
+router.route("/:gameCode/:userName").patch(joinGame);
 // router.route("/:gameCode/:playerId/sentence").patch(addSentenceHandler);
 router.route("/:gameCode/save-song").post(saveSong);
 

@@ -10,9 +10,17 @@ interface GameResultsModalProps {
 const GameResultsModal = ({ showModal }: GameResultsModalProps) => {
   const navigate = useNavigate();
   const players = useAppStore((state) => state.game.players);
+  const isGameActive = useAppStore((state) => state.game.isActive);
+
   const onClose = () => {
     navigate("/home");
   };
+
+  const sortedPlayers = [...players].sort((a, b) => b.score - a.score);
+
+  if (isGameActive) {
+    return null;
+  }
 
   return (
     <Popup
@@ -31,16 +39,14 @@ const GameResultsModal = ({ showModal }: GameResultsModalProps) => {
         {/* Player Rankings */}
 
         <List sx={{ maxHeight: 200, overflowY: "auto" }}>
-          {players
-            .sort((a, b) => a.rank - b.rank)
-            .map((player) => (
-              <ListItem key={player.id}>
-                <ListItemText
-                  primary={`${player.rank + 1}. ${player.name}`}
-                  secondary={player.rank === 0 ? "🏆 Winner" : null}
-                />
-              </ListItem>
-            ))}
+          {sortedPlayers.map((player, index) => (
+            <ListItem key={player.name}>
+              <ListItemText
+                primary={`${index + 1}. ${player.name}`}
+                secondary={index === 0 ? "🏆 Winner" : null}
+              />
+            </ListItem>
+          ))}
         </List>
       </div>
     </Popup>
