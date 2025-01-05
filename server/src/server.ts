@@ -11,19 +11,19 @@ import { default as mongoose } from "mongoose";
 import { server } from "./app";
 import "./redisClient";
 
-const DB = process.env.DATABASE.replace(
-  "<db_password>",
-  process.env.DATABASE_PASSWORD
-);
+// const DB = process.env.DATABASE.replace(
+//   "<db_password>",
+//   process.env.DATABASE_PASSWORD
+// );
 
-mongoose
-  .connect(DB)
-  .then(() => {
-    console.log("Connected to MongoDB");
-  })
-  .catch((err) => {
-    console.error("Error connecting to MongoDB:", err);
-  });
+// mongoose
+//   .connect(DB)
+//   .then(() => {
+//     console.log("Connected to MongoDB");
+//   })
+//   .catch((err) => {
+//     console.error("Error connecting to MongoDB:", err);
+//   });
 
 const port = process.env.PORT || 3000;
 server.listen(port, () => {

@@ -13,27 +13,21 @@ import { socketHandler } from "./socket";
 
 const app = express();
 
-app.use(
-  cors({
-    origin: "http://localhost:5000", // Frontend URL
-    methods: "GET,POST,PATCH,DELETE", // Allow specific methods
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+app.use(cors())
 
 const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:5000",
-    methods: ["GET", "POST"],
+    origin: "*", // Allow all origins
+    methods: ["GET", "POST"], // Allow specific HTTP methods
   },
 });
 
 socketHandler(io);
 
-//set security HTTP headers
-app.use(helmet());
+// //set security HTTP headers
+// app.use(helmet());
 
 //development logging
 if (process.env.NODE_ENV === "development") {
@@ -50,7 +44,8 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v1/game", gameRouter);
 
 app.all("*", (req: Request, res: Response, next: NextFunction) => {
-  next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
+  // next(new AppError(`Can't find ${req.originalUrl} on this server`, 404));
+  res.status(404).json('Not found')
 });
 
 app.use(globalErrorHandler);

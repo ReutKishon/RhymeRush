@@ -42,8 +42,11 @@ const protect = asyncHandler(async (req: CustomRequest, res, next) => {
   }
 });
 
-router.use(protect);
-router.route("/").post(createGame).get(getAllGames).delete(deleteAllGames);
+// router.use(protect);
+router.route("/")
+  .post(createGame)
+  .get(getAllGames)
+  .delete(deleteAllGames);
 router.route("/:gameCode").get(getGameInfo);
 router.route("/:gameCode/:userName").patch(joinGame);
 // router.route("/:gameCode/:playerId/sentence").patch(addSentenceHandler);
