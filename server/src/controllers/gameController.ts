@@ -73,7 +73,7 @@ export const createGame = catchAsync(
       winnerPlayerName: null,
       gameCreatorName: gameCreator.name,
       songId: uniqueCode,
-      currentTimerId: null,
+      isTurnChanging:false,
     };
     await redisClient.set(`game:${game.code}`, JSON.stringify(game));
     res.status(201).json({

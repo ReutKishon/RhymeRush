@@ -6,6 +6,7 @@ import { api } from "../../services/index.ts";
 import useAppStore from "../../store/useStore.ts";
 import { Box } from "@mui/material";
 import GameResultsModal from "./modals/GameResultsModal.tsx";
+import GameTimer from "./GameTimer.tsx";
 // import LosingAlert from "./modals/LosingAlert.tsx";
 
 const GameBoard = () => {
@@ -52,6 +53,7 @@ const GameBoard = () => {
           {topic}
         </h2>
         <StartGameButton />
+        <GameTimer setShowResultsModal />
       </Box>
       {/* Middle Section - SongLyrics (Centered in the middle of the page) */}
       <div className="flex-1 flex flex-col sm:flex-row items-center gap-4">

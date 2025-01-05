@@ -43,7 +43,7 @@ const useSocketEvents = ({ setShowResultsModal }: SocketEventsProps) => {
       addSentence(sentence);
     });
 
-    socket.on("UpdateCurrentPlayer", (playerName: string) => {
+    socket.on("updateCurrentPlayer", (playerName: string) => {
       console.log("Next turn", playerName);
       setCurrentPlayerId(playerName);
     });

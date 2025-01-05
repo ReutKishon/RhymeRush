@@ -6,6 +6,6 @@ import { GameBase, Player } from "../../../shared/types/gameTypes";
 // }
 
 export interface Game extends GameBase {
-    currentTimerId: NodeJS.Timeout | null;
+    isTurnChanging: boolean;
 }
 
