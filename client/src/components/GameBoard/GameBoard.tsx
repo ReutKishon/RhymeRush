@@ -47,28 +47,10 @@ const GameBoard = () => {
         <GameTimer setShowResultsModal />
       </div>
 
-
       <div className="flex w-full h-full">
-
         <SongLyrics />
         <PlayerList />
       </div>
-
-
-      {/* <div className="flex-1 flex flex-row items-center gap-4">
-        <div className="flex-shrink-0 flex-grow-0 basis-[10%]">
-        </div>
-        <div className="basis-[90%] flex items-center justify-center max-h-[400px] h-full mt-10">
-        </div>
-
-        <StartGameButton />
-
-      </div>
-
-      <div className="flex flex-col items-center justify-center">
-          <p>elad</p>
-      </div> */}
-
 
 
 
