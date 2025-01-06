@@ -1,6 +1,10 @@
 import { getGameFromRedis } from "../controllers/gameController";
 import redisClient from "../redisClient";
-import { Player, Sentence } from "../../../shared/types/gameTypes";
+import {
+  Player,
+  Sentence,
+  SentenceScores,
+} from "../../../shared/types/gameTypes";
 import { io } from "../app";
 import { Game } from "types/gameTypes";
 import { evaluateSentence } from "../utils/sentencValidation";
@@ -23,7 +27,7 @@ export const startGame = async (gameCode: string) => {
       io.to(gameCode).emit("gameOver");
       game.isActive = false;
       await redisClient.set(`game:${game.code}`, JSON.stringify(game));
-    }, 3 * 60 * 1000);
+    }, game.timerInMinutes * 60 * 1000);
 
     startTimer(game);
 
@@ -50,36 +54,47 @@ export const handleAddSentenceSubmit = async (
     throw new Error("It's not your turn!");
   }
 
-  player.score += await getSentenceValue(game, sentence);
+  const sentenceScores = await getSentenceScores(game, sentence);
+  player.score += sentenceScores.generalScore;
   io.to(game.code).emit("updatePlayerScore", playerName, player.score);
 
-  await addSentenceToSong(game, player, sentence);
+  await addSentenceToSong(game, player, sentence, sentenceScores);
 
   await moveNextTurn(game);
 
   await redisClient.set(`game:${game.code}`, JSON.stringify(game));
 };
 
-const getSentenceValue = async (game: Game, sentence: string) => {
+const getSentenceScores = async (
+  game: Game,
+  sentence: string
+): Promise<SentenceScores> => {
   const res = await evaluateSentence(game, sentence);
   const assistantResponse = JSON.parse(res.choices[0].message.content);
 
   // Get the final score
   const finalScore = assistantResponse.finalScore;
+  const rhymeScore = assistantResponse.rhymeScore;
+  const scores: SentenceScores = {
+    generalScore: finalScore,
+    rhymeScore: rhymeScore,
+  };
+  console.log(assistantResponse);
+  console.log(finalScore); 
 
-  console.log(finalScore); // Output: 8
-
-  return finalScore;
+  return scores;
 };
 
 const addSentenceToSong = async (
   game: Game,
   player: Player,
-  sentence: string
+  sentence: string,
+  scores: SentenceScores
 ) => {
   const sentenceData: Sentence = {
     content: sentence,
     player,
+    scores,
   };
 
   game.lyrics.push(sentenceData);

@@ -29,7 +29,7 @@ export const createPlayer = async (playerName: string): Promise<Player> => {
 
 export const createGame = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { uniqueCode, userName } = req.body;
+    const { uniqueCode, userName ,gameTimerInMinutes} = req.body;
 
     if (!userName) {
       return next(new AppError("a game must be created by a player!", 401));
@@ -49,6 +49,7 @@ export const createGame = catchAsync(
       gameCreatorName: gameCreator.name,
       songId: uniqueCode,
       isTurnChanging: false,
+      timerInMinutes: gameTimerInMinutes
     };
     await redisClient.set(`game:${game.code}`, JSON.stringify(game));
     res.status(201).json({

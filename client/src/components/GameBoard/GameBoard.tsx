@@ -4,7 +4,6 @@ import { useParams } from "react-router-dom";
 import useSocketEvents from "../../hooks/useSocketEvents";
 import { api } from "../../services/index";
 import useAppStore from "../../store/useStore";
-import { Box } from "@mui/material";
 import GameResultsModal from "./modals/GameResultsModal";
 import GameTimer from "./GameTimer";
 
@@ -23,6 +22,7 @@ const GameBoard = () => {
       try {
         if (gameCode) {
           const game = await api.fetchGameData(gameCode);
+          console.log("Fetched game: ", game);
           setGame(game);
           setGameCode(gameCode); //TODO: remove gameCode state and use the field in game
           setTopic(game.topic);
@@ -44,7 +44,7 @@ const GameBoard = () => {
         <p className="text-2xl font-extrabold w-full text-center mb-4 ml-10">
           {topic}
         </p>
-        <GameTimer setShowResultsModal />
+        <GameTimer  />
       </div>
 
       <div className="flex w-full h-full">

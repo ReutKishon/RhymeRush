@@ -35,6 +35,7 @@ const initialGameState: GameBase = {
   winnerPlayerName: "",
   gameCreatorName: "",
   songId: "",
+  timerInMinutes: 0,
 };
 
 const useAppStore = create<AppState>((set) => ({
@@ -93,8 +94,8 @@ const useAppStore = create<AppState>((set) => ({
     set({
       game: { ...initialGameState },
     }),
-  setConnectionStatus: (status: boolean) => set(() => ({ connectionStatus: status })),
-
+  setConnectionStatus: (status: boolean) =>
+    set(() => ({ connectionStatus: status })),
 }));
 
 export default useAppStore;

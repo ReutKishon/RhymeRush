@@ -32,11 +32,18 @@ export interface GameBase {
   winnerPlayerName: string;
   gameCreatorName: string;
   songId: string;
+  timerInMinutes:number
 }
 
 export interface Sentence {
   content: string;
   player: Player;
+  scores: SentenceScores;
+}
+
+export interface SentenceScores {
+  generalScore: number;
+  rhymeScore: number;
 }
 
 type UserInput = Omit<User, "_id">;

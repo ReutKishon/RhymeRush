@@ -9,34 +9,37 @@ const apiKey = process.env.OPEN_AI_KEY;
 
 export const evaluateSentence = async (game: Game, sentence: string) => {
   const prompt = `
-  You are an expert lyric evaluator for a collaborative songwriting game. Evaluate the player's submitted sentence based on the following criteria and return the results as a JSON object.
+ You are an expert lyric evaluator for a collaborative songwriting game. Evaluate the player's submitted sentence based on the following criteria and return the results as a JSON object.
 
-1. **Topic Relation**: Rate how well the sentence aligns with the given topic. (0-10)
-2. **Song Relevance**: Rate how well the sentence fits with the context and flow of the song so far. (0-10)
-   - If there are no previous lyrics, skip the Song Relevance (do not include it in the average score)
-3. **Rhyme**: Rate whether the sentence rhymes with the previous sentence.
-   - Only evaluate rhyme if the line number is even. For odd-numbered lines, skip the rhyme evaluation (do not include it in the average score).
-4. **Final Score**: Calculate the average of the three scores and convert it to an integer. If rhyme is not evaluated (for odd-numbered lines), divide the total score by 2 instead of 3.
+1. Topic Relation: Rate how well the sentence aligns with the given topic. (0-10)
+2. Song Relevance: Rate how well the sentence fits with the context and flow of the song so far. (0-10)
+3. Rhyme Score: Rate whether the sentence rhymes with the previous sentence. If the input sentence is even-numbered in the song, skip this criterion.
+
+Return the following fields in the JSON object:
+- "topicRelation": <integer between 0 and 10>
+- "songRelevance": <integer between 0 and 10>
+- "rhymeScore": <integer between 0 and 10> or null if this criterion is skipped.
+- "finalScore": <integer average of the above criteria>.
 
 Input structure:
 {
   "topic": "<TOPIC>",
   "songSoFar": "<SONG_SO_FAR>",
-  "playerSentence": "<PLAYER_SENTENCE>",
-  "lineNumber": <LINE_NUMBER>
+  "playerSentence": "<PLAYER_SENTENCE>"
 }
 
-- Make sure to separate the field in the \`songSoFar\` by considering \`*\` as a sentence delimiter.
-- Return a JSON object with this structure:
+Note: Ensure The songSoFar sentences are separated by '*' and are 0-indexed.
+
+Return a JSON object with this structure:
 {
-  "topicRelation": <integer between 0 and 10>,
-  "songRelevance": <integer between 0 and 10>,
-  "isRhyme": <integer between 0 and 10> (skip this field for odd-numbered lines),
-  "finalScore": <integer average of the above> (divide by 2 if no rhyme is evaluated)
+  "topicRelation": <integer>,
+  "songRelevance": <integer>,
+  "rhymeScore": <integer>,
+  "finalScore": <integer>,
 }
    `;
   const url = "https://api.openai.com/v1/chat/completions";
-
+  console.log(game.lyrics);
   const headers = {
     "Content-Type": "application/json",
     Authorization: `Bearer ${apiKey}`,

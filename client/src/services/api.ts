@@ -26,13 +26,15 @@ api.interceptors.request.use(
 
 export const createGame = async (
   gameCode: string,
-  userName: string
+  userName: string,
+  gameTimerInMinutes: number
 ): Promise<Game> => {
   try {
     console.log("Creating new game");
     const response = await api.post(`/game`, {
       uniqueCode: gameCode,
       userName,
+      gameTimerInMinutes,
     });
     const game: Game = response.data.data.game;
     socket.emit("gameCreated", game.code, userName);
@@ -58,7 +60,7 @@ export const joinGame = async (
       socket.emit("playerJoined", gameCode, joinedPlayer);
     }
   } catch (err) {
-    console.log(err)
+    console.log(err);
     throw err;
   }
 };

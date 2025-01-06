@@ -2,9 +2,15 @@ import { useEffect, useState } from "react";
 import useAppStore from "../../store/useStore";
 import React from "react";
 
-const GameTimer = ({ setShowResultsModal }) => {
-  const [remainingTime, setRemainingTime] = useState<number>(3 * 60);
-  const { isActive: gameIsActive } = useAppStore((state) => state.game);
+const GameTimer = ({}) => {
+  const { isActive: gameIsActive, timerInMinutes } = useAppStore(
+    (state) => state.game
+  );
+  const [remainingTime, setRemainingTime] = useState<number>(3*60);
+
+  useEffect(() => {
+    setRemainingTime(timerInMinutes * 60);
+  }, [timerInMinutes]);
 
   useEffect(() => {
     if (!gameIsActive) return;
@@ -14,7 +20,6 @@ const GameTimer = ({ setShowResultsModal }) => {
         if (prevTime <= 1) {
           // Game over logic, stop the timer
           clearInterval(intervalId);
-          setShowResultsModal(true);
           return 0;
         }
         return prevTime - 1;
