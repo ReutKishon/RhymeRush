@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../services";
-import { Input, Popup } from "pixel-retroui";
-import { Box } from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
 import useAppStore from "../../store/useStore";
+import { AiFillCloseCircle } from "react-icons/ai";
+import GameTimerSelection from "./GameTimerSelection";
 
 interface CreateGameModalProps {
   showModal: boolean;
@@ -17,6 +17,8 @@ const CreateGameModal = ({ showModal, setShowModal }: CreateGameModalProps) => {
   >("enterUsername");
   const [username, setUsername] = useState("");
   const [gameCode, setGameCode] = useState("");
+  const [gameTimer, setGameTimer] = useState(3);
+
   const navigate = useNavigate();
   const { setUserName } = useAppStore((state) => state);
 
@@ -26,7 +28,7 @@ const CreateGameModal = ({ showModal, setShowModal }: CreateGameModalProps) => {
       return;
     }
     const generatedCode = uuidv4(); //TODO: move the generated code to the backend?
-    const game = await api.createGame(generatedCode, username);
+    const game = await api.createGame(generatedCode, username, gameTimer);
 
     setGameCode(game.code);
     setCurrentStep("gameCreated");
@@ -41,65 +43,70 @@ const CreateGameModal = ({ showModal, setShowModal }: CreateGameModalProps) => {
     setShowModal(false);
     setCurrentStep("enterUsername");
   };
+  if (!showModal) return null;
 
   return (
-    showModal && (
-      <Box className="fixed inset-0 flex items-center justify-center">
-        <Box className="w-[70%] max-w-[400px] h-[300px] sm:w-[80%] sm:h-[250px] md:w-[70%] md:h-[300px] lg:w-[60%] lg:h-[350px] xl:w-[50%] xl:h-[400px]">
-          <Popup
-            isOpen={showModal}
-            onClose={onClose}
-            bg="#fefcd0"
-            baseBg="#c381b5"
-            textColor="black"
-            borderColor="black"
+    <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
+      <div className="w-[70%] max-w-[400px] h-[300px] sm:w-[80%] sm:h-[250px] md:w-[70%] md:h-[300px] lg:w-[60%] lg:h-[350px] xl:w-[50%] xl:h-[400px]">
+        <div className="bg-gradient-to-br from-purple-500 to-pink-500 p-6 rounded-2xl shadow-2xl text-white w-full h-full relative">
+          <button
+            onClick={onClose}
+            className="absolute top-4 right-4 text-white hover:text-yellow-300 focus:outline-none"
+            aria-label="Close"
           >
-            {currentStep === "enterUsername" && (
-              <div>
-                <h2 className="text-xl mb-4">Create a New Game</h2>
-                <div className="mb-4">
-                  <Input
-                    type="text"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Enter your name"
-                    className="w-full border border-gray-300 rounded py-2 pl-4"
-                  />
-                </div>
-                <button
-                  onClick={handleCreateGame}
-                  className="bg-[#8bd98f] text-black rounded px-4 py-2 hover:bg-green-600 w-full mb-2"
-                >
-                  Create Game
-                </button>
+            <AiFillCloseCircle size={24} />
+          </button>
+
+          {currentStep === "enterUsername" && (
+            <div>
+              <h2 className="text-4xl font-bold text-center mb-6 text-yellow-300">
+                Create a New Game
+              </h2>
+              <div className="mb-6">
+                <label className="block text-lg mb-2">Your Name</label>
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Enter your name"
+                  className="w-full border-none rounded-xl py-3 pl-4 text-black bg-yellow-100 focus:ring-4 focus:ring-yellow-300 focus:outline-none"
+                />
               </div>
-            )}
-            {currentStep === "gameCreated" && (
-              <div>
-                <h2 className="text-xl mb-4">Game Created!</h2>
-                <p className="text-gray-700 mb-4">
-                  Share this game code with others to join:
-                </p>
-                <div className="mb-4">
-                  <input
-                    type="text"
-                    value={gameCode}
-                    readOnly
-                    className="w-full border border-gray-300 rounded py-2 pl-4"
-                  />
-                </div>
-                <button
-                  onClick={handleEnterGame}
-                  className="bg-[#8bd98f] text-black rounded px-4 py-2 hover:bg-green-600 w-full mb-2"
-                >
-                  Enter Game
-                </button>
+              <GameTimerSelection
+                gameTimer={gameTimer}
+                setGameTimer={setGameTimer}
+              />
+              <button
+                onClick={handleCreateGame}
+                className="bg-yellow-400 text-black font-bold rounded-full px-6 py-3 hover:bg-yellow-300 focus:ring-4 focus:ring-yellow-200 w-full transition-all duration-200"
+              >
+                Create Game
+              </button>
+            </div>
+          )}
+          {currentStep === "gameCreated" && (
+            <div>
+              <h2 className="text-4xl font-bold text-center mb-6 text-yellow-300">
+                🎉 Game Created!
+              </h2>
+              <p className="text-lg text-center mb-4 text-yellow-100">
+                Share this code with your friends to join:
+              </p>
+              <div className="bg-yellow-100 text-black font-bold rounded-xl py-3 px-4 text-center mb-4">
+                {gameCode}
               </div>
-            )}
-          </Popup>
-        </Box>
-      </Box>
-    )
+
+              <button
+                onClick={handleEnterGame}
+                className="bg-yellow-400 text-black font-bold rounded-full px-6 py-3 hover:bg-yellow-300 focus:ring-4 focus:ring-yellow-200 w-full transition-all duration-200"
+              >
+                Enter Game
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
   );
 };
 export default CreateGameModal;

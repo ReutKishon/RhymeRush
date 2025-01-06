@@ -1,9 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { api, socket } from "../../services";
+import { api } from "../../services";
 import useAppStore from "../../store/useStore";
-import { Popup, Input } from "pixel-retroui";
-import { Box } from "@mui/material";
+import { AiFillCloseCircle } from "react-icons/ai";
 
 interface JoinGameModalProps {
   showModal: boolean;
@@ -46,51 +45,55 @@ const JoinGameModal = ({ showModal, setShowModal }: JoinGameModalProps) => {
     setShowModal(false);
   };
 
-  return (
-    showModal && (
-      <Box className="fixed inset-0 flex items-center justify-center">
-        <Box className="w-[70%] max-w-[400px] h-[300px] sm:w-[80%] sm:h-[250px] md:w-[70%] md:h-[300px] lg:w-[60%] lg:h-[350px] xl:w-[50%] xl:h-[400px]">
-          <Popup
-            isOpen={showModal}
-            onClose={onCloseModal}
-            bg="#fefcd0"
-            baseBg="#c381b5"
-            textColor="black"
-            borderColor="black"
-          >
-            <h2 className="text-xl font-bold mb-4">Join A Game</h2>
+  if (!showModal) return null;
 
-            <div className="mb-4">
-              <Input
-                placeholder="Enter your username"
-                type="text"
-                onChange={handleUserNameChange}
-                value={userNameInput}
-                className="w-full border border-gray-300 rounded py-2 pl-4"
-              />
-            </div>
-            <div className="mb-4">
-              <Input
-                placeholder="Enter a game code"
-                type="text"
-                value={gameCode}
-                onChange={handleGameCodeChange}
-                className="w-full border border-gray-300 rounded px-4 py-2 bg-gray-100"
-              />
-            </div>
-            {errorMessage && (
-              <p className="text-red-600 text-sm mb-2">{errorMessage}</p>
-            )}
-            <button
-              onClick={handleEnterGame}
-              className="bg-[#8bd98f] text-black rounded px-4 py-2 hover:bg-green-600 w-full mb-2"
-            >
-              Enter Game
-            </button>
-          </Popup>
-        </Box>
-      </Box>
-    )
+  return (
+    <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center z-50">
+      <div
+        className="bg-gradient-to-br from-blue-500 to-teal-500 p-6 rounded-2xl shadow-2xl text-white max-w-sm w-full relative"
+        onClick={(e) => e.stopPropagation()} // Prevent click bubbling
+      >
+        <button
+          onClick={onCloseModal}
+          className="absolute top-4 right-4 text-white hover:text-yellow-300 focus:outline-none"
+          aria-label="Close"
+        >
+          <AiFillCloseCircle size={24} />
+        </button>
+        <h2 className="text-4xl font-bold text-center mb-6 text-yellow-300">
+          🚀 Join A Game 🎮
+        </h2>
+        <div className="mb-4">
+          <label className="block text-lg mb-2">Your Username</label>
+          <input
+            placeholder="Enter your username"
+            type="text"
+            onChange={handleUserNameChange}
+            value={userNameInput}
+            className="w-full border-none rounded-xl py-3 pl-4 text-black bg-yellow-100 focus:ring-4 focus:ring-yellow-300 focus:outline-none"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-lg mb-2">Game Code</label>
+          <input
+            placeholder="Enter a game code"
+            type="text"
+            value={gameCode}
+            onChange={handleGameCodeChange}
+            className="w-full border-none rounded-xl py-3 px-4 text-black bg-yellow-100 focus:ring-4 focus:ring-yellow-300 focus:outline-none"
+          />
+        </div>
+        {errorMessage && (
+          <p className="text-red-500 text-sm mb-4">{errorMessage}</p>
+        )}
+        <button
+          onClick={handleEnterGame}
+          className="bg-yellow-400 text-black font-bold rounded-full px-6 py-3 hover:bg-yellow-300 focus:ring-4 focus:ring-yellow-200 w-full transition-all duration-200"
+        >
+          Enter Game
+        </button>
+      </div>
+    </div>
   );
 };
 
