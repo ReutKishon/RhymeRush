@@ -37,7 +37,7 @@ const SentenceInput = memo(() => {
   };
 
   return (
-    <div className="flex w-[95%] sm:w-[50%] gap-4 items-center">
+    <div className="flex w-full gap-4 items-center">
       <Input
         placeholder="Type a new line"
         onChange={handleSentenceChange}

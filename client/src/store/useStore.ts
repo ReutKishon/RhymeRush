@@ -39,7 +39,6 @@ const initialGameState: GameBase = {
 
 const useAppStore = create<AppState>((set) => ({
   connectionStatus: false,
-  userName: "",
   game: { ...initialGameState },
   user: {
     username: "",
@@ -50,6 +49,7 @@ const useAppStore = create<AppState>((set) => ({
     songs: [],
   },
   setUserName: (username) => {
+    console.log("Setting username to: ", username);
     set((state) => ({ user: { ...state.user, username } }));
   },
   setUser: (user: User) => set(() => ({ user })),

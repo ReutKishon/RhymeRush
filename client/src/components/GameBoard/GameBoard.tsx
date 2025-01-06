@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { PlayerList, SentenceInput, SongLyrics, StartGameButton } from "./";
 import { useParams } from "react-router-dom";
 import useSocketEvents from "../../hooks/useSocketEvents";
@@ -7,13 +7,15 @@ import useAppStore from "../../store/useStore";
 import { Box } from "@mui/material";
 import GameResultsModal from "./modals/GameResultsModal";
 import GameTimer from "./GameTimer";
-// import LosingAlert from "./modals/LosingAlert.tsx";
 
 const GameBoard = () => {
   const { gameCode } = useParams<{ gameCode: string }>();
   const { setGame, setGameCode, resetGame } = useAppStore((state) => state);
   const [topic, setTopic] = useState<string>();
-
+  const {
+    game,
+    user: { username },
+  } = useAppStore((state) => state);
   const [showResultsModal, setShowResultsModal] = useState<boolean>(false);
 
   useEffect(() => {
@@ -36,51 +38,52 @@ const GameBoard = () => {
   useSocketEvents({ setShowResultsModal });
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", height: "100vh" }}>
-      {/* Top Section - Start Button and Topic */}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          p: 3,
-        }}
-      >
-        <h2
-          className="text-l sm:text-2xl text-center mb-4 ml-10"
-          style={{ fontWeight: "bold", width: "90%" }}
-        >
+    <div className="h-screen flex flex-col p-20">
+      <div
+        className="flex items-center justify-around">
+        <p className="text-2xl font-extrabold w-full text-center mb-4 ml-10">
           {topic}
-        </h2>
-        <StartGameButton />
+        </p>
         <GameTimer setShowResultsModal />
-      </Box>
-      {/* Middle Section - SongLyrics (Centered in the middle of the page) */}
-      <div className="flex-1 flex flex-col sm:flex-row items-center gap-4">
-        <div className="flex-shrink-0 flex-grow-0 basis-[10%]">
-          <PlayerList />
-        </div>
-        <div className="flex basis-[90%] flex items-center justify-center max-h-[400px] h-full mt-10">
-          <SongLyrics />
-        </div>
       </div>
-      {/* Bottom Section - Sentence Input */}
-      <Box
-        sx={{
-          marginTop: 10,
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          paddingBottom: 12,
-        }}
-      >
-        <SentenceInput />
-      </Box>
 
-      {/* <LosingAlert /> */}
+
+      <div className="flex w-full h-full">
+
+        <SongLyrics />
+        <PlayerList />
+      </div>
+
+
+      {/* <div className="flex-1 flex flex-row items-center gap-4">
+        <div className="flex-shrink-0 flex-grow-0 basis-[10%]">
+        </div>
+        <div className="basis-[90%] flex items-center justify-center max-h-[400px] h-full mt-10">
+        </div>
+
+        <StartGameButton />
+
+      </div>
+
+      <div className="flex flex-col items-center justify-center">
+          <p>elad</p>
+      </div> */}
+
+
+
+
+      <div className="w-full flex justify-center">
+        {!game.isActive && username == game.gameCreatorName && <StartGameButton />}
+        {game.isActive && <div className="w-2/3">
+          <SentenceInput />
+        </div>}
+      </div>
+
+
+
 
       <GameResultsModal showModal={showResultsModal} />
-    </Box>
+    </div>
   );
 };
 

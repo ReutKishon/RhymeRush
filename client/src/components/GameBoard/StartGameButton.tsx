@@ -28,8 +28,7 @@ const StartGameButton = () => {
       borderColor="#30210b"
       shadow="#30210b"
       onClick={onStartGamePress}
-      style={{ fontWeight: "bold", width: "10%" }}
-      className="w-20 py-2 border rounded"
+      className="w-52 py-2 border rounded"
     >
       <h1 className="text-xs sm:text-xl text-center">Start</h1>
     </Button>
