@@ -45,7 +45,6 @@ const sendErrorDev = (err: AppError, res: Response): void => {
 
 const sendErrorProd = (err: AppError, res: Response): void => {
   if (err.isOperational) {
-    console.log("mess ", err.message);
     res.status(err.statusCode).json({
       status: err.status,
       message: err.message,

@@ -1,19 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Player } from "../../../../shared/types/gameTypes";
-import { Box, CircularProgress, Typography, SvgIcon } from "@mui/material";
-
-const CoinIcon = () => (
-  <SvgIcon
-    sx={{ color: "yellow" }}
-    width="14"
-    height="14"
-    viewBox="0 0 24 24"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path fill="currentColor" />
-  </SvgIcon>
-);
+import { Box, CircularProgress, SvgIcon } from "@mui/material";
 
 interface PlayerProps {
   player: Player;
@@ -24,7 +11,7 @@ const PlayerAvatar = ({ player, isPlayerTurn }: PlayerProps) => {
   const [timer, setTimer] = useState<number | null>(null);
 
   useEffect(() => {
-    let intervalId: any
+    let intervalId: any;
 
     if (isPlayerTurn) {
       setTimer(30);
@@ -49,75 +36,36 @@ const PlayerAvatar = ({ player, isPlayerTurn }: PlayerProps) => {
   }, [isPlayerTurn]);
 
   return (
-    <Box
-      sx={{
-        position: "relative",
-        width: "112px",
-        height: "112px",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        animation: isPlayerTurn
-          ? "growShrink 1.5s infinite ease-in-out"
-          : "none",
-        transformOrigin: "center", // Prevent layout shift
-      }}
-    >
-      {/* Circular Progress Bar or Background Color */}
-      {timer ? (
-        <CircularProgress
-          variant="determinate"
-          value={(timer / 30) * 100}
-          sx={{
-            position: "absolute",
-            width: "100%",
-            height: "100%",
-            borderRadius: "50%",
-            color: player.color,
-            backgroundColor: "#d6d6d6", // Trail color
-          }}
-        />
-      ) : (
-        <Box
-          sx={{
-            width: "100%",
-            height: "100%",
-            borderRadius: "50%",
-            backgroundColor: "#d6d6d6",
-          }}
-        />
-      )}
-
-      {/* Player Name and Score */}
-      <Box
-        sx={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          color: "white",
-          fontWeight: "bold",
-          textAlign: "center",
-        }}
-      >
-        <Typography variant="body2" color={player.color}>
-          {player.name}
-        </Typography>
-
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            marginTop: "5px",
-          }}
-        >
-          <Typography variant="body2" color="white">
-            {player.score}
-          </Typography>
-        </Box>
-      </Box>
-    </Box>
+    <div className="relative bg-gradient-to-br from-purple-500 to-pink-500 rounded-full shadow-xs w-[150px] h-[150px]">
+      {/* Circular Progress Bar */}
+      <div className="absolute inset-0 w-full h-full flex items-center justify-center">
+        {timer && (
+          <CircularProgress
+            variant="determinate"
+            value={(timer / 30) * 100}
+            className="absolute inset-0 w-full h-full"
+            sx={{
+              color: "pink", // Progress color
+              "& .MuiCircularProgress-circle": {
+                strokeWidth: 3, // Adjust the thickness of the progress bar
+              },
+            }}
+          />
+        )}
+        {/* Avatar Content */}
+        <div className="text-center">
+          <div
+            className="text-2xl font-bold truncate"
+            style={{ color: player.color }}
+          >
+            {player.name}
+          </div>
+          <div className="text-sm font-medium text-yellow-200">
+            Score: <span className="font-bold">{player.score}</span>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
