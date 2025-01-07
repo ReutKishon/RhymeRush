@@ -39,15 +39,15 @@ const SignIn = () => {
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
       <div className="w-full max-w-md p-8 bg-white rounded shadow-md">
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
+        <h2 className="2xl font-bold text-center gray-800 mb-6">
           Sign In
         </h2>
-        {error && <p className="text-red-500 mb-4">{error}</p>}
+        {error && <p className="red-500 mb-4">{error}</p>}
         <form onSubmit={handleSignIn} className="space-y-4">
           <div>
             <label
               htmlFor="email"
-              className="block text-gray-700 font-medium mb-2"
+              className="block gray-700 font-medium mb-2"
             >
               Email
             </label>
@@ -64,7 +64,7 @@ const SignIn = () => {
           <div>
             <label
               htmlFor="password"
-              className="block text-gray-700 font-medium mb-2"
+              className="block gray-700 font-medium mb-2"
             >
               Password
             </label>
@@ -80,7 +80,7 @@ const SignIn = () => {
           </div>
           <button
             type="submit"
-            className="w-full bg-indigo-500 text-white py-2 px-4 rounded-lg hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+            className="w-full bg-indigo-500 white py-2 px-4 rounded-lg hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-indigo-400"
           >
             Sign In
           </button>

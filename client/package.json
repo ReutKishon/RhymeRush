@@ -22,7 +22,9 @@
     "react-router-dom": "^6.28.0",
     "react-scripts": "5.0.1",
     "socket.io-client": "^4.8.1",
+    "styled-components": "^6.1.14",
     "uuid": "^11.0.4",
+    "vara": "^1.4.1",
     "web-vitals": "^2.1.4",
     "zustand": "^5.0.1"
   },
@@ -55,6 +57,7 @@
     "@types/node": "^22.10.1",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
+    "@types/vara": "^1.1.4",
     "autoprefixer": "^10.4.20",
     "file-loader": "^6.2.0",
     "postcss": "^8.4.49",

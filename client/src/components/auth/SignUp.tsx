@@ -55,12 +55,12 @@ const SignUp = () => {
         onSubmit={handleSignUp}
         className="bg-white p-8 rounded shadow-md w-96"
       >
-        <h2 className="text-2xl font-bold text-center mb-6">Sign Up</h2>
+        <h2 className="2xl font-bold text-center mb-6">Sign Up</h2>
 
-        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+        {error && <p className="red-500 sm mb-4">{error}</p>}
 
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block sm font-medium gray-700 mb-2">
             Username
           </label>
           <input
@@ -73,7 +73,7 @@ const SignUp = () => {
         </div>
 
         <div className="mb-4">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block sm font-medium gray-700 mb-2">
             Email
           </label>
           <input
@@ -86,7 +86,7 @@ const SignUp = () => {
         </div>
 
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block sm font-medium gray-700 mb-2">
             Password
           </label>
           <input
@@ -98,7 +98,7 @@ const SignUp = () => {
           />
         </div>
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block sm font-medium gray-700 mb-2">
             Password Confirm
           </label>
           <input
@@ -112,7 +112,7 @@ const SignUp = () => {
 
         <button
           type="submit"
-          className="w-full bg-green-500 hover:bg-green-600 text-white font-medium py-2 rounded"
+          className="w-full bg-green-500 hover:bg-green-600 white font-medium py-2 rounded"
         >
           Sign Up
         </button>

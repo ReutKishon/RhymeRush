@@ -10,6 +10,8 @@ import JoinGameModal from "./JoinGameModal";
 import logo from "assets/images/RhymeRushLogo-removebg-preview.png";
 import useAppStore from "store/useStore";
 import { AiOutlineWifi } from "react-icons/ai";
+import { HandwrittenText } from "../GameBoard/utils/Handwriting";
+
 const Home = () => {
   const navigate = useNavigate();
   const [showCreateGameModal, setShowCreateGameModal] = useState(false);
@@ -31,34 +33,37 @@ const Home = () => {
 
   return (
     <div
-      className="flex h-screen flex-col items-center justify-center gap-6 p-4 bg-gradient-to-br from-purple-400 to-pink-300"
+      className="flex h-screen flex-col items-center justify-center gap-6 p-4"
       style={connectionStatus ? {} : areaDisabledStyle}
     >
       {/* Logo */}
       <img className="w-40 mb-4" src={logo} alt="Rhyme Rush Logo" />
 
+      {/* <HandwrittenText text="Hello, world!" /> */}
+
+
       {/* Button Container */}
       <div className="flex flex-col items-center w-3/4 max-w-md gap-6">
         {/* Create Game Button */}
         <button
-          className="w-full h-12 bg-[#fefcd0] rounded-full text-black text-lg font-bold shadow-lg shadow-[#c381b5] hover:scale-105 transform transition-all duration-200"
+          className="btn w-full h-12 bg-[#fefcd0] rounded-full black lg  shadow-lg shadow-[#c381b5] hover:scale-105 transform transition-all duration-200"
           onClick={handleCreateGame}
         >
-          🌟 Create New Game
+          <span>🌟&nbsp; Create New Game</span>
         </button>
 
         {/* Join Game Button */}
         <button
-          className="w-full h-12 bg-[#c7f5a4] rounded-full text-black text-lg font-bold shadow-lg shadow-[#c381b5] hover:scale-105 transform transition-all duration-200"
+          className="btn-secondary w-full h-12 bg-[#c7f5a4] rounded-full black lg shadow-lg shadow-[#c381b5] hover:scale-105 transform transition-all duration-200"
           onClick={handleJoinGame}
         >
-          🎮 Join Game
+          <span>🎮 &nbsp;Join Game</span>
         </button>
       </div>
 
       {/* Connection Lost Message */}
       {!connectionStatus && (
-        <div className="mt-6 flex items-center gap-2 text-red-600 text-lg font-semibold">
+        <div className="mt-6 flex items-center gap-2 red-600 lg font-semibold">
           <AiOutlineWifi size={24} />
           <span>Connection lost. Try again later...</span>
         </div>
@@ -73,6 +78,8 @@ const Home = () => {
         showModal={showJoinGameModal}
         setShowModal={setShowJoinGameModal}
       />
+
+
     </div>
   );
 };

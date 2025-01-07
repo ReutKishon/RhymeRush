@@ -45,6 +45,7 @@ const GameBoard = () => {
           {topic}
         </p>
         <GameTimer  />
+
       </div>
 
       <div className="flex w-full h-full">

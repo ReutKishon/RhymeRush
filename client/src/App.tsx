@@ -13,43 +13,47 @@ import "./index.css";
 import useAppStore from "./store/useStore";
 
 function App() {
-  const { setConnectionStatus, connectionStatus} = useAppStore((state) => state);
+  const { setConnectionStatus, connectionStatus } = useAppStore((state) => state);
   const state = useAppStore((state) => state);
 
   useEffect(() => {
-      if (connectionStatus) return;
-      socket.on("connect", () => {
-        console.log("Connected to the server with ID:", socket.id);
-        setConnectionStatus(true);
-      });
-      socket.on("disconnect", () => {
-        setConnectionStatus(false);
-      });
+    if (connectionStatus) return;
+    socket.on("connect", () => {
+      console.log("Connected to the server with ID:", socket.id);
+      setConnectionStatus(true);
+    });
+    socket.on("disconnect", () => {
+      setConnectionStatus(false);
+    });
 
 
-      if (socket.connected) {
-        console.log('Already connected');
-        setConnectionStatus(true);
-      } else {
-        console.log('Connecting to the server...');
-        socket.connect(); // Connect only if not already connected
-      }
-  
-      // Cleanup listeners when component is unmounted
-      return () => {
-        socket.off('connect');
-        socket.off('disconnect');
-      };
+    if (socket.connected) {
+      console.log('Already connected');
+      setConnectionStatus(true);
+    } else {
+      console.log('Connecting to the server...');
+      socket.connect(); // Connect only if not already connected
+    }
+
+    // Cleanup listeners when component is unmounted
+    return () => {
+      socket.off('connect');
+      socket.off('disconnect');
+    };
   }, []);
 
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/game/:gameCode" element={<GameBoard />} />
+      <div className="font-satisfy">
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/game/:gameCode" element={<GameBoard />} />
 
-      </Routes>
-        <p>{JSON.stringify(state, null, 2)}</p>
+        </Routes>
+
+      </div>
+
+      <p>{JSON.stringify(state, null, 2)}</p>
     </BrowserRouter>
   );
 }

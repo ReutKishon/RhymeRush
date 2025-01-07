@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 @import 'pixel-retroui/dist/index.css';
+@import url('https://fonts.googleapis.com/css2?family=Satisfy&display=swap'); 
 
 .scrollbar-hidden::-webkit-scrollbar {
     display: none;
@@ -52,4 +53,49 @@
 .scrollbar-hide {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
+}
+
+
+@layer base {
+  body {
+    @apply bg-primary-purple
+  }
+
+  /* Typography */
+  h1 {
+    @apply text-4xl font-satisfy text-primary-pink mb-6;
+  }
+
+  h2 {
+    @apply text-3xl font-satisfy text-primary-purple mb-4;
+  }
+
+  h3 {
+    @apply text-2xl font-satisfy text-primary-blue mb-3;
+  }
+
+  p {
+    @apply text-gray-800 leading-relaxed mb-4;
+  }
+
+  /* Links */
+  a {
+    @apply text-primary-blue hover:text-primary-purple transition-colors;
+  }
+
+  span {
+    @apply text-gray-800
+  }
+
+
+}
+
+@layer components {
+  .btn {
+    @apply bg-primary-pink text-white px-4 py-2 rounded-md;
+  }
+
+  .btn-secondary {
+    @apply bg-primary-blue text-white px-4 py-2 rounded-md;
+  }
 }

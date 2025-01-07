@@ -7,7 +7,7 @@ interface GameTimerSelectionProps{
 const GameTimerSelection = ({gameTimer,setGameTimer}:GameTimerSelectionProps) => {
   return (
     <div className="mb-6">
-      <label className="block text-lg mb-2">Select Game Timer</label>
+      <label className="block lg mb-2">Select Game Timer</label>
       <div className="flex justify-around">
         <label className="flex items-center">
           <input

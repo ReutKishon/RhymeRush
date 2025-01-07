@@ -48,10 +48,10 @@ const CreateGameModal = ({ showModal, setShowModal }: CreateGameModalProps) => {
   return (
     <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
       <div className="w-[70%] max-w-[400px] h-[300px] sm:w-[80%] sm:h-[250px] md:w-[70%] md:h-[300px] lg:w-[60%] lg:h-[350px] xl:w-[50%] xl:h-[400px]">
-        <div className="bg-gradient-to-br from-purple-500 to-pink-500 p-6 rounded-2xl shadow-2xl text-white w-full h-full relative">
+        <div className="bg-gradient-to-br from-purple-500 to-pink-500 p-6 rounded-2xl shadow-2xl white w-full h-full relative">
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 text-white hover:text-yellow-300 focus:outline-none"
+            className="absolute top-4 right-4 white hover:yellow-300 focus:outline-none"
             aria-label="Close"
           >
             <AiFillCloseCircle size={24} />
@@ -59,17 +59,17 @@ const CreateGameModal = ({ showModal, setShowModal }: CreateGameModalProps) => {
 
           {currentStep === "enterUsername" && (
             <div>
-              <h2 className="text-4xl font-bold text-center mb-6 text-yellow-300">
+              <h2 className="4xl font-bold center mb-6 yellow-300">
                 Create a New Game
               </h2>
               <div className="mb-6">
-                <label className="block text-lg mb-2">Your Name</label>
+                <label className="block lg mb-2">Your Name</label>
                 <input
                   type="text"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="Enter your name"
-                  className="w-full border-none rounded-xl py-3 pl-4 text-black bg-yellow-100 focus:ring-4 focus:ring-yellow-300 focus:outline-none"
+                  className="w-full border-none rounded-xl py-3 pl-4 black bg-yellow-100 focus:ring-4 focus:ring-yellow-300 focus:outline-none"
                 />
               </div>
               <GameTimerSelection
@@ -78,7 +78,7 @@ const CreateGameModal = ({ showModal, setShowModal }: CreateGameModalProps) => {
               />
               <button
                 onClick={handleCreateGame}
-                className="bg-yellow-400 text-black font-bold rounded-full px-6 py-3 hover:bg-yellow-300 focus:ring-4 focus:ring-yellow-200 w-full transition-all duration-200"
+                className="bg-yellow-400 black rounded-full px-6 py-3 hover:bg-yellow-300 focus:ring-4 focus:ring-yellow-200 w-full transition-all duration-200"
               >
                 Create Game
               </button>
@@ -86,19 +86,19 @@ const CreateGameModal = ({ showModal, setShowModal }: CreateGameModalProps) => {
           )}
           {currentStep === "gameCreated" && (
             <div>
-              <h2 className="text-4xl font-bold text-center mb-6 text-yellow-300">
+              <h2 className="4xl font-bold text-center mb-6 yellow-300">
                 🎉 Game Created!
               </h2>
-              <p className="text-lg text-center mb-4 text-yellow-100">
+              <p className="lg text-center mb-4 yellow-100">
                 Share this code with your friends to join:
               </p>
-              <div className="bg-yellow-100 text-black font-bold rounded-xl py-3 px-4 text-center mb-4">
+              <div className="bg-yellow-100 black font-bold rounded-xl py-3 px-4 text-center mb-4">
                 {gameCode}
               </div>
 
               <button
                 onClick={handleEnterGame}
-                className="bg-yellow-400 text-black font-bold rounded-full px-6 py-3 hover:bg-yellow-300 focus:ring-4 focus:ring-yellow-200 w-full transition-all duration-200"
+                className="bg-yellow-400 black font-bold rounded-full px-6 py-3 hover:bg-yellow-300 focus:ring-4 focus:ring-yellow-200 w-full transition-all duration-200"
               >
                 Enter Game
               </button>
