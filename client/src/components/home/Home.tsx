@@ -33,7 +33,7 @@ const Home = () => {
 
   return (
     <div
-      className="flex h-screen flex-col items-center justify-center gap-6 p-4"
+      className="flex h-screen flex-col items-center justify-center gap-6 p-4 bg-primary-purple"
       style={connectionStatus ? {} : areaDisabledStyle}
     >
       {/* Logo */}

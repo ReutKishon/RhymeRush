@@ -65,11 +65,22 @@ export const handleAddSentenceSubmit = async (
   await redisClient.set(`game:${game.code}`, JSON.stringify(game));
 };
 
+const getExampleEvaluateSentence = async (
+  game: Game,
+  sentence: string
+): Promise<SentenceScores> => {
+  return {
+    generalScore: 10,
+    rhymeScore: 10,
+  };
+};
+
 const getSentenceScores = async (
   game: Game,
   sentence: string
 ): Promise<SentenceScores> => {
   const res = await evaluateSentence(game, sentence);
+  const res = await getExampleSentenceScores(game, sentence);
   const assistantResponse = JSON.parse(res.choices[0].message.content);
 
   // Get the final score

@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import useAppStore from "../../store/useStore";
 import { AiFillCloseCircle } from "react-icons/ai";
 import GameTimerSelection from "./GameTimerSelection";
+import { Input } from "pixel-retroui";
 
 interface CreateGameModalProps {
   showModal: boolean;
@@ -47,8 +48,7 @@ const CreateGameModal = ({ showModal, setShowModal }: CreateGameModalProps) => {
 
   return (
     <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
-      <div className="w-[70%] max-w-[400px] h-[300px] sm:w-[80%] sm:h-[250px] md:w-[70%] md:h-[300px] lg:w-[60%] lg:h-[350px] xl:w-[50%] xl:h-[400px]">
-        <div className="bg-gradient-to-br from-purple-500 to-pink-500 p-6 rounded-2xl shadow-2xl white w-full h-full relative">
+        <div className="bg-primary-pink p-6 rounded-xl w-full md:w-2/3 ">
           <button
             onClick={onClose}
             className="absolute top-4 right-4 white hover:yellow-300 focus:outline-none"
@@ -58,20 +58,18 @@ const CreateGameModal = ({ showModal, setShowModal }: CreateGameModalProps) => {
           </button>
 
           {currentStep === "enterUsername" && (
-            <div>
-              <h2 className="4xl font-bold center mb-6 yellow-300">
+            <div className="flex flex-col gap-2">
+              <h2>
                 Create a New Game
               </h2>
-              <div className="mb-6">
-                <label className="block lg mb-2">Your Name</label>
-                <input
-                  type="text"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Enter your name"
-                  className="w-full border-none rounded-xl py-3 pl-4 black bg-yellow-100 focus:ring-4 focus:ring-yellow-300 focus:outline-none"
-                />
-              </div>
+              <label className="lg mb-2">Your Name</label>
+              <input
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="Enter your name"
+                className="w-full border-none rounded-xl py-3 pl-4 black  focus:ring-4  focus:outline-none"
+              />
               <GameTimerSelection
                 gameTimer={gameTimer}
                 setGameTimer={setGameTimer}
@@ -105,7 +103,6 @@ const CreateGameModal = ({ showModal, setShowModal }: CreateGameModalProps) => {
             </div>
           )}
         </div>
-      </div>
     </div>
   );
 };

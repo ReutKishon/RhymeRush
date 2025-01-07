@@ -1,7 +1,11 @@
 import { useEffect } from "react";
 import Vara from "vara";
 
-export function HandwrittenText({ text }: { text: string }) {
+interface HandwrittenTextProps {
+  text: string;
+}
+
+export function HandwrittenText({ text }: HandwrittenTextProps) {
     useEffect(() => {
       var vara = new Vara(
         "#vara-container",
@@ -9,10 +13,18 @@ export function HandwrittenText({ text }: { text: string }) {
         [
           {
             text: text,
-            fontSize: 45,
-            strokeWidth: 0.8,
+            fontSize: 38,
+            strokeWidth: 1,
+            textAlign: "left",
+            x: 20,
+            y: 25,
+            duration: 2000,
+            autoAnimation: true,
           },
-        ]
+        ],
+        {
+          textAlign: "left"
+        }
       );
 
       return () => {
@@ -21,7 +33,7 @@ export function HandwrittenText({ text }: { text: string }) {
           container.innerHTML = "";
         }
       };
-    }, []);
+    }, [text]);
   
-    return <div id="vara-container" className="z-[20] w-full"></div>;
-  }
+    return <div id="vara-container" className="z-[20] w-full h-full"></div>;
+}

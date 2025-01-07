@@ -22,18 +22,27 @@ const SentenceInput = memo(() => {
   };
 
   const handleSentenceSubmit = () => {
+    console.log("handleSentenceSubmit - Turn Status:", isUserTurn);
     if (!isUserTurn) {
+      setError("It's not your turn!");
       return;
     }
 
-    if (sentence.trim() === "") {
+    const trimmedSentence = sentence.trim();
+    if (trimmedSentence === "") {
       setError("Sentence cannot be empty.");
       return;
     }
-    socket.emit("addSentence", sentence);
 
-    setSentence("");
-    setError("");
+    try {
+      console.log("Emitting sentence:", trimmedSentence);
+      socket.emit("addSentence", trimmedSentence);
+      setSentence("");
+      setError("");
+    } catch (err) {
+      console.error("Error sending sentence:", err);
+      setError("Failed to send sentence. Please try again.");
+    }
   };
 
   return (

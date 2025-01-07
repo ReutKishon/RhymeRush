@@ -12,13 +12,15 @@ const StartGameButton = () => {
   const onStartGamePress = () => {
     if (
       game.isActive ||
-      Object.keys(game.players).length === 1 ||
       username !== game.gameCreatorName
     ) {
       return;
     }
     console.log("onStartGamePress");
-    socket.emit("startGame");
+    console.log("game.isActive", game.isActive);
+    console.log("username", username);
+    console.log("game.gameCreatorName", game.gameCreatorName);
+    socket.emit("startGame")
   };
 
   return (

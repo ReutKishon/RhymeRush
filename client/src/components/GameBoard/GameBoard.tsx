@@ -37,6 +37,8 @@ const GameBoard = () => {
 
   useSocketEvents({ setShowResultsModal });
 
+  
+
   return (
     <div className="h-screen flex flex-col p-20">
       <div

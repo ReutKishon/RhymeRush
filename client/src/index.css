@@ -63,24 +63,24 @@
 
   /* Typography */
   h1 {
-    @apply text-4xl font-satisfy text-primary-pink mb-6;
+    @apply text-4xl font-satisfy text-black mb-6;
   }
 
   h2 {
-    @apply text-3xl font-satisfy text-primary-purple mb-4;
+    @apply text-3xl font-satisfy  text-black mb-4;
   }
 
   h3 {
-    @apply text-2xl font-satisfy text-primary-blue mb-3;
+    @apply text-2xl font-satisfy  text-black mb-3;
   }
 
   p {
-    @apply text-gray-800 leading-relaxed mb-4;
+    @apply text-gray-800 leading-relaxed  text-black mb-4;
   }
 
   /* Links */
   a {
-    @apply text-primary-blue hover:text-primary-purple transition-colors;
+    @apply   text-black transition-colors;
   }
 
   span {

@@ -6,6 +6,7 @@ export const playerSocketMap: Record<
   string,
   { playerId: string; gameCode: string }
 > = {};
+
 export const socketHandler = (io: Server) => {
   io.on("connection", (socket: Socket) => {
     console.log("New client connected");
@@ -54,6 +55,7 @@ export const socketHandler = (io: Server) => {
 
     socket.on("addSentence", async (sentence: string) => {
       try {
+        console.log("addSentence", sentence);
         const { gameCode, playerId } = playerSocketMap[socket.id];
         await handleAddSentenceSubmit(gameCode, playerId, sentence);
       } catch (err) {
