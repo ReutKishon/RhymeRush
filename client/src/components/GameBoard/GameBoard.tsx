@@ -6,6 +6,7 @@ import { api } from "../../services/index";
 import useAppStore from "../../store/useStore";
 import GameResultsModal from "./modals/GameResultsModal";
 import GameTimer from "./GameTimer";
+import Topic from "./Topic";
 
 const GameBoard = () => {
   const { gameCode } = useParams<{ gameCode: string }>();
@@ -37,37 +38,39 @@ const GameBoard = () => {
 
   useSocketEvents({ setShowResultsModal });
 
-  
-
   return (
     <div className="h-screen flex flex-col p-20">
-      <div
-        className="flex items-center justify-around">
+      <div className="flex items-center justify-around">
         <p className="text-2xl font-extrabold w-full text-center mb-4 ml-10">
           {topic}
         </p>
-        <GameTimer  />
+        <GameTimer />
 
+        <div className="flex justify-between w-full items-center">
+          <GameTimer />
+          <div className="flex flex-grow justify-center pr-12">
+            <Topic topic={game.topic} />
+          </div>
+        </div>
+
+        <div className="flex w-full h-full justify-between gap-2 pt-8 pb-8">
+          <SongLyrics />
+          <PlayerList />
+        </div>
+
+        <div className="w-full flex justify-center">
+          {!game.isActive && username == game.gameCreatorName && (
+            <StartGameButton />
+          )}
+          {game.isActive && (
+            <div className="w-2/3">
+              <SentenceInput />
+            </div>
+          )}
+        </div>
+
+        <GameResultsModal showModal={showResultsModal} />
       </div>
-
-      <div className="flex w-full h-full">
-        <SongLyrics />
-        <PlayerList />
-      </div>
-
-
-
-      <div className="w-full flex justify-center">
-        {!game.isActive && username == game.gameCreatorName && <StartGameButton />}
-        {game.isActive && <div className="w-2/3">
-          <SentenceInput />
-        </div>}
-      </div>
-
-
-
-
-      <GameResultsModal showModal={showResultsModal} />
     </div>
   );
 };

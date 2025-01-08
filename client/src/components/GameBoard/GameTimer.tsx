@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import useAppStore from "../../store/useStore";
-import React from "react";
 
 const GameTimer = ({}) => {
   const { isActive: gameIsActive, timerInMinutes } = useAppStore(
     (state) => state.game
   );
-  const [remainingTime, setRemainingTime] = useState<number>(3*60);
+  const [remainingTime, setRemainingTime] = useState<number>(3 * 60);
 
   useEffect(() => {
     setRemainingTime(timerInMinutes * 60);
@@ -38,24 +37,13 @@ const GameTimer = ({}) => {
   const formattedTime = `${minutes < 10 ? "0" : ""}${minutes}:${
     seconds < 10 ? "0" : ""
   }${seconds}`;
+  const progress = (remainingTime / (timerInMinutes * 60)) * 100;
 
   return (
-    <div
-      style={{
-        width: "100px",
-        height: "100px",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        border: "2px solid #000", // Square border style
-        borderRadius: "8px", // Optional: gives the square a rounded corner
-        backgroundColor: "#f0f0f0", // Background color for the timer
-        fontSize: "20px", // Font size for timer text
-        fontWeight: "bold", // Makes the text bold
-        color: "#333", // Text color
-      }}
-    >
-      <p>{formattedTime}</p>
+    <div className="flex flex-col w-[150px] h-[60px] flex items-center justify-center border rounded-full bg-pink-600">
+      {/* Timer Content */}
+      <p className="text-2xl font-bold text-green-200">{formattedTime}</p>
+      <p className="text-xs text-green-200">Time Left</p>
     </div>
   );
 };

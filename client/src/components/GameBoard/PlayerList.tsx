@@ -23,7 +23,7 @@ const PlayerList = () => {
   }, [currentPlayerName, gameIsActive, players]);
 
   return (
-    <div className="flex sm:flex-col justify-center items-center gap-4">
+    <div className="flex sm:flex-col w-[20%] gap-4 items-center">
       {playerComponents}
     </div>
   );

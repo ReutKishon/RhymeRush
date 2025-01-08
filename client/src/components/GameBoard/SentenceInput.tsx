@@ -47,19 +47,22 @@ const SentenceInput = memo(() => {
 
   return (
     <div className="flex w-full gap-4 items-center">
-      <Input
+      <input
         placeholder="Type a new line"
         onChange={handleSentenceChange}
         disabled={!isUserTurn}
-        className="w-full h-[50px] text-[18px]"
+        className="w-full h-[60px] p-4 text-[18px] rounded-full border-2 border-pink-600"
         value={sentence}
       />
-
-      <LuSendHorizontal
-        className="mt-2"
-        onClick={handleSentenceSubmit}
-        size={50}
-      />
+      <div className="flex items-center justify-center w-[60px] h-[60px] rounded-full bg-pink-600  p-2">
+        <LuSendHorizontal
+          className="mt-2"
+          onClick={handleSentenceSubmit}
+          size={30}
+          color="white"
+          style={{ width: "100%", height: "100%" }}
+        />
+      </div>
       {error && <p className="text-red-600 text-sm mb-2">{error}</p>}
     </div>
   );

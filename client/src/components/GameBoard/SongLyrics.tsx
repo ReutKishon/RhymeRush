@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useRef } from "react";
 import useAppStore from "../../store/useStore";
-
+import { TypeAnimation } from "react-type-animation";
 
 const SongLyrics = memo(() => {
   const lyrics = useAppStore((state) => state.game.lyrics);
@@ -13,69 +13,27 @@ const SongLyrics = memo(() => {
   }, [lyrics]);
 
   return (
-    <div className="flex flex-col w-full h-full overflow-hidden justify-center items-center">
-      <div
-        ref={scrollRef}
-        className="overflow-y-auto scrollbar-hide w-full h-full text-center"
-      >
-        {lyrics.map((_, index) => {
-          // Only process pairs (odd and even indices together)
-          if (index % 2 === 1) return null;
-
-          const firstSentence = lyrics[index];
-          const secondSentence = lyrics[index + 1];
-
-          const markLastWord = (content:string, shouldMark:boolean) => {
-            if (!shouldMark) return content;
-
-            const words = content.split(" ");
-            words[words.length - 1] = `<span class="text-red-500">${
-              words[words.length - 1]
-            }</span>`;
-            return words.join(" ");
-          };
-
-          const firstSentenceRhymeScore =
-            secondSentence?.scores?.rhymeScore ?? 0;
-          const doesRhyme = firstSentenceRhymeScore > 8; 
-
+    <div className="flex p-10 flex-col w-[80%] h-full overflow-hidden items-center">
+      <div ref={scrollRef} className="overflow-y-auto scrollbar-hide ">
+        {lyrics.map((sentence, index) => {
           return (
-            <React.Fragment key={index}>
-              <p className="text-sm md:text-xl mb-2">
-                <span
-                  style={{
-                    color: firstSentence.player.color,
-                    marginRight: "8px",
-                  }}
-                >
-                  {firstSentence.player.name}:
-                </span>
-                <span
-                  className="text-black"
-                  dangerouslySetInnerHTML={{
-                    __html: markLastWord(firstSentence.content, doesRhyme),
-                  }}
-                />
-              </p>
-              {secondSentence && (
-                <p className="text-sm md:text-xl mb-2">
-                  <span
-                    style={{
-                      color: secondSentence.player.color,
-                      marginRight: "8px",
-                    }}
-                  >
-                    {secondSentence.player.name}:
-                  </span>
-                  <span
-                    className="text-black"
-                    dangerouslySetInnerHTML={{
-                      __html: markLastWord(secondSentence.content, doesRhyme),
-                    }}
+            <div className="flex items-center space-x-4 pb-4">
+              <div className="text-xl">{sentence.player.name + ":"}</div>
+              <div className="flex-1">
+                {index === lyrics.length - 1 ? (
+                  <TypeAnimation
+                    sequence={[sentence.content, 1000]}
+                    speed={50}
+                    cursor={true}
+                    className="text-xl"
+                    style={{ direction: "ltr" }}
+                    repeat={Infinity}
                   />
-                </p>
-              )}
-            </React.Fragment>
+                ) : (
+                  <div className="text-xl">{sentence.content}</div>
+                )}
+              </div>
+            </div>
           );
         })}
       </div>

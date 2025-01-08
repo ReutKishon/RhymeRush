@@ -24,16 +24,12 @@ const StartGameButton = () => {
   };
 
   return (
-    <Button
-      bg="#c7f5a4"
-      textColor="#30210b"
-      borderColor="#30210b"
-      shadow="#30210b"
+    <button
       onClick={onStartGamePress}
-      className="w-52 py-2 border rounded"
+      className="flex items-center justify-center w-[250px] h-[50px] rounded-full bg-pink-600"
     >
-      <h1 className="text-xs sm:text-xl text-center">Start</h1>
-    </Button>
+      <h1 className="text-2xl text-green-200 font-bold text-center">Start</h1>
+    </button>
   );
 };
 
