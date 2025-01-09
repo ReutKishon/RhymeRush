@@ -44,6 +44,18 @@ const CreateGameModal = ({ showModal, setShowModal }: CreateGameModalProps) => {
     setShowModal(false);
     setCurrentStep("enterUsername");
   };
+
+  const handleCodeCopy = () => {
+    navigator.clipboard.writeText(gameCode).then(
+      () => {
+        alert("Copied to clipboard!");
+      },
+      (err) => {
+        console.error("Failed to copy: ", err);
+      }
+    );
+  };
+
   if (!showModal) return null;
 
   return (
@@ -88,8 +100,11 @@ const CreateGameModal = ({ showModal, setShowModal }: CreateGameModalProps) => {
             <p className="lg text-center mb-4 yellow-100">
               Share this code with your friends to join:
             </p>
-            <div className="bg-yellow-100 black font-bold rounded-xl py-3 px-4 text-center mb-4">
-              {gameCode}
+            <div className="flex justify-between bg-yellow-100 black font-bold rounded-xl py-3 px-4 mb-4">
+              <p>{gameCode}</p>
+              <button onClick={handleCodeCopy}>
+                <i className="material-icons">content_copy</i>
+              </button>
             </div>
 
             <button
