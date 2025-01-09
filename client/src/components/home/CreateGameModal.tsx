@@ -5,6 +5,9 @@ import { v4 as uuidv4 } from "uuid";
 import useAppStore from "../../store/useStore";
 import GameTimerSelection from "./GameTimerSelection";
 import Modal from "../common/Modal";
+import { validations } from '../../utils/validations';
+import CustomInput from '../common/CustomInput';
+import { useFormValidation } from "../../hooks/useFormValidation";
 
 interface CreateGameModalProps {
   showModal: boolean;
@@ -13,29 +16,50 @@ interface CreateGameModalProps {
 
 const CreateGameModal = ({ showModal, setShowModal }: CreateGameModalProps) => {
   const [currentStep, setCurrentStep] = useState<"enterUsername" | "gameCreated">("enterUsername");
-  const [username, setUsername] = useState("");
   const [gameCode, setGameCode] = useState("");
   const [gameTimer, setGameTimer] = useState(3);
-
-  const navigate = useNavigate();
+  const [isCopied, setIsCopied] = useState(false);
   const { setUserName } = useAppStore((state) => state);
+  
+  const navigate = useNavigate();
+
+  const {
+    values,
+    errors,
+    isValid,
+    handleChange,
+    handleBlur,
+    validateForm
+  } = useFormValidation({
+    username: {
+      value: "",
+      validations: [
+        validations.required,
+        validations.minLength(3),
+        validations.maxLength(20)
+      ]
+    }
+  });
 
   const handleCreateGame = async () => {
-    if (!username.trim()) {
-      alert("Please enter a username");
+    if (!validateForm()) {
       return;
     }
+
+    setUserName(values.username);
     const generatedCode = uuidv4();
-    const game = await api.createGame(generatedCode, username, gameTimer);
+    const game = await api.createGame(generatedCode, values.username, gameTimer);
 
     setGameCode(game.code);
     setCurrentStep("gameCreated");
   };
 
-
   const handleCodeCopy = () => {
     navigator.clipboard.writeText(gameCode).then(
-      () => alert("Copied to clipboard!"),
+      () => {
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+      },
       (err) => console.error("Failed to copy: ", err)
     );
   };
@@ -51,11 +75,17 @@ const CreateGameModal = ({ showModal, setShowModal }: CreateGameModalProps) => {
     >
       {currentStep === "enterUsername" && (
         <div className="flex items-center flex-col gap-4">
-          <input
+          <CustomInput
             type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
+            value={values.username}
+            onChange={(e) => handleChange('username', e.target.value)}
+            onBlur={() => handleBlur('username')}
             placeholder="Enter your name"
+            validations={[
+              validations.required,
+              validations.minLength(3),
+              validations.maxLength(20)
+            ]}
           />
           <GameTimerSelection
             gameTimer={gameTimer}
@@ -63,7 +93,8 @@ const CreateGameModal = ({ showModal, setShowModal }: CreateGameModalProps) => {
           />
           <button
             onClick={handleCreateGame}
-            className=""
+            className={`${!isValid ? 'opacity-50 cursor-not-allowed' : ''}`}
+            disabled={!isValid}
           >
             <p>Create Game</p>
           </button>
@@ -77,7 +108,9 @@ const CreateGameModal = ({ showModal, setShowModal }: CreateGameModalProps) => {
           </p>
           <div className="w-full flex items-center justify-between bg-yellow-100 rounded-xl py-3 px-4">
             <h5 className="text-center">{gameCode}</h5>
-              <i onClick={handleCodeCopy} className="material-icons">content_copy</i>
+            <i onClick={handleCodeCopy} className="material-icons cursor-pointer">
+              {isCopied ? 'check' : 'content_copy'}
+            </i>
           </div>
 
           <button

@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import useAppStore from "../../store/useStore";
 import { jwtDecode } from "jwt-decode";
+import CustomInput from "../common/CustomInput";
+import { validations } from '../../utils/validations';
 
 const SignUp = () => {
   const [username, setUsername] = useState("");
@@ -60,53 +62,58 @@ const SignUp = () => {
         {error && <p className="red-500 sm mb-4">{error}</p>}
 
         <div className="mb-4">
-          <label className="block sm font-medium gray-700 mb-2">
-            Username
-          </label>
-          <input
+          <CustomInput
             type="text"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            className="w-full border border-gray-300 rounded px-4 py-2"
             placeholder="Enter your username"
+            label="Username"
+            validations={[
+              validations.required,
+              validations.minLength(3),
+              validations.maxLength(20)
+            ]}
           />
         </div>
 
         <div className="mb-4">
-          <label className="block sm font-medium gray-700 mb-2">
-            Email
-          </label>
-          <input
+          <CustomInput
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="w-full border border-gray-300 rounded px-4 py-2"
             placeholder="Enter your email"
+            label="Email"
+            validations={[
+              validations.required,
+              validations.email
+            ]}
           />
         </div>
 
         <div className="mb-6">
-          <label className="block sm font-medium gray-700 mb-2">
-            Password
-          </label>
-          <input
+          <CustomInput
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full border border-gray-300 rounded px-4 py-2"
             placeholder="Enter your password"
+            label="Password"
+            validations={[
+              validations.required,
+              validations.minLength(8)
+            ]}
           />
         </div>
         <div className="mb-6">
-          <label className="block sm font-medium gray-700 mb-2">
-            Password Confirm
-          </label>
-          <input
-            type="passwordConfirm"
+          <CustomInput
+            type="password"
             value={passwordConfirm}
             onChange={(e) => setPasswordConfirm(e.target.value)}
-            className="w-full border border-gray-300 rounded px-4 py-2"
-            placeholder="Enter your password"
+            placeholder="Confirm your password"
+            label="Password Confirm"
+            validations={[
+              validations.required,
+              validations.matchesPassword(password)
+            ]}
           />
         </div>
 

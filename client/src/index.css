@@ -103,7 +103,7 @@
   }
 
   input{
-    @apply w-full border-none rounded-xl py-3 pl-4 focus:ring-4 focus:outline-none
+    @apply w-full border-none rounded-xl py-3 pl-4 focus:ring-4 focus:outline-none bg-primary-yellow
   }
 
   button{

@@ -52,7 +52,7 @@ function App() {
 
       </div>
 
-      {/* <p>{JSON.stringify(state, null, 2)}</p> */}
+      <p>{JSON.stringify(state, null, 2)}</p>
     </BrowserRouter>
   );
 }

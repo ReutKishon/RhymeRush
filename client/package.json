@@ -24,6 +24,7 @@
     "react-type-animation": "^3.2.0",
     "socket.io-client": "^4.8.1",
     "styled-components": "^6.1.14",
+    "tailwind-merge": "^2.6.0",
     "uuid": "^11.0.4",
     "vara": "^1.4.1",
     "web-vitals": "^2.1.4",

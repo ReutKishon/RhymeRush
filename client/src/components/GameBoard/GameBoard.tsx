@@ -82,7 +82,7 @@ const GameBoard = () => {
       </div>
       <div className="flex p-20 justify-center">
         {!game.isActive && username == game.gameCreatorName && (
-          <button onClick={onStartGamePress} className="btn w-40 bg-[#c7f5a4]">
+          <button onClick={onStartGamePress} >
             <h3 className="text-center">Start</h3>
           </button>
         )}
