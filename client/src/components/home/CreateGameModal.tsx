@@ -77,9 +77,7 @@ const CreateGameModal = ({ showModal, setShowModal }: CreateGameModalProps) => {
           </p>
           <div className="w-full flex items-center justify-between bg-yellow-100 rounded-xl py-3 px-4">
             <h5 className="text-center">{gameCode}</h5>
-            <button onClick={handleCodeCopy}>
-              <i className="material-icons">content_copy</i>
-            </button>
+              <i onClick={handleCodeCopy} className="material-icons">content_copy</i>
           </div>
 
           <button
