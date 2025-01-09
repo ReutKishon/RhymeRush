@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
-import { Players, SongLyrics } from "./";
 import { useParams } from "react-router-dom";
 import useSocketEvents from "../../hooks/useSocketEvents";
 import useAppStore from "../../store/useStore";
 import GameResultsModal from "./modals/GameResultsModal";
 import GameTimer from "./GameTimer";
 import { socket, api } from "../../services";
+import SongLyrics from "./SongLyrics";
+import Players from "./Players";
 
 const GameBoard = () => {
   const { gameCode } = useParams<{ gameCode: string }>();
   const [sentenceInput, setSentenceInput] = useState<string>("");
-  const [error, setError] = useState<string>("");
+  const [addSentenceError, setAddSentenceError] = useState<string>("");
 
   const { setGame, setGameCode, resetGame } = useAppStore((state) => state);
   const {
@@ -36,7 +37,7 @@ const GameBoard = () => {
     fetchGame();
   }, [gameCode]);
 
-  useSocketEvents({ setShowResultsModal });
+  useSocketEvents({ setShowResultsModal, setAddSentenceError });
 
   const onStartGamePress = () => {
     socket.emit("startGame");
@@ -48,19 +49,16 @@ const GameBoard = () => {
     if (event.key !== "Enter") return;
     const trimmedSentence = sentenceInput.trim();
     if (trimmedSentence === "") {
-      setError("Sentence cannot be empty.");
+      setAddSentenceError(
+        "Oops! It looks like you forgot to enter something. Please try again!"
+      );
       return;
     }
 
-    try {
-      console.log("Emitting sentence:", trimmedSentence);
-      socket.emit("addSentence", trimmedSentence);
-      setSentenceInput("");
-      setError("");
-    } catch (err) {
-      console.error("Error sending sentence:", err);
-      setError("Failed to send sentence. Please try again.");
-    }
+    console.log("Emitting sentence:", trimmedSentence);
+    socket.emit("addSentence", trimmedSentence);
+    setSentenceInput("");
+    setAddSentenceError("");
   };
 
   return (
@@ -89,13 +87,16 @@ const GameBoard = () => {
           </button>
         )}
         {game.isActive && (
-          <input
-            placeholder="Type a new line"
-            onChange={(e) => setSentenceInput(e.target.value)}
-            disabled={!game.isActive || game.currentPlayerName != username}
-            value={sentenceInput}
-            onKeyUp={handleSentenceSubmit}
-          />
+          <div className="w-full">
+            <input
+              placeholder="Type a new line"
+              onChange={(e) => setSentenceInput(e.target.value)}
+              disabled={!game.isActive || game.currentPlayerName != username}
+              value={sentenceInput}
+              onKeyUp={handleSentenceSubmit}
+            />
+            <p className="err">{addSentenceError}</p>
+          </div>
         )}
       </div>
       <GameResultsModal showModal={showResultsModal} />

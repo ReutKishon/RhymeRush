@@ -9,8 +9,12 @@ import useStore from "../store/useStore";
 
 interface SocketEventsProps {
   setShowResultsModal: (show: boolean) => void;
+  setAddSentenceError: (err: string) => void;
 }
-const useSocketEvents = ({ setShowResultsModal }: SocketEventsProps) => {
+const useSocketEvents = ({
+  setShowResultsModal,
+  setAddSentenceError,
+}: SocketEventsProps) => {
   const {
     game: { code },
     addPlayer,
@@ -54,6 +58,11 @@ const useSocketEvents = ({ setShowResultsModal }: SocketEventsProps) => {
       setShowResultsModal(true);
     });
 
+    socket.on("errorAddingSentence", (errorMsg: string) => {
+      console.log("errorAddingSentence")
+      setAddSentenceError(errorMsg);
+    });
+
     return () => {
       socket.off("gameStarted");
       socket.off("playerJoined");
@@ -62,6 +71,7 @@ const useSocketEvents = ({ setShowResultsModal }: SocketEventsProps) => {
       socket.off("nextTurn");
       socket.off("updatePlayerScore");
       socket.off("UpdateCurrentPlayer");
+      socket.off("errorAddingSentence");
     };
   }, [code]);
 };

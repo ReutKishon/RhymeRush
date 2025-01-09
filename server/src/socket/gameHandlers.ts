@@ -49,10 +49,9 @@ export const handleAddSentenceSubmit = async (
     throw new Error("Player doesn't exist!");
   }
 
-  // Check if it's the player's turn
-  if (playerName != game.players[game.currentTurnIndex].name) {
-    throw new Error("It's not your turn!");
-  }
+ 
+  // throw new Error("It's not your turn!");
+
 
   const sentenceScores = await getSentenceScores(game, sentence);
   player.score += sentenceScores.generalScore;
@@ -79,19 +78,18 @@ const getSentenceScores = async (
   game: Game,
   sentence: string
 ): Promise<SentenceScores> => {
-  const res = await evaluateSentence(game, sentence);
-  const res = await getExampleSentenceScores(game, sentence);
-  const assistantResponse = JSON.parse(res.choices[0].message.content);
+  // const res = await evaluateSentence(game, sentence);
+  // const res = await getExampleSentenceScores(game, sentence);
+  // const assistantResponse = JSON.parse(res.choices[0].message.content);
 
   // Get the final score
-  const finalScore = assistantResponse.finalScore;
-  const rhymeScore = assistantResponse.rhymeScore;
+  const finalScore = 1; //assistantResponse.finalScore;
+  const rhymeScore = 1; // assistantResponse.rhymeScore;
   const scores: SentenceScores = {
     generalScore: finalScore,
     rhymeScore: rhymeScore,
   };
-  console.log(assistantResponse);
-  console.log(finalScore); 
+  // console.log(assistantResponse);
 
   return scores;
 };

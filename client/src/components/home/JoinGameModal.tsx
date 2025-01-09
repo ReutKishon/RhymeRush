@@ -84,7 +84,7 @@ const JoinGameModal = ({ showModal, setShowModal }: JoinGameModalProps) => {
           />
         </div>
         {errorMessage && (
-          <p className="red-500 sm mb-4">{errorMessage}</p>
+          <p className="err mb-4">{errorMessage}</p>
         )}
         <button
           onClick={handleEnterGame}

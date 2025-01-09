@@ -98,5 +98,8 @@
   .btn {
     @apply rounded-full px-4 py-2 hover:scale-105 transform transition-all duration-200
   }
+  .err{
+    @apply text-red-600 font-regular mt-3
+  }
 
 }

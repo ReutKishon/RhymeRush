@@ -59,10 +59,11 @@ export const socketHandler = (io: Server) => {
         const { gameCode, playerId } = playerSocketMap[socket.id];
         await handleAddSentenceSubmit(gameCode, playerId, sentence);
       } catch (err) {
-        console.error("Error adding sentence:", err);
+        console.log("err")
+        const message = "Failed to send sentence. Please try again.";
+        io.to(socket.id).emit("errorAddingSentence", message);
       }
     });
-    
 
     socket.on("disconnect", async (reason) => {
       console.log(`Socket disconnected. Reason: ${reason}`);

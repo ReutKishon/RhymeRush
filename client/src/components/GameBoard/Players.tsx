@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
-import { PlayerAvatar } from ".";
 import { Player } from "../../../../shared/types/gameTypes";
+import PlayerAvatar from "./PlayerAvatar";
 
 interface PlayersProps {
   players: Player[];
