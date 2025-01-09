@@ -37,7 +37,7 @@ const Home = () => {
       style={connectionStatus ? {} : areaDisabledStyle}
     >
       {/* Logo */}
-      <img className="w-40 mb-4" src={logo} alt="Rhyme Rush Logo" />
+      <img className="w-40" src={logo} alt="Rhyme Rush Logo" />
 
       {/* <HandwrittenText text="Hello, world!" /> */}
 

@@ -53,18 +53,21 @@ const JoinGameModal = ({ showModal, setShowModal }: JoinGameModalProps) => {
         className="bg-gradient-to-br from-blue-500 to-teal-500 p-6 rounded-2xl shadow-2xl white max-w-sm w-full relative"
         onClick={(e) => e.stopPropagation()} // Prevent click bubbling
       >
-        <button
-          onClick={onCloseModal}
-          className="absolute top-4 right-4 white hover:yellow-300 focus:outline-none"
-          aria-label="Close"
-        >
-          <AiFillCloseCircle size={24} />
-        </button>
-        <h2 className="4xl font-bold text-center mb-6 yellow-300">
-          🚀 Join A Game 🎮
-        </h2>
-        <div className="mb-4">
-          <label className="block lg mb-2">Your Username</label>
+
+        <div className="flex justify-end">
+          <button
+            onClick={onCloseModal}
+            className="absolute top-4 right-4 white hover:yellow-300 focus:outline-none"
+            aria-label="Close"
+          >
+            <AiFillCloseCircle size={24} />
+          </button>
+        </div>
+
+        <div className="flex flex-col gap-4">
+          <h2 className="4xl font-bold text-center yellow-300">
+            Join A Game
+          </h2>
           <input
             placeholder="Enter your username"
             type="text"
@@ -72,19 +75,15 @@ const JoinGameModal = ({ showModal, setShowModal }: JoinGameModalProps) => {
             value={userNameInput}
             className="w-full bg-yellow-100"
           />
-        </div>
-        <div className="mb-4">
-          <label className="block lg mb-2">Game Code</label>
-          <input
-            placeholder="Enter a game code"
-            type="text"
-            value={gameCode}
-            onChange={handleGameCodeChange}
-            className="w-full bg-yellow-100"
-          />
-        </div>
+        <input
+          placeholder="Enter a game code"
+          type="text"
+          value={gameCode}
+          onChange={handleGameCodeChange}
+          className="w-full bg-yellow-100"
+        />
         {errorMessage && (
-          <p className="err mb-4">{errorMessage}</p>
+          <p className="err">{errorMessage}</p>
         )}
         <button
           onClick={handleEnterGame}
@@ -92,6 +91,8 @@ const JoinGameModal = ({ showModal, setShowModal }: JoinGameModalProps) => {
         >
           Enter Game
         </button>
+        </div>
+
       </div>
     </div>
   );

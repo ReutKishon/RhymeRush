@@ -65,19 +65,19 @@
 
   /* Typography */
   h1 {
-    @apply text-4xl font-satisfy text-black mb-6;
+    @apply text-4xl font-satisfy text-black 
   }
 
   h2 {
-    @apply text-3xl font-satisfy  text-black mb-4;
+    @apply text-3xl font-satisfy  text-black 
   }
 
   h3 {
-    @apply text-2xl font-satisfy  text-black mb-3;
+    @apply text-2xl font-satisfy  text-black 
   }
 
   p {
-    @apply text-gray-800 leading-relaxed  text-black mb-4;
+    @apply  leading-relaxed  text-black 
   }
 
   /* Links */
@@ -102,7 +102,7 @@
     @apply rounded-full px-4 py-2 hover:scale-105 transform transition-all duration-200
   }
   .err{
-    @apply text-red-600 font-regular mt-3
+    @apply text-red-600 font-regular 
   }
 
 }

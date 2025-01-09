@@ -59,7 +59,7 @@ const CreateGameModal = ({ showModal, setShowModal }: CreateGameModalProps) => {
   if (!showModal) return null;
 
   return (
-    <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center">
       <div className="bg-primary-purple p-6 rounded-xl w-full md:w-1/2 ">
         <div className="flex justify-end">
         <button
@@ -72,7 +72,7 @@ const CreateGameModal = ({ showModal, setShowModal }: CreateGameModalProps) => {
         </div>
 
         {currentStep === "enterUsername" && (
-          <div className="flex items-center flex-col gap-2">
+          <div className="flex items-center flex-col gap-4">
             <h2>Create a New Game</h2>
             <input
               type="text"
@@ -96,15 +96,15 @@ const CreateGameModal = ({ showModal, setShowModal }: CreateGameModalProps) => {
           </div>
         )}
         {currentStep === "gameCreated" && (
-          <div>
-            <h2 className="4xl font-bold text-center mb-6 yellow-300">
+          <div className="flex flex-col justify-center w-full gap-4">
+            <h2 className="4xl font-bold text-center 6 yellow-300">
               🎉 Game Created!
             </h2>
-            <p className="lg text-center mb-4 yellow-100">
+            <p className="lg text-center yellow-100">
               Share this code with your friends to join:
             </p>
-            <div className="flex justify-between bg-yellow-100 black font-bold rounded-xl py-3 px-4 mb-4">
-              <p>{gameCode}</p>
+            <div className=" w-full flex items-center justify-between bg-yellow-100 rounded-xl py-3 px-4">
+              <h5 className="text-center">{gameCode}</h5>
               <button onClick={handleCodeCopy}>
                 <i className="material-icons">content_copy</i>
               </button>
