@@ -1,17 +1,18 @@
 import { useEffect, useState } from "react";
-import { PlayerList, SentenceInput, SongLyrics, StartGameButton } from "./";
+import { Players, SongLyrics } from "./";
 import { useParams } from "react-router-dom";
 import useSocketEvents from "../../hooks/useSocketEvents";
-import { api } from "../../services/index";
 import useAppStore from "../../store/useStore";
 import GameResultsModal from "./modals/GameResultsModal";
 import GameTimer from "./GameTimer";
-import Topic from "./Topic";
+import { socket, api } from "../../services";
 
 const GameBoard = () => {
   const { gameCode } = useParams<{ gameCode: string }>();
+  const [sentenceInput, setSentenceInput] = useState<string>("");
+  const [error, setError] = useState<string>("");
+
   const { setGame, setGameCode, resetGame } = useAppStore((state) => state);
-  const [topic, setTopic] = useState<string>();
   const {
     game,
     user: { username },
@@ -26,7 +27,6 @@ const GameBoard = () => {
           console.log("Fetched game: ", game);
           setGame(game);
           setGameCode(gameCode); //TODO: remove gameCode state and use the field in game
-          setTopic(game.topic);
         }
       } catch (err) {
         console.error("Failed to fetch game details: ", err);
@@ -38,39 +38,67 @@ const GameBoard = () => {
 
   useSocketEvents({ setShowResultsModal });
 
+  const onStartGamePress = () => {
+    socket.emit("startGame");
+  };
+
+  const handleSentenceSubmit = (
+    event: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (event.key !== "Enter") return;
+    const trimmedSentence = sentenceInput.trim();
+    if (trimmedSentence === "") {
+      setError("Sentence cannot be empty.");
+      return;
+    }
+
+    try {
+      console.log("Emitting sentence:", trimmedSentence);
+      socket.emit("addSentence", trimmedSentence);
+      setSentenceInput("");
+      setError("");
+    } catch (err) {
+      console.error("Error sending sentence:", err);
+      setError("Failed to send sentence. Please try again.");
+    }
+  };
+
   return (
-    <div className="h-screen flex flex-col p-20">
-      <div className="flex items-center justify-around">
-        <p className="text-2xl font-extrabold w-full text-center mb-4 ml-10">
-          {topic}
-        </p>
+    <div className="h-screen p-10">
+      <div className="h-[10%] pl-20">
         <GameTimer />
-
-        <div className="flex justify-between w-full items-center">
-          <GameTimer />
-          <div className="flex flex-grow justify-center pr-12">
-            <Topic topic={game.topic} />
-          </div>
-        </div>
-
-        <div className="flex w-full h-full justify-between gap-2 pt-8 pb-8">
-          <SongLyrics />
-          <PlayerList />
-        </div>
-
-        <div className="w-full flex justify-center">
-          {!game.isActive && username == game.gameCreatorName && (
-            <StartGameButton />
-          )}
-          {game.isActive && (
-            <div className="w-2/3">
-              <SentenceInput />
-            </div>
-          )}
-        </div>
-
-        <GameResultsModal showModal={showResultsModal} />
       </div>
+      <h3 className="flex justify-center font-bold">Love My Life</h3>
+
+      <div className="flex pt-8 h-[60%]">
+        <div className="w-[70%]">
+          <SongLyrics lyrics={game.lyrics} />
+        </div>
+        <div className="w-[30%] flex justify-center pl-10">
+          <Players
+            players={game.players}
+            gameIsActive={game.isActive}
+            currentPlayerName={game.currentPlayerName}
+          />
+        </div>
+      </div>
+      <div className="flex p-20 justify-center">
+        {!game.isActive && username == game.gameCreatorName && (
+          <button onClick={onStartGamePress} className="btn w-40 bg-[#c7f5a4]">
+            <h3 className="text-center">Start</h3>
+          </button>
+        )}
+        {game.isActive && (
+          <input
+            placeholder="Type a new line"
+            onChange={(e) => setSentenceInput(e.target.value)}
+            disabled={!game.isActive || game.currentPlayerName != username}
+            value={sentenceInput}
+            onKeyUp={handleSentenceSubmit}
+          />
+        )}
+      </div>
+      <GameResultsModal showModal={showResultsModal} />
     </div>
   );
 };

@@ -46,7 +46,7 @@ const Home = () => {
       <div className="flex flex-col items-center w-3/4 max-w-md gap-6">
         {/* Create Game Button */}
         <button
-          className="btn w-full h-12 bg-[#fefcd0] rounded-full black lg  shadow-lg shadow-[#c381b5] hover:scale-105 transform transition-all duration-200"
+          className="btn w-full h-12 bg-[#fefcd0] shadow-lg shadow-[#c381b5]"
           onClick={handleCreateGame}
         >
           <span>🌟&nbsp; Create New Game</span>
@@ -54,7 +54,7 @@ const Home = () => {
 
         {/* Join Game Button */}
         <button
-          className="btn-secondary w-full h-12 bg-[#c7f5a4] rounded-full black lg shadow-lg shadow-[#c381b5] hover:scale-105 transform transition-all duration-200"
+          className="btn w-full h-12 bg-[#c7f5a4] shadow-lg shadow-[#c381b5]"
           onClick={handleJoinGame}
         >
           <span>🎮 &nbsp;Join Game</span>

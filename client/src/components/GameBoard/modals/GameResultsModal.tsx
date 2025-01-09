@@ -13,7 +13,7 @@ const GameResultsModal = ({ showModal }: GameResultsModalProps) => {
   const isGameActive = useAppStore((state) => state.game.isActive);
 
   const onClose = () => {
-    navigate("/home");
+    navigate("/");
   };
 
   const sortedPlayers = [...players].sort((a, b) => b.score - a.score);

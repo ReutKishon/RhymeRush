@@ -70,7 +70,7 @@ const JoinGameModal = ({ showModal, setShowModal }: JoinGameModalProps) => {
             type="text"
             onChange={handleUserNameChange}
             value={userNameInput}
-            className="w-full border-none rounded-xl py-3 pl-4 black bg-yellow-100 focus:ring-4 focus:ring-yellow-300 focus:outline-none"
+            className="w-full bg-yellow-100"
           />
         </div>
         <div className="mb-4">
@@ -80,7 +80,7 @@ const JoinGameModal = ({ showModal, setShowModal }: JoinGameModalProps) => {
             type="text"
             value={gameCode}
             onChange={handleGameCodeChange}
-            className="w-full border-none rounded-xl py-3 px-4 black bg-yellow-100 focus:ring-4 focus:ring-yellow-300 focus:outline-none"
+            className="w-full bg-yellow-100"
           />
         </div>
         {errorMessage && (

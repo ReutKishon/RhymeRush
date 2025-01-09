@@ -1,15 +1,20 @@
 import React, { useMemo } from "react";
-import { PlayerAvatar } from "../GameBoard";
-import useAppStore from "../../store/useStore";
+import { PlayerAvatar } from ".";
+import { Player } from "../../../../shared/types/gameTypes";
 
-const PlayerList = () => {
-  const {
-    players,
-    isActive: gameIsActive,
-    currentPlayerName,
-  } = useAppStore((state) => state.game);
+interface PlayersProps {
+  players: Player[];
+  gameIsActive: boolean;
+  currentPlayerName: string;
+}
 
+const Players = ({
+  players,
+  gameIsActive,
+  currentPlayerName,
+}: PlayersProps) => {
   const playerComponents = useMemo(() => {
+    
     console.log("players:", players);
     return players.map((player) => {
       return (
@@ -23,10 +28,10 @@ const PlayerList = () => {
   }, [currentPlayerName, gameIsActive, players]);
 
   return (
-    <div className="flex sm:flex-col w-[20%] gap-4 items-center">
+    <div className="flex sm:flex-col gap-5 items-center">
       {playerComponents}
     </div>
   );
 };
 
-export default PlayerList;
+export default Players;

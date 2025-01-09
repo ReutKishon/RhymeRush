@@ -3,8 +3,8 @@
 @tailwind utilities;
 @import 'pixel-retroui/dist/index.css';
 @import url('https://fonts.googleapis.com/css2?family=Satisfy&display=swap'); 
-
-.scrollbar-hidden::-webkit-scrollbar {
+@import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@100..900&family=Inconsolata:wght@200..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Oswald:wght@200..700&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap');.scrollbar-hidden::-webkit-scrollbar {
     display: none;
   }
 
@@ -55,7 +55,6 @@
   scrollbar-width: none; /* Firefox */
 }
 
-
 @layer base {
   body {
     @apply bg-primary-purple
@@ -86,16 +85,18 @@
   span {
     @apply text-gray-800
   }
+  input{
+    @apply w-full border-none rounded-xl py-3 pl-4 focus:ring-4 focus:outline-none
+  }
+
+
 
 
 }
 
 @layer components {
   .btn {
-    @apply bg-primary-pink text-white px-4 py-2 rounded-md;
+    @apply rounded-full px-4 py-2 hover:scale-105 transform transition-all duration-200
   }
 
-  .btn-secondary {
-    @apply bg-primary-blue text-white px-4 py-2 rounded-md;
-  }
 }

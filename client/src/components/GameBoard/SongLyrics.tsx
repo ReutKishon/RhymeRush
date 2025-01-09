@@ -1,9 +1,8 @@
-import React, { memo, useEffect, useRef } from "react";
-import useAppStore from "../../store/useStore";
+import { memo, useEffect, useRef } from "react";
 import { TypeAnimation } from "react-type-animation";
+import { Sentence } from "../../../../shared/types/gameTypes";
 
-const SongLyrics = memo(() => {
-  const lyrics = useAppStore((state) => state.game.lyrics);
+const SongLyrics = memo(({ lyrics }: { lyrics: Sentence[] }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -13,13 +12,13 @@ const SongLyrics = memo(() => {
   }, [lyrics]);
 
   return (
-    <div className="flex p-10 flex-col w-[80%] h-full overflow-hidden items-center">
+    <div className="flex flex-col h-full items-center">
       <div ref={scrollRef} className="overflow-y-auto scrollbar-hide ">
         {lyrics.map((sentence, index) => {
           return (
             <div className="flex items-center space-x-4 pb-4">
               <div className="text-xl">{sentence.player.name + ":"}</div>
-              <div className="flex-1">
+              <div className="flex">
                 {index === lyrics.length - 1 ? (
                   <TypeAnimation
                     sequence={[sentence.content, 1000]}

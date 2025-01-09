@@ -36,9 +36,9 @@ const PlayerAvatar = ({ player, isPlayerTurn }: PlayerProps) => {
   }, [isPlayerTurn]);
 
   return (
-    <div className="relative bg-gradient-to-br from-purple-500 to-pink-500 rounded-full shadow-xs w-[150px] h-[150px]">
+    <div className="relative bg-gray-400 rounded-full w-[120px] h-[120px]">
       {/* Circular Progress Bar */}
-      <div className="absolute inset-0 w-full h-full flex items-center justify-center">
+      <div className="absolute inset-0 flex items-center justify-center">
         {timer && (
           <CircularProgress
             variant="determinate"
@@ -54,15 +54,10 @@ const PlayerAvatar = ({ player, isPlayerTurn }: PlayerProps) => {
         )}
         {/* Avatar Content */}
         <div className="text-center">
-          <div
-            className="text-2xl font-bold truncate"
-            style={{ color: player.color }}
-          >
-            {player.name}
-          </div>
-          <div className="text-sm font-medium text-yellow-200">
+          <h2 className="font-bold truncate">{player.name}</h2>
+          <h4 className="font-medium">
             Score: <span className="font-bold">{player.score}</span>
-          </div>
+          </h4>
         </div>
       </div>
     </div>

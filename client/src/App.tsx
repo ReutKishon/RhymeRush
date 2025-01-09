@@ -44,7 +44,7 @@ function App() {
 
   return (
     <BrowserRouter>
-      <div className="font-satisfy">
+      <div className="font-regular">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/game/:gameCode" element={<GameBoard />} />
@@ -53,7 +53,7 @@ function App() {
 
       </div>
 
-      <p>{JSON.stringify(state, null, 2)}</p>
+      {/* <p>{JSON.stringify(state, null, 2)}</p> */}
     </BrowserRouter>
   );
 }

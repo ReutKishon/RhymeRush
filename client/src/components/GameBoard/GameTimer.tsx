@@ -40,10 +40,9 @@ const GameTimer = ({}) => {
   const progress = (remainingTime / (timerInMinutes * 60)) * 100;
 
   return (
-    <div className="flex flex-col w-[150px] h-[60px] flex items-center justify-center border rounded-full bg-pink-600">
+    <div className="">
       {/* Timer Content */}
-      <p className="text-2xl font-bold text-green-200">{formattedTime}</p>
-      <p className="text-xs text-green-200">Time Left</p>
+      <h1>{formattedTime}</h1>
     </div>
   );
 };
