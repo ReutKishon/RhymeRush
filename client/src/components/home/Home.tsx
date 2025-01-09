@@ -33,7 +33,7 @@ const Home = () => {
 
   return (
     <div
-      className="flex h-screen flex-col items-center justify-center gap-6 p-4 bg-primary-purple"
+      className="flex h-screen flex-col items-center justify-center gap-6 p-4"
       style={connectionStatus ? {} : areaDisabledStyle}
     >
       {/* Logo */}
@@ -46,18 +46,18 @@ const Home = () => {
       <div className="flex flex-col items-center w-3/4 max-w-md gap-6">
         {/* Create Game Button */}
         <button
-          className="btn w-full h-12 bg-[#fefcd0] shadow-lg shadow-[#c381b5]"
+          className="btn w-full h-12 bg-[#fefcd0] shadow-lg"
           onClick={handleCreateGame}
         >
-          <span>🌟&nbsp; Create New Game</span>
+          <span>Create New Game</span>
         </button>
 
         {/* Join Game Button */}
         <button
-          className="btn w-full h-12 bg-[#c7f5a4] shadow-lg shadow-[#c381b5]"
+          className="btn w-full h-12 bg-[#c7f5a4] "
           onClick={handleJoinGame}
         >
-          <span>🎮 &nbsp;Join Game</span>
+          <span>Join Game</span>
         </button>
       </div>
 

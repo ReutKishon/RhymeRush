@@ -13,7 +13,7 @@ const GameTimerSelection = ({gameTimer, setGameTimer}: GameTimerSelectionProps) 
 
   return (
     <div className="p-2">
-      <label className="block text-lg font-medium mb-3 ">Select Game Timer</label>
+      <label className="block text-lg font-medium mb-3 ">How long would you like to play?</label>
       <div className="relative p-1 bg-gray-100 rounded-full flex w-fit mx-auto ">
         {options.map((option) => (
           <button
@@ -34,8 +34,8 @@ const GameTimerSelection = ({gameTimer, setGameTimer}: GameTimerSelectionProps) 
         <div
           className="absolute inset-y-1 transition-all duration-300 bg-blue-500 rounded-full"
           style={{
-            left: `${(options.findIndex(opt => opt.value === gameTimer) * 100) / options.length}%`,
-            width: `${100 / options.length}%`
+            left:  `${((options.findIndex(opt => opt.value === gameTimer) * 100) / options.length ) + 1}%`,
+            width: `${93 / options.length}%`
           }}
         />
       </div>

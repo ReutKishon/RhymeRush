@@ -60,33 +60,36 @@ const CreateGameModal = ({ showModal, setShowModal }: CreateGameModalProps) => {
 
   return (
     <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
-      <div className="bg-primary-pink p-6 rounded-xl w-full md:w-2/3 ">
+      <div className="bg-primary-purple p-6 rounded-xl w-full md:w-1/2 ">
+        <div className="flex justify-end">
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 white hover:yellow-300 focus:outline-none"
+          className="flex justify-end flex-row-reverse "
           aria-label="Close"
         >
-          <AiFillCloseCircle size={24} />
-        </button>
+            <AiFillCloseCircle size={24} />
+          </button>
+        </div>
 
         {currentStep === "enterUsername" && (
-          <div className="flex flex-col gap-2">
+          <div className="flex items-center flex-col gap-2">
             <h2>Create a New Game</h2>
-            <label className="lg mb-2">Your Name</label>
             <input
               type="text"
-              className="w-full"
+              className="w-1/2"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               placeholder="Enter your name"
             />
-            <GameTimerSelection
-              gameTimer={gameTimer}
-              setGameTimer={setGameTimer}
-            />
+            <div className="flex flex-col gap-2">
+              <GameTimerSelection
+                gameTimer={gameTimer}
+                setGameTimer={setGameTimer}
+              />
+            </div>
             <button
               onClick={handleCreateGame}
-              className="bg-yellow-400 black rounded-full px-6 py-3 hover:bg-yellow-300 focus:ring-4 focus:ring-yellow-200 w-full transition-all duration-200"
+              className="bg-yellow-400 black  w-1/2 rounded-full px-6 py-3 hover:bg-yellow-300 focus:ring-4 focus:ring-yellow-200 transition-all duration-200"
             >
               Create Game
             </button>
