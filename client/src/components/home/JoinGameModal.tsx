@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../services";
 import useAppStore from "../../store/useStore";
-import { AiFillCloseCircle } from "react-icons/ai";
+import Modal from "../common/Modal";
 
 interface JoinGameModalProps {
   showModal: boolean;
@@ -40,61 +40,38 @@ const JoinGameModal = ({ showModal, setShowModal }: JoinGameModalProps) => {
     setGameCode(event.target.value);
   };
 
-  const onCloseModal = () => {
-    setGameCode("");
-    setShowModal(false);
-  };
-
-  if (!showModal) return null;
-
   return (
-    <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center z-50">
-      <div
-        className="bg-gradient-to-br from-blue-500 to-teal-500 p-6 rounded-2xl shadow-2xl white max-w-sm w-full relative"
-        onClick={(e) => e.stopPropagation()} // Prevent click bubbling
-      >
-
-        <div className="flex justify-end">
-          <button
-            onClick={onCloseModal}
-            className="absolute top-4 right-4 white hover:yellow-300 focus:outline-none"
-            aria-label="Close"
-          >
-            <AiFillCloseCircle size={24} />
-          </button>
-        </div>
-
-        <div className="flex flex-col gap-4">
-          <h2 className="4xl font-bold text-center yellow-300">
-            Join A Game
-          </h2>
-          <input
-            placeholder="Enter your username"
-            type="text"
-            onChange={handleUserNameChange}
-            value={userNameInput}
-            className="w-full bg-yellow-100"
-          />
+    <Modal
+      isOpen={showModal}
+      onClose={() => setShowModal(false)}
+      title="Join A Game"
+      variant="primary"
+      width="max-w-sm"
+    >
+      <div className="flex flex-col gap-4">
+        <input
+          placeholder="Enter your username"
+          type="text"
+          onChange={handleUserNameChange}
+          value={userNameInput}
+        />
         <input
           placeholder="Enter a game code"
           type="text"
           value={gameCode}
           onChange={handleGameCodeChange}
-          className="w-full bg-yellow-100"
         />
         {errorMessage && (
           <p className="err">{errorMessage}</p>
         )}
         <button
           onClick={handleEnterGame}
-          className="bg-yellow-400 black font-bold rounded-full px-6 py-3 hover:bg-yellow-300 focus:ring-4 focus:ring-yellow-200 w-full transition-all duration-200"
+          className="bg-primary-yellow"
         >
-          Enter Game
+          <p>Enter Game</p>
         </button>
-        </div>
-
       </div>
-    </div>
+    </Modal>
   );
 };
 

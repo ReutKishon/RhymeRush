@@ -48,7 +48,6 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/game/:gameCode" element={<GameBoard />} />
-
         </Routes>
 
       </div>

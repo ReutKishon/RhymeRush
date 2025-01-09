@@ -1,12 +1,12 @@
 import React from "react";
-import { List, ListItem, ListItemText } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import useAppStore from "../../../store/useStore";
-import { Popup } from "pixel-retroui";
+import Modal from "../../common/Modal";
 
 interface GameResultsModalProps {
   showModal: boolean;
 }
+
 const GameResultsModal = ({ showModal }: GameResultsModalProps) => {
   const navigate = useNavigate();
   const players = useAppStore((state) => state.game.players);
@@ -23,15 +23,14 @@ const GameResultsModal = ({ showModal }: GameResultsModalProps) => {
   }
 
   return (
-    <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex justify-center items-center z-50">
-      <div
-        className="bg-gradient-to-br from-purple-500 to-pink-500 p-6 rounded-xl shadow-lg text-white max-w-md w-full relative"
-        onClick={(e) => e.stopPropagation()} // Prevent click bubbling
-      >
-        <h2 className="text-3xl font-bold text-center mb-4">
-          🎉 Game Over! 🎮
-        </h2>
-        <p className="text-center text-sm mb-6">Here are the final scores:</p>
+    <Modal 
+      isOpen={showModal} 
+      onClose={onClose}
+      title="Game Over"
+      width="max-w-md"
+    >
+      <div className="flex flex-col gap-4">
+        <p className="text-center text-sm">Here are the final scores:</p>
         <ul className="space-y-3">
           {sortedPlayers.map((player, index) => (
             <li
@@ -42,9 +41,6 @@ const GameResultsModal = ({ showModal }: GameResultsModalProps) => {
                 <div
                   className="w-10 h-10 rounded-full flex items-center justify-center text-black font-bold mr-3"
                   style={{
-                    // backgroundImage: `url(${player.avatarUrl})`,
-                    // backgroundSize: "cover",
-                    // backgroundPosition: "center",
                     backgroundColor: player.color,
                   }}
                 >
@@ -58,12 +54,12 @@ const GameResultsModal = ({ showModal }: GameResultsModalProps) => {
         </ul>
         <button
           onClick={onClose}
-          className="mt-6 w-full py-2 bg-yellow-400 text-black rounded-lg hover:bg-yellow-300 focus:ring-4 focus:ring-yellow-200"
+          className="w-full py-2 bg-yellow-400 text-black rounded-lg hover:bg-yellow-300 focus:ring-4 focus:ring-yellow-200"
         >
           Close
         </button>
       </div>
-    </div>
+    </Modal>
   );
 };
 

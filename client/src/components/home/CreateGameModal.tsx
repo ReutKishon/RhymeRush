@@ -1,11 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../services";
 import { v4 as uuidv4 } from "uuid";
 import useAppStore from "../../store/useStore";
-import { AiFillCloseCircle } from "react-icons/ai";
 import GameTimerSelection from "./GameTimerSelection";
-import { Input } from "pixel-retroui";
+import Modal from "../common/Modal";
 
 interface CreateGameModalProps {
   showModal: boolean;
@@ -13,9 +12,7 @@ interface CreateGameModalProps {
 }
 
 const CreateGameModal = ({ showModal, setShowModal }: CreateGameModalProps) => {
-  const [currentStep, setCurrentStep] = useState<
-    "enterUsername" | "gameCreated"
-  >("enterUsername");
+  const [currentStep, setCurrentStep] = useState<"enterUsername" | "gameCreated">("enterUsername");
   const [username, setUsername] = useState("");
   const [gameCode, setGameCode] = useState("");
   const [gameTimer, setGameTimer] = useState(3);
@@ -28,98 +25,72 @@ const CreateGameModal = ({ showModal, setShowModal }: CreateGameModalProps) => {
       alert("Please enter a username");
       return;
     }
-    const generatedCode = uuidv4(); //TODO: move the generated code to the backend?
+    const generatedCode = uuidv4();
     const game = await api.createGame(generatedCode, username, gameTimer);
 
     setGameCode(game.code);
     setCurrentStep("gameCreated");
   };
 
-  const handleEnterGame = () => {
-    console.log(`Game Code: ${gameCode}, Username: ${username}`);
-    setUserName(username);
-    navigate(`/game/${gameCode}`);
-  };
-  const onClose = () => {
-    setShowModal(false);
-    setCurrentStep("enterUsername");
-  };
 
   const handleCodeCopy = () => {
     navigator.clipboard.writeText(gameCode).then(
-      () => {
-        alert("Copied to clipboard!");
-      },
-      (err) => {
-        console.error("Failed to copy: ", err);
-      }
+      () => alert("Copied to clipboard!"),
+      (err) => console.error("Failed to copy: ", err)
     );
   };
 
-  if (!showModal) return null;
-
   return (
-    <div className="fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center">
-      <div className="bg-primary-purple p-6 rounded-xl w-full md:w-1/2 ">
-        <div className="flex justify-end">
-        <button
-          onClick={onClose}
-          className="flex justify-end flex-row-reverse "
-          aria-label="Close"
-        >
-            <AiFillCloseCircle size={24} />
+    <Modal
+      isOpen={showModal}
+      onClose={() => {
+        setShowModal(false);
+        setCurrentStep("enterUsername");
+      }}
+      title={currentStep === "enterUsername" ? "Create a New Game" : "Game Created"}
+    >
+      {currentStep === "enterUsername" && (
+        <div className="flex items-center flex-col gap-4">
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="Enter your name"
+          />
+          <GameTimerSelection
+            gameTimer={gameTimer}
+            setGameTimer={setGameTimer}
+          />
+          <button
+            onClick={handleCreateGame}
+            className=""
+          >
+            <p>Create Game</p>
           </button>
         </div>
+      )}
 
-        {currentStep === "enterUsername" && (
-          <div className="flex items-center flex-col gap-4">
-            <h2>Create a New Game</h2>
-            <input
-              type="text"
-              className="w-1/2"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="Enter your name"
-            />
-            <div className="flex flex-col gap-2">
-              <GameTimerSelection
-                gameTimer={gameTimer}
-                setGameTimer={setGameTimer}
-              />
-            </div>
-            <button
-              onClick={handleCreateGame}
-              className="bg-yellow-400 black  w-1/2 rounded-full px-6 py-3 hover:bg-yellow-300 focus:ring-4 focus:ring-yellow-200 transition-all duration-200"
-            >
-              Create Game
+      {currentStep === "gameCreated" && (
+        <div className="flex flex-col justify-center w-full gap-4">
+          <p className="lg text-center yellow-100">
+            Share this code with your friends to join:
+          </p>
+          <div className="w-full flex items-center justify-between bg-yellow-100 rounded-xl py-3 px-4">
+            <h5 className="text-center">{gameCode}</h5>
+            <button onClick={handleCodeCopy}>
+              <i className="material-icons">content_copy</i>
             </button>
           </div>
-        )}
-        {currentStep === "gameCreated" && (
-          <div className="flex flex-col justify-center w-full gap-4">
-            <h2 className="4xl font-bold text-center 6 yellow-300">
-              🎉 Game Created!
-            </h2>
-            <p className="lg text-center yellow-100">
-              Share this code with your friends to join:
-            </p>
-            <div className=" w-full flex items-center justify-between bg-yellow-100 rounded-xl py-3 px-4">
-              <h5 className="text-center">{gameCode}</h5>
-              <button onClick={handleCodeCopy}>
-                <i className="material-icons">content_copy</i>
-              </button>
-            </div>
 
-            <button
-              onClick={handleEnterGame}
-              className="bg-yellow-400 black font-bold rounded-full px-6 py-3 hover:bg-yellow-300 focus:ring-4 focus:ring-yellow-200 w-full transition-all duration-200"
-            >
-              Enter Game
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
+          <button
+            onClick={() => navigate(`/game/${gameCode}`)}
+          >
+            Enter Game
+          </button>
+        </div>
+      )}
+    </Modal>
   );
 };
+
 export default CreateGameModal;

@@ -16,7 +16,7 @@ const Welcome = () => {
 
   return (
     <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
-      <h1 className="3xl font-bold mb-8">Welcome!</h1>
+      <h1 className="3xl font-bold">Welcome!</h1>
       <div className="space-y-4">
         <button
           className="px-6 py-3 bg-blue-500 white rounded hover:bg-blue-600"

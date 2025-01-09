@@ -60,47 +60,66 @@
 
 @layer base {
   body {
-    @apply bg-primary-purple
+    @apply bg-primary-purple uppercase;
   }
 
   /* Typography */
   h1 {
-    @apply text-4xl font-satisfy text-black 
+    @apply text-4xl font-satisfy text-black;
   }
 
   h2 {
-    @apply text-3xl font-satisfy  text-black 
+    @apply text-3xl font-satisfy text-black;
   }
 
   h3 {
-    @apply text-2xl font-satisfy  text-black 
+    @apply text-2xl font-satisfy text-black;
   }
 
   p {
-    @apply  leading-relaxed  text-black 
+    @apply leading-relaxed text-black uppercase;
   }
 
   /* Links */
   a {
-    @apply   text-black transition-colors;
+    @apply text-black transition-colors;
   }
 
   span {
-    @apply text-gray-800
+    @apply text-gray-800 uppercase
   }
+  
+  input {
+    @apply w-full border-none rounded-xl py-3 pl-4 focus:ring-4 focus:outline-none uppercase;
+  }
+
+  /* Add this new style for placeholders */
+  input::placeholder {
+    @apply uppercase;
+  }
+
+  label{
+    @apply text-black uppercase
+  }
+
   input{
     @apply w-full border-none rounded-xl py-3 pl-4 focus:ring-4 focus:outline-none
   }
 
+  button{
+    @apply w-full rounded-full px-4 py-2 hover:scale-105 transform transition-all duration-200;
+    @apply bg-primary-yellow
+  }
 
 
 
 }
 
 @layer components {
-  .btn {
-    @apply rounded-full px-4 py-2 hover:scale-105 transform transition-all duration-200
+  button.secondary{
+    @apply bg-primary-green
   }
+
   .err{
     @apply text-red-600 font-regular 
   }

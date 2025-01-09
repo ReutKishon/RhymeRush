@@ -46,15 +46,15 @@ const Home = () => {
       <div className="flex flex-col items-center w-3/4 max-w-md gap-6">
         {/* Create Game Button */}
         <button
-          className="btn w-full h-12 bg-[#fefcd0] shadow-lg"
+          className="w-full h-12 bg-[#fefcd0] shadow-lg"
           onClick={handleCreateGame}
         >
-          <span>Create New Game</span>
+          <p>Create New Game</p>
         </button>
 
         {/* Join Game Button */}
         <button
-          className="btn w-full h-12 bg-[#c7f5a4] "
+          className="secondary"
           onClick={handleJoinGame}
         >
           <span>Join Game</span>
@@ -63,7 +63,7 @@ const Home = () => {
 
       {/* Connection Lost Message */}
       {!connectionStatus && (
-        <div className="mt-6 flex items-center gap-2 red-600 lg font-semibold">
+        <div className="flex items-center gap-2 red-600 lg font-semibold">
           <AiOutlineWifi size={24} />
           <span>Connection lost. Try again later...</span>
         </div>

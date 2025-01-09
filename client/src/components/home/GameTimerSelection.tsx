@@ -6,21 +6,23 @@ interface GameTimerSelectionProps{
 }
 const GameTimerSelection = ({gameTimer, setGameTimer}: GameTimerSelectionProps) => {
   const options = [
-    { value: 3, label: '3 min' },
-    { value: 5, label: '5 min' },
-    { value: 10, label: '10 min' },
+    { value: 0.1, label: '1 MIN' },
+    { value: 3, label: '3 MIN' },
+    { value: 5, label: '5 MIN' },
+    { value: 10, label: '10 MIN' },
   ];
 
   return (
-    <div className="flex flex-col gap-2">
-      <label className="block text-lg font-medium ">How long would you like to play?</label>
-      <div className="relative p-1 bg-gray-100 rounded-full flex w-fit mx-auto ">
+    <div className="w-full flex flex-col gap-2 items-center">
+      <label className="">How long would you like to play?</label>
+      <div className="w-full flex relative p-1  rounded-full bg-gray-100">
         {options.map((option) => (
           <button
+
             key={option.value}
             onClick={() => setGameTimer(option.value)}
             className={`
-              relative z-10 px-6 py-2 rounded-full transition-all duration-300
+              relative z-10 bg-transparent
               ${gameTimer === option.value 
                 ? 'text-white' 
                 : 'text-gray-600 hover:text-gray-800'
@@ -32,7 +34,7 @@ const GameTimerSelection = ({gameTimer, setGameTimer}: GameTimerSelectionProps) 
         ))}
         {/* Sliding background */}
         <div
-          className="absolute inset-y-1 transition-all duration-300 bg-blue-500 rounded-full"
+          className="absolute inset-y-1 transition-all duration-300 bg-primary-blue rounded-full"
           style={{
             left:  `${((options.findIndex(opt => opt.value === gameTimer) * 100) / options.length ) + 1}%`,
             width: `${93 / options.length}%`
