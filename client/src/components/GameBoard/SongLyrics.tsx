@@ -12,11 +12,11 @@ const SongLyrics = memo(({ lyrics }: { lyrics: Sentence[] }) => {
   }, [lyrics]);
 
   return (
-    <div className="flex flex-col h-full items-center">
-      <div ref={scrollRef} className="overflow-y-auto scrollbar-hide ">
+    <div className="flex flex-col h-full w-full items-center px-2">
+      <div ref={scrollRef} className="overflow-y-auto scrollbar-hide w-full ">
         {lyrics.map((sentence, index) => {
           return (
-            <div className="flex items-center space-x-4 pb-4">
+            <div className="flex items-center space-x-4 pb-4" key={index}>
               <div className="text-xl">{sentence.player.name + ":"}</div>
               <div className="flex">
                 {index === lyrics.length - 1 ? (

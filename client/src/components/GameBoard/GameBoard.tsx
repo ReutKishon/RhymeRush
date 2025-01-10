@@ -111,7 +111,7 @@ const GameBoard = () => {
               </div>
             </div>
           ) : (
-            <div className="overflow-y-auto">
+            <div className="overflow-y-auto w-full">
               <SongLyrics lyrics={game.lyrics} />
             </div>
           )}

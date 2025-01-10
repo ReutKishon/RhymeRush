@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 
 type ValidationRule = {
   validate: (value: string) => boolean;
@@ -26,6 +26,9 @@ export function useFormValidation<T extends Record<string, string>>(formConfig: 
   const [errors, setErrors] = useState<Partial<Record<keyof T, string>>>({});
   const [touched, setTouched] = useState<Partial<Record<keyof T, boolean>>>({});
   const [isValid, setIsValid] = useState(false);
+  
+  // Use ref to prevent infinite loop
+  const prevValuesRef = useRef(values);
 
   // Validate a single field
   const validateField = useCallback((name: keyof T, value: string) => {
@@ -44,7 +47,7 @@ export function useFormValidation<T extends Record<string, string>>(formConfig: 
     const newErrors: Partial<Record<keyof T, string>> = {};
     let formIsValid = true;
 
-    for (const [name, config] of Object.entries(formConfig)) {
+    for (const [name] of Object.entries(formConfig)) {
       const error = validateField(name as keyof T, values[name as keyof T]);
       if (error) {
         newErrors[name as keyof T] = error;
@@ -57,23 +60,38 @@ export function useFormValidation<T extends Record<string, string>>(formConfig: 
     return formIsValid;
   }, [values, formConfig, validateField]);
 
-  // Handle input change
   const handleChange = useCallback((name: keyof T, value: string) => {
     setValues(prev => ({ ...prev, [name]: value }));
     setTouched(prev => ({ ...prev, [name]: true }));
   }, []);
 
-  // Handle input blur
   const handleBlur = useCallback((name: keyof T) => {
     setTouched(prev => ({ ...prev, [name]: true }));
     const error = validateField(name, values[name]);
     setErrors(prev => ({ ...prev, [name]: error }));
   }, [validateField, values]);
 
-  // Validate form whenever values change
+  // Run validation only when values actually change
   useEffect(() => {
-    validateForm();
-  }, [values, validateForm]);
+    if (JSON.stringify(prevValuesRef.current) === JSON.stringify(values)) {
+      return;
+    }
+    
+    prevValuesRef.current = values;
+    const newErrors: Partial<Record<keyof T, string>> = {};
+    let formIsValid = true;
+
+    for (const [name] of Object.entries(formConfig)) {
+      const error = validateField(name as keyof T, values[name as keyof T]);
+      if (error) {
+        newErrors[name as keyof T] = error;
+        formIsValid = false;
+      }
+    }
+
+    setErrors(newErrors);
+    setIsValid(formIsValid);
+  }, [values, formConfig, validateField]);
 
   return {
     values,
