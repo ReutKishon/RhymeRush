@@ -30,7 +30,6 @@ const GameResultsModal = ({ showModal }: GameResultsModalProps) => {
       width="max-w-md"
     >
       <div className="flex flex-col gap-4">
-        <p className="text-center text-sm">Here are the final scores:</p>
         <ul className="space-y-3">
           {sortedPlayers.map((player, index) => (
             <li
@@ -54,7 +53,6 @@ const GameResultsModal = ({ showModal }: GameResultsModalProps) => {
         </ul>
         <button
           onClick={onClose}
-          className="w-full py-2 bg-yellow-400 text-black rounded-lg hover:bg-yellow-300 focus:ring-4 focus:ring-yellow-200"
         >
           Close
         </button>

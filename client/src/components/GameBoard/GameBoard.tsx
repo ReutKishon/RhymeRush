@@ -27,9 +27,8 @@ const GameBoard = () => {
       try {
         if (gameCode) {
           const game = await api.fetchGameData(gameCode);
-          console.log("Fetched game: ", game);
           setGame(game);
-          setGameCode(gameCode); //TODO: remove gameCode state and use the field in game
+          setGameCode(gameCode);
         }
       } catch (err) {
         console.error("Failed to fetch game details: ", err);
@@ -45,97 +44,99 @@ const GameBoard = () => {
     socket.emit("startGame");
   };
 
-  const handleSentenceSubmit = (
-    event: React.KeyboardEvent<HTMLInputElement>
-  ) => {
+  const handleSentenceSubmit = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key !== "Enter") return;
     const trimmedSentence = sentenceInput.trim();
     if (trimmedSentence === "") {
-      setAddSentenceError(
-        "Oops! It looks like you forgot to enter something. Please try again!"
-      );
+      setAddSentenceError("Please enter something!");
       return;
     }
 
-    console.log("Emitting sentence:", trimmedSentence);
     socket.emit("addSentence", trimmedSentence);
     setSentenceInput("");
     setAddSentenceError("");
   };
 
-  // Updated navigation prevention
-  useEffect(() => {
-    // Prevent default behavior of back/forward buttons
-    const preventDefaultNavigation = (e: BeforeUnloadEvent) => {
-      e.preventDefault();
-      // Chrome requires returnValue to be set
-      e.returnValue = '';
-    };
-
-    // Prevent back button navigation
-    const preventBackNavigation = () => {
-      window.history.pushState(null, '', window.location.pathname);
-    };
-
-    // Initial state
-    window.history.pushState(null, '', window.location.pathname);
-
-    // Add event listeners
-    window.addEventListener('beforeunload', preventDefaultNavigation);
-    window.addEventListener('popstate', preventBackNavigation);
-
-    // Block all navigation attempts
-    window.onpopstate = () => {
-      window.history.pushState(null, '', window.location.pathname);
-    };
-
-    // Cleanup
-    return () => {
-      window.removeEventListener('beforeunload', preventDefaultNavigation);
-      window.removeEventListener('popstate', preventBackNavigation);
-      window.onpopstate = null;
-    };
-  }, []);
-
   return (
-    <div className="h-screen p-10 relative">
-      <ExitButton />
-      <div className="h-[10%] pl-20">
+    <div className="flex flex-col h-screen bg-primary-purple">
+      {/* Header Section */}
+      <div className="flex justify-between items-center p-4">
         <GameTimer />
+        <ExitButton />
       </div>
-      <h3 className="flex justify-center font-bold">Love My Life</h3>
 
-      <div className="flex pt-8 h-[60%]">
-        <div className="w-[70%]">
-          <SongLyrics lyrics={game.lyrics} />
-        </div>
-        <div className="w-[30%] flex justify-center pl-10">
+      {/* Topic/Title Section */}
+      <div className="text-center py-2">
+        <h3 className="font-bold">{game.topic}</h3>
+      </div>
+
+      {/* Main Content Section - Using grid for desktop */}
+      <div className="flex-1 flex flex-col md:grid md:grid-cols-3 gap-4 p-4 overflow-hidden">
+        {/* Empty First Column on Desktop */}
+        <div className="hidden md:block"></div>
+
+        {/* Players Section - Row on mobile, Column on desktop */}
+        <div className="md:order-last md:col-span-1">
           <Players
             players={game.players}
             gameIsActive={game.isActive}
             currentPlayerName={game.currentPlayerName}
           />
         </div>
+
+        {/* Center Lyrics Section */}
+        <div className="flex-1 overflow-y-auto md:col-span-1">
+          <SongLyrics lyrics={game.lyrics} />
+        </div>
       </div>
-      <div className="flex p-20 justify-center">
-        {!game.isActive && username == game.gameCreatorName && (
-          <button onClick={onStartGamePress} >
-            <h3 className="text-center">Start</h3>
+
+      {/* Input Section */}
+      <div className="p-4">
+        {!game.isActive && username === game.gameCreatorName && (
+          <button 
+            onClick={onStartGamePress}
+            className="bg-primary-yellow w-full py-3 rounded-xl"
+          >
+            Start Game
           </button>
         )}
+        
         {game.isActive && (
-          <div className="w-full">
-            <input
-              placeholder="Type a new line"
-              onChange={(e) => setSentenceInput(e.target.value)}
-              disabled={!game.isActive || game.currentPlayerName != username}
-              value={sentenceInput}
-              onKeyUp={handleSentenceSubmit}
-            />
-            <p className="err">{addSentenceError}</p>
+          <div className="space-y-2">
+            <div className="flex gap-2">
+              <input
+                className="W-full bg-primary-yellow rounded-xl py-3 px-4"
+                placeholder="Type your line and press Enter"
+                onChange={(e) => setSentenceInput(e.target.value)}
+                disabled={!game.isActive || game.currentPlayerName !== username}
+                value={sentenceInput}
+                onKeyUp={handleSentenceSubmit}
+              />
+              <button
+                onClick={() => {
+                  if (sentenceInput.trim()) {
+                    socket.emit("addSentence", sentenceInput.trim());
+                    setSentenceInput("");
+                    setAddSentenceError("");
+                  }
+                }}
+                disabled={!game.isActive || game.currentPlayerName !== username || !sentenceInput.trim()}
+                className={`bg-primary-green rounded-lg w-24
+                  ${(!game.isActive || game.currentPlayerName !== username || !sentenceInput.trim()) 
+                    ? 'opacity-50 cursor-not-allowed' 
+                    : 'hover:bg-primary-pink transition-colors'
+                  }`}
+              >
+                →
+              </button>
+            </div>
+            {addSentenceError && (
+              <p className="text-red-500 text-sm">{addSentenceError}</p>
+            )}
           </div>
         )}
       </div>
+
       <GameResultsModal showModal={showResultsModal} />
     </div>
   );

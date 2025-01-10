@@ -14,8 +14,6 @@ const Players = ({
   currentPlayerName,
 }: PlayersProps) => {
   const playerComponents = useMemo(() => {
-    
-    console.log("players:", players);
     return players.map((player) => {
       return (
         <PlayerAvatar
@@ -28,7 +26,7 @@ const Players = ({
   }, [currentPlayerName, gameIsActive, players]);
 
   return (
-    <div className="flex sm:flex-col gap-5 items-center">
+    <div className="flex flex-row md:flex-col justify-center gap-5 items-center">
       {playerComponents}
     </div>
   );
