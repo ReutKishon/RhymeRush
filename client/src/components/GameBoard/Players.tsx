@@ -26,7 +26,7 @@ const Players = ({
   }, [currentPlayerName, gameIsActive, players]);
 
   return (
-    <div className="flex flex-row md:flex-col justify-center gap-5 items-center">
+    <div className="flex flex-row md:flex-col justify-center items-center gap-2 md:gap-5 flex-wrap md:flex-nowrap">
       {playerComponents}
     </div>
   );

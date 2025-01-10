@@ -14,6 +14,7 @@ const GameBoard = () => {
   const { gameCode } = useParams<{ gameCode: string }>();
   const [sentenceInput, setSentenceInput] = useState<string>("");
   const [addSentenceError, setAddSentenceError] = useState<string>("");
+  const [isCopied, setIsCopied] = useState(false);
 
   const { setGame, setGameCode, resetGame } = useAppStore((state) => state);
   const {
@@ -57,6 +58,16 @@ const GameBoard = () => {
     setAddSentenceError("");
   };
 
+  const handleCodeCopy = () => {
+    navigator.clipboard.writeText(game.code).then(
+      () => {
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+      },
+      (err) => console.error("Failed to copy: ", err)
+    );
+  };
+
   return (
     <div className="flex flex-col h-screen bg-primary-purple">
       {/* Header Section */}
@@ -84,9 +95,26 @@ const GameBoard = () => {
           />
         </div>
 
-        {/* Center Lyrics Section */}
-        <div className="flex-1 overflow-y-auto md:col-span-1">
-          <SongLyrics lyrics={game.lyrics} />
+        {/* Center Content - Game Code or Lyrics */}
+        <div className="flex-1 md:col-span-1">
+          {!game.isActive ? (
+            <div className="flex flex-col items-center justify-center gap-4 h-full">
+              <h3 className="text-center">Share this code with friends:</h3>
+              <div className="bg-primary-yellow rounded-xl py-4 px-8 flex items-center gap-4">
+                <span className="text-2xl font-bold">{game.code}</span>
+                <i 
+                  onClick={handleCodeCopy} 
+                  className="material-icons cursor-pointer hover:text-primary-pink transition-colors"
+                >
+                  {isCopied ? 'check' : 'content_copy'}
+                </i>
+              </div>
+            </div>
+          ) : (
+            <div className="overflow-y-auto">
+              <SongLyrics lyrics={game.lyrics} />
+            </div>
+          )}
         </div>
       </div>
 
@@ -105,7 +133,7 @@ const GameBoard = () => {
           <div className="space-y-2">
             <div className="flex gap-2">
               <input
-                className="W-full bg-primary-yellow rounded-xl py-3 px-4"
+                className="bg-primary-yellow rounded-xl py-3 px-4"
                 placeholder="Type your line and press Enter"
                 onChange={(e) => setSentenceInput(e.target.value)}
                 disabled={!game.isActive || game.currentPlayerName !== username}

@@ -36,7 +36,7 @@ const PlayerAvatar = ({ player, isPlayerTurn }: PlayerProps) => {
   }, [isPlayerTurn]);
 
   return (
-    <div className="relative bg-gray-400 rounded-full w-[120px] h-[120px]">
+    <div className="relative bg-primary-blue rounded-full w-[80px] h-[80px] md:w-[120px] md:h-[120px]">
       {/* Circular Progress Bar */}
       <div className="absolute inset-0 flex items-center justify-center">
         {timer && (
@@ -45,17 +45,17 @@ const PlayerAvatar = ({ player, isPlayerTurn }: PlayerProps) => {
             value={(timer / 30) * 100}
             className="absolute inset-0 w-full h-full"
             sx={{
-              color: "pink", // Progress color
+              color: "pink",
               "& .MuiCircularProgress-circle": {
-                strokeWidth: 3, // Adjust the thickness of the progress bar
+                strokeWidth: 3,
               },
             }}
           />
         )}
         {/* Avatar Content */}
         <div className="text-center">
-          <h2 className="font-bold truncate">{player.name}</h2>
-          <h4 className="font-medium">
+          <h2 className="font-bold truncate text-xs md:text-base">{player.name}</h2>
+          <h4 className="font-medium text-xs md:text-sm">
             Score: <span className="font-bold">{player.score}</span>
           </h4>
         </div>
