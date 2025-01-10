@@ -108,7 +108,7 @@
   }
 
   p {
-    @apply leading-relaxed text-black uppercase;
+    @apply text-sm leading-relaxed text-black uppercase;
   }
 
   /* Links */
@@ -117,7 +117,7 @@
   }
 
   span {
-    @apply text-gray-800 uppercase
+    @apply text-gray-800 uppercase text-sm
   }
   
   input {

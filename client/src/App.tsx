@@ -53,8 +53,9 @@ function App() {
             </Routes>
 
           </div>
-
-          <p>{JSON.stringify(state, null, 2)}</p>
+          {process.env.NODE_ENV === 'development' && (
+            <p>{JSON.stringify(state, null, 2)}</p>
+          )}
         </BrowserRouter>
       </div>
     </div>
