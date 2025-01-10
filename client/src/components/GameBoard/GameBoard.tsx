@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import useSocketEvents from "../../hooks/useSocketEvents";
 import useAppStore from "../../store/useStore";
 import GameResultsModal from "./modals/GameResultsModal";
@@ -7,8 +7,10 @@ import GameTimer from "./GameTimer";
 import { socket, api } from "../../services";
 import SongLyrics from "./SongLyrics";
 import Players from "./Players";
+import ExitButton from "./ExitButton";
 
 const GameBoard = () => {
+  const navigate = useNavigate();
   const { gameCode } = useParams<{ gameCode: string }>();
   const [sentenceInput, setSentenceInput] = useState<string>("");
   const [addSentenceError, setAddSentenceError] = useState<string>("");
@@ -61,8 +63,43 @@ const GameBoard = () => {
     setAddSentenceError("");
   };
 
+  // Updated navigation prevention
+  useEffect(() => {
+    // Prevent default behavior of back/forward buttons
+    const preventDefaultNavigation = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+      // Chrome requires returnValue to be set
+      e.returnValue = '';
+    };
+
+    // Prevent back button navigation
+    const preventBackNavigation = () => {
+      window.history.pushState(null, '', window.location.pathname);
+    };
+
+    // Initial state
+    window.history.pushState(null, '', window.location.pathname);
+
+    // Add event listeners
+    window.addEventListener('beforeunload', preventDefaultNavigation);
+    window.addEventListener('popstate', preventBackNavigation);
+
+    // Block all navigation attempts
+    window.onpopstate = () => {
+      window.history.pushState(null, '', window.location.pathname);
+    };
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('beforeunload', preventDefaultNavigation);
+      window.removeEventListener('popstate', preventBackNavigation);
+      window.onpopstate = null;
+    };
+  }, []);
+
   return (
-    <div className="h-screen p-10">
+    <div className="h-screen p-10 relative">
+      <ExitButton />
       <div className="h-[10%] pl-20">
         <GameTimer />
       </div>
