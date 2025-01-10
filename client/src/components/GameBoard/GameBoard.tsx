@@ -81,16 +81,16 @@ const GameBoard = () => {
 
       {/* Topic/Title Section */}
       <div className="text-center py-2">
-        <h3 className="font-bold">{game.topic}</h3>
+        <h1 className="font-bold">{game.topic}</h1>
       </div>
 
       {/* Main Content Section - Using grid for desktop */}
-      <div className="flex-1 flex flex-col md:grid md:grid-cols-3 gap-4 p-4 overflow-hidden">
+      <div className="flex-1 flex flex-col lg:grid lg:grid-cols-3 gap-4 p-4 overflow-hidden">
         {/* Empty First Column on Desktop */}
-        <div className="hidden md:block"></div>
+        <div className="hidden lg:block"></div>
 
         {/* Players Section - Row on mobile, Column on desktop */}
-        <div className="md:order-last md:col-span-1">
+        <div className="lg:order-last lg:col-span-1">
           <Players
             players={game.players}
             gameIsActive={game.isActive}
@@ -99,7 +99,7 @@ const GameBoard = () => {
         </div>
 
         {/* Center Content - Game Code or Lyrics */}
-        <div className="flex-1 md:col-span-1">
+        <div className="flex-1 lg:col-span-1">
           {!game.isActive ? (
             <div className="flex flex-col items-center justify-center gap-4 h-full">
               <h3 className="text-center">{t.game.shareCode}</h3>

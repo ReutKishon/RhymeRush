@@ -43,17 +43,21 @@ function App() {
   }, []);
 
   return (
-    <BrowserRouter>
-      <div className="font-regular">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/game/:gameCode" element={<GameBoard />} />
-        </Routes>
+    <div className="min-h-screen">
+      <div className="mx-auto max-w-md min-h-screen shadow-lg">
+        <BrowserRouter>
+          <div className="font-regular">
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/game/:gameCode" element={<GameBoard />} />
+            </Routes>
 
+          </div>
+
+          <p>{JSON.stringify(state, null, 2)}</p>
+        </BrowserRouter>
       </div>
-
-      <p>{JSON.stringify(state, null, 2)}</p>
-    </BrowserRouter>
+    </div>
   );
 }
 

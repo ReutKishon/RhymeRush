@@ -96,15 +96,15 @@
 
   /* Typography */
   h1 {
-    @apply text-4xl font-satisfy text-black;
-  }
-
-  h2 {
     @apply text-3xl font-satisfy text-black;
   }
 
-  h3 {
+  h2 {
     @apply text-2xl font-satisfy text-black;
+  }
+
+  h3 {
+    @apply text-xl font-satisfy text-black;
   }
 
   p {
