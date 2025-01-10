@@ -22,6 +22,8 @@ interface AppState {
   setGameCode: (gameCode: string) => void;
   resetGame: () => void;
   setConnectionStatus: (status: boolean) => void;
+  language: 'en' | 'he';
+  setLanguage: (lang: 'en' | 'he') => void;
 }
 
 const initialGameState: GameBase = {
@@ -96,6 +98,8 @@ const useAppStore = create<AppState>((set) => ({
     }),
   setConnectionStatus: (status: boolean) =>
     set(() => ({ connectionStatus: status })),
+  language: 'en',
+  setLanguage: (lang: 'en' | 'he') => set(() => ({ language: lang })),
 }));
 
 export default useAppStore;

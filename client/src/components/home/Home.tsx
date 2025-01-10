@@ -10,7 +10,7 @@ import JoinGameModal from "./JoinGameModal";
 import logo from "assets/images/RhymeRushLogo-removebg-preview.png";
 import useAppStore from "store/useStore";
 import { AiOutlineWifi } from "react-icons/ai";
-import { HandwrittenText } from "../GameBoard/utils/Handwriting";
+import LanguageSelector from '../common/LanguageSelector';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -36,6 +36,7 @@ const Home = () => {
       className="flex h-screen flex-col items-center justify-center gap-6 p-4"
       style={connectionStatus ? {} : areaDisabledStyle}
     >
+      <LanguageSelector />
       {/* Logo */}
       <img className="w-40" src={logo} alt="Rhyme Rush Logo" />
 

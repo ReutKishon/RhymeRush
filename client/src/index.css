@@ -126,3 +126,11 @@
   }
 
 }
+
+.lang-selector-button {
+  @apply flex items-center gap-2 px-3 py-2 bg-white rounded-lg shadow-md hover:bg-gray-50;
+}
+
+.lang-selector-item {
+  @apply w-full flex items-center gap-2 px-3 py-2 hover:bg-gray-50;
+}
