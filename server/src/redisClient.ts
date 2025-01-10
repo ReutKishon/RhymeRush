@@ -1,18 +1,27 @@
 import { createClient } from "redis";
 
-// Create and configure the Redis client
 const redisClient = createClient({
-  // url: "redis://redis-server:6379", // Replace with your actual Redis URL
-  url: "redis://localhost:6379"
+  url: process.env.REDIS_URL,
+  socket: {
+    reconnectStrategy(retries, cause) {
+      console.log(`Redis reconnecting... Attempt ${retries}.`);
+      return 5000;
+    },
+  },
 });
 
-redisClient
-  .connect()
-  .then(() => {
-    console.log("Connected to Redis");
-  })
-  .catch((err: Error) => {
-    console.error("Error connecting to Redis:", err);
-  });
+redisClient.connect()
+
+redisClient.on("error", (err: Error) => {
+  console.error("Redis error:", err);
+});
+
+redisClient.on("connect", () => {
+  console.log("Redis connected");
+});
+
+redisClient.on("end", () => {
+  console.log("Redis connection closed");
+});
 
 export default redisClient;
