@@ -11,13 +11,14 @@ import logo from "assets/images/RhymeRushLogo-removebg-preview.png";
 import useAppStore from "store/useStore";
 import { AiOutlineWifi } from "react-icons/ai";
 import LanguageSelector from '../common/LanguageSelector';
+import { useTranslations } from "hooks/useTranslations";
 
 const Home = () => {
   const navigate = useNavigate();
   const [showCreateGameModal, setShowCreateGameModal] = useState(false);
   const [showJoinGameModal, setShowJoinGameModal] = useState(false);
   const { connectionStatus } = useAppStore((state) => state);
-
+  const t = useTranslations();
   const handleCreateGame = () => {
     setShowCreateGameModal(true);
   };
@@ -40,7 +41,6 @@ const Home = () => {
       {/* Logo */}
       <img className="w-40" src={logo} alt="Rhyme Rush Logo" />
 
-      {/* <HandwrittenText text="Hello, world!" /> */}
 
 
       {/* Button Container */}
@@ -50,7 +50,7 @@ const Home = () => {
           className="w-full h-12 bg-[#fefcd0] shadow-lg"
           onClick={handleCreateGame}
         >
-          <p>Create New Game</p>
+          <p>{t.common.createGame}</p>
         </button>
 
         {/* Join Game Button */}
@@ -58,7 +58,7 @@ const Home = () => {
           className="secondary"
           onClick={handleJoinGame}
         >
-          <span>Join Game</span>
+          <span>{t.common.joinGame}</span>
         </button>
       </div>
 
@@ -66,7 +66,7 @@ const Home = () => {
       {!connectionStatus && (
         <div className="flex items-center gap-2 red-600 lg font-semibold">
           <AiOutlineWifi size={24} />
-          <span>Connection lost. Try again later...</span>
+          <span>{t.common.connectionLost}</span>
         </div>
       )}
 

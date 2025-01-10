@@ -8,6 +8,7 @@ import { socket, api } from "../../services";
 import SongLyrics from "./SongLyrics";
 import Players from "./Players";
 import ExitButton from "./ExitButton";
+import { useTranslations } from "../../hooks/useTranslations";
 
 const GameBoard = () => {
   const navigate = useNavigate();
@@ -22,6 +23,8 @@ const GameBoard = () => {
     user: { username },
   } = useAppStore((state) => state);
   const [showResultsModal, setShowResultsModal] = useState<boolean>(false);
+
+  const t = useTranslations();
 
   useEffect(() => {
     const fetchGame = async () => {
@@ -49,7 +52,7 @@ const GameBoard = () => {
     if (event.key !== "Enter") return;
     const trimmedSentence = sentenceInput.trim();
     if (trimmedSentence === "") {
-      setAddSentenceError("Please enter something!");
+      setAddSentenceError(t.game.pleaseEnterSomething);
       return;
     }
 
@@ -99,14 +102,14 @@ const GameBoard = () => {
         <div className="flex-1 md:col-span-1">
           {!game.isActive ? (
             <div className="flex flex-col items-center justify-center gap-4 h-full">
-              <h3 className="text-center">Share this code with friends:</h3>
+              <h3 className="text-center">{t.game.shareCode}</h3>
               <div className="bg-primary-yellow rounded-xl py-4 px-8 flex items-center gap-4">
                 <span className="text-2xl font-bold">{game.code}</span>
                 <i 
                   onClick={handleCodeCopy} 
                   className="material-icons cursor-pointer hover:text-primary-pink transition-colors"
                 >
-                  {isCopied ? 'check' : 'content_copy'}
+                  {isCopied ? t.common.copied : t.common.copy}
                 </i>
               </div>
             </div>
@@ -125,7 +128,7 @@ const GameBoard = () => {
             onClick={onStartGamePress}
             className="bg-primary-yellow w-full py-3 rounded-xl"
           >
-            Start Game
+            {t.game.startGame}
           </button>
         )}
         
@@ -134,7 +137,7 @@ const GameBoard = () => {
             <div className="flex gap-2">
               <input
                 className="bg-primary-yellow rounded-xl py-3 px-4"
-                placeholder="Type your line and press Enter"
+                placeholder={t.game.typeLine}
                 onChange={(e) => setSentenceInput(e.target.value)}
                 disabled={!game.isActive || game.currentPlayerName !== username}
                 value={sentenceInput}

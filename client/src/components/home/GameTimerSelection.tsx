@@ -1,20 +1,21 @@
-import { useState } from "react";
+import { useTranslations } from "hooks/useTranslations";
 
 interface GameTimerSelectionProps{
   gameTimer: number;
   setGameTimer: (timer: number) => void;
 }
 const GameTimerSelection = ({gameTimer, setGameTimer}: GameTimerSelectionProps) => {
+  const t = useTranslations();
   const options = [
-    { value: 0.1, label: '1 MIN' },
-    { value: 3, label: '3 MIN' },
-    { value: 5, label: '5 MIN' },
-    { value: 10, label: '10 MIN' },
+      { value: 0.1, label: t.timer.min1 },
+      { value: 3, label: t.timer.min3 },
+      { value: 5, label: t.timer.min5 },
+      { value: 10, label: t.timer.min10 },
   ];
 
   return (
     <div className="w-full flex flex-col gap-2 items-center">
-      <label className="">How long would you like to play?</label>
+      <label className="">{t.game.howLongPlay}</label>
       <div className="w-full flex relative p-1  rounded-full bg-gray-100">
         {options.map((option) => (
           <button

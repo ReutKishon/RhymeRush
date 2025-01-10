@@ -8,6 +8,7 @@ import Modal from "../common/Modal";
 import { validations } from '../../utils/validations';
 import CustomInput from '../common/CustomInput';
 import { useFormValidation } from "../../hooks/useFormValidation";
+import { useTranslations } from "hooks/useTranslations";
 
 interface CreateGameModalProps {
   showModal: boolean;
@@ -20,7 +21,7 @@ const CreateGameModal = ({ showModal, setShowModal }: CreateGameModalProps) => {
   const [gameTimer, setGameTimer] = useState(3);
   const [isCopied, setIsCopied] = useState(false);
   const { setUserName } = useAppStore((state) => state);
-  
+  const t = useTranslations();
   const navigate = useNavigate();
 
   const {
@@ -71,7 +72,7 @@ const CreateGameModal = ({ showModal, setShowModal }: CreateGameModalProps) => {
         setShowModal(false);
         setCurrentStep("enterUsername");
       }}
-      title={currentStep === "enterUsername" ? "Create a New Game" : "Game Created"}
+      title={currentStep === "enterUsername" ? t.game.createNewGame : t.game.gameCreated}
     >
       {currentStep === "enterUsername" && (
         <div className="flex items-center flex-col gap-4">
@@ -80,7 +81,7 @@ const CreateGameModal = ({ showModal, setShowModal }: CreateGameModalProps) => {
             value={values.username}
             onChange={(e) => handleChange('username', e.target.value)}
             onBlur={() => handleBlur('username')}
-            placeholder="Enter your name"
+            placeholder={t.game.enterUsername}
             validations={[
               validations.required,
               validations.minLength(3),
@@ -96,7 +97,7 @@ const CreateGameModal = ({ showModal, setShowModal }: CreateGameModalProps) => {
             className={`${!isValid ? 'opacity-50 cursor-not-allowed' : ''}`}
             disabled={!isValid}
           >
-            <p>Create Game</p>
+            <p>{t.common.createGame}</p>
           </button>
         </div>
       )}
@@ -104,7 +105,7 @@ const CreateGameModal = ({ showModal, setShowModal }: CreateGameModalProps) => {
       {currentStep === "gameCreated" && (
         <div className="flex flex-col justify-center w-full gap-4">
           <p className="lg text-center yellow-100">
-            Share this code with your friends to join:
+            {t.game.shareCode}
           </p>
           <div className="w-full flex items-center justify-between bg-yellow-100 rounded-xl py-3 px-4">
             <h5 className="text-center">{gameCode}</h5>
@@ -116,7 +117,7 @@ const CreateGameModal = ({ showModal, setShowModal }: CreateGameModalProps) => {
           <button
             onClick={() => navigate(`/game/${gameCode}`)}
           >
-            Enter Game
+            {t.common.enterGame}
           </button>
         </div>
       )}
