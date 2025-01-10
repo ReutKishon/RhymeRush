@@ -6,6 +6,7 @@ import Modal from "../common/Modal";
 import CustomInput from "../common/CustomInput";
 import { validations } from "../../utils/validations";
 import { useFormValidation } from "../../hooks/useFormValidation";
+import { useTranslations } from "hooks/useTranslations";
 
 interface JoinGameModalProps {
   showModal: boolean;
@@ -16,7 +17,7 @@ const JoinGameModal = ({ showModal, setShowModal }: JoinGameModalProps) => {
   const [serverError, setServerError] = useState("");
   const { setUserName } = useAppStore((state) => state);
   const navigate = useNavigate();
-
+  const t = useTranslations();
   const {
     values,
     errors,
@@ -54,8 +55,8 @@ const JoinGameModal = ({ showModal, setShowModal }: JoinGameModalProps) => {
       await api.joinGame(values.gameCode, values.username);
       setUserName(values.username);
       navigate(`/game/${values.gameCode}`);
-    } catch (err: any) {
-      setServerError(err.response.data.message);
+    } catch (err : any) {
+      setServerError(t.game.errorCannotJoin)
     }
   };
 
@@ -63,13 +64,13 @@ const JoinGameModal = ({ showModal, setShowModal }: JoinGameModalProps) => {
     <Modal
       isOpen={showModal}
       onClose={() => setShowModal(false)}
-      title="Join A Game"
+      title={t.common.joinGame}
       variant="primary"
       width="max-w-sm"
     >
       <div className="flex flex-col gap-4">
         <CustomInput
-          placeholder="Enter your username"
+          placeholder={t.game.enterUsername}
           type="text"
           value={values.username}
           onChange={(e) => handleChange('username', e.target.value)}
@@ -81,7 +82,7 @@ const JoinGameModal = ({ showModal, setShowModal }: JoinGameModalProps) => {
           ]}
         />
         <CustomInput
-          placeholder="Enter a game code"
+          placeholder={t.game.enterGameCode}
           type="text"
           value={values.gameCode}
           onChange={(e) => handleChange('gameCode', e.target.value)}
@@ -102,7 +103,7 @@ const JoinGameModal = ({ showModal, setShowModal }: JoinGameModalProps) => {
           className={`bg-primary-yellow ${!isValid ? 'opacity-50 cursor-not-allowed' : ''}`}
           disabled={!isValid}
         >
-          <p>Enter Game</p>
+          <p>{t.common.enterGame}</p>
         </button>
       </div>
     </Modal>

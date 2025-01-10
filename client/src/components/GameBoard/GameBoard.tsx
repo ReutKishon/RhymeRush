@@ -155,7 +155,8 @@ const GameBoard = () => {
                     : 'hover:bg-primary-pink transition-colors'
                   }`}
               >
-                →
+                {/* if rtl */}
+                {document.documentElement.dir === 'rtl' ? '←' : '→'}
               </button>
             </div>
             {addSentenceError && (

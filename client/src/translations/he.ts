@@ -13,6 +13,7 @@ export const he = {
     copied: "הועתק",
   },
   game: {
+    score: 'נק',
     createNewGame: "צור משחק חדש",
     gameCreated: "המשחק נוצר",
     enterUsername: "הכנס שם משתמש",
@@ -25,6 +26,7 @@ export const he = {
     gameOver: "המשחק נגמר",
     points: "נקודות",
     waitingPlayers: "ממתין לשחקנים...",
+    errorCannotJoin: "לא ניתן להצטרף למשחק, נסה שוב עם קוד משחק שונה"
   },
   timer: {
     min1: "דקה 1",

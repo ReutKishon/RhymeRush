@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { api } from "../../services";
 import { v4 as uuidv4 } from "uuid";
 import useAppStore from "../../store/useStore";
-import GameTimerSelection from "./GameTimerSelection";
+import GameTimerSelector from "./GameTimerSelection";
 import Modal from "../common/Modal";
 import { validations } from '../../utils/validations';
 import CustomInput from '../common/CustomInput';
@@ -88,7 +88,7 @@ const CreateGameModal = ({ showModal, setShowModal }: CreateGameModalProps) => {
               validations.maxLength(20)
             ]}
           />
-          <GameTimerSelection
+          <GameTimerSelector
             gameTimer={gameTimer}
             setGameTimer={setGameTimer}
           />

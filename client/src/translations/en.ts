@@ -13,6 +13,7 @@ export const en = {
     copied: "Copied",
   },
   game: {
+    score: 'Score',
     createNewGame: "Create a New Game",
     gameCreated: "Game Created",
     enterUsername: "Enter your username",
@@ -25,6 +26,7 @@ export const en = {
     gameOver: "Game Over",
     points: "pts",
     waitingPlayers: "Waiting for players...",
+    errorCannotJoin: "Could not join game, try again with a different game code"
   },
   timer: {
     min1: "1 MIN",

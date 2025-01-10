@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Player } from "../../../../shared/types/gameTypes";
 import { Box, CircularProgress, SvgIcon } from "@mui/material";
+import { useTranslations } from "hooks/useTranslations";
 
 interface PlayerProps {
   player: Player;
@@ -9,7 +10,7 @@ interface PlayerProps {
 
 const PlayerAvatar = ({ player, isPlayerTurn }: PlayerProps) => {
   const [timer, setTimer] = useState<number | null>(null);
-
+  const t = useTranslations();
   useEffect(() => {
     let intervalId: any;
 
@@ -56,7 +57,8 @@ const PlayerAvatar = ({ player, isPlayerTurn }: PlayerProps) => {
         <div className="text-center">
           <h2 className="font-bold truncate text-xs md:text-base">{player.name}</h2>
           <h4 className="font-medium text-xs md:text-sm">
-            Score: <span className="font-bold">{player.score}</span>
+            {t.game.score}:
+             <span className="font-bold"> {player.score} </span>
           </h4>
         </div>
       </div>

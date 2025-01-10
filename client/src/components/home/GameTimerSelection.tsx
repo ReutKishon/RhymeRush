@@ -1,10 +1,10 @@
 import { useTranslations } from "hooks/useTranslations";
 
-interface GameTimerSelectionProps{
+interface GameTimerSelectorProps{
   gameTimer: number;
   setGameTimer: (timer: number) => void;
 }
-const GameTimerSelection = ({gameTimer, setGameTimer}: GameTimerSelectionProps) => {
+const GameTimerSelector = ({gameTimer, setGameTimer}: GameTimerSelectorProps) => {
   const t = useTranslations();
   const options = [
       { value: 0.1, label: t.timer.min1 },
@@ -37,7 +37,7 @@ const GameTimerSelection = ({gameTimer, setGameTimer}: GameTimerSelectionProps) 
         <div
           className="absolute inset-y-1 transition-all duration-300 bg-primary-blue rounded-full"
           style={{
-            left:  `${((options.findIndex(opt => opt.value === gameTimer) * 100) / options.length ) + 1}%`,
+            [document.dir === 'rtl' ? 'right' : 'left']: `${((options.findIndex(opt => opt.value === gameTimer) * 100) / options.length ) + 1}%`,
             width: `${93 / options.length}%`
           }}
         />
@@ -46,4 +46,4 @@ const GameTimerSelection = ({gameTimer, setGameTimer}: GameTimerSelectionProps) 
   );
 };
 
-export default GameTimerSelection;
+export default GameTimerSelector;
