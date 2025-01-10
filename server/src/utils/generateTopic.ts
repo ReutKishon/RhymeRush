@@ -1,16 +1,24 @@
 function generateSongTopic(): string {
   const topics = [
-    "אהבה נכזבת",
-    "געגוע לילדות",
-    "פרידה כואבת",
-    "שוויון ואחדות",
-    "מערכת יחסים סוערת",
-    "חיפוש משמעות בחיים",
-    "התמודדות עם לחצי היום-יום",
-    "הרצון לברוח משגרה אינטנסיבית",
-    "התחלה חדשה",
-    "געגוע לבן/בת הזוג הרחוק/ה",
-    "בדידות"
+    "breakup",
+    "colors",
+    "death",
+    "disability",
+    "dreams",
+    "encounters with past lovers",
+    "friendship",
+    "money",
+    "war",
+    "time",
+    "revenge",
+    "party",
+    "family",
+    "social issues",
+    "religion",
+    "loyality",
+    "work",
+    "school",
+    "holiday",
   ];
   const randomIndex = Math.floor(Math.random() * topics.length);
   return topics[randomIndex];
@@ -19,4 +27,3 @@ function generateSongTopic(): string {
 // Function to check if two sentences rhyme
 // module.exports = { generateSongTopic, sentencesRhyme };
 export default generateSongTopic;
-
