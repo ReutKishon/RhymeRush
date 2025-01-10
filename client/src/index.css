@@ -59,6 +59,37 @@
 }
 
 @layer base {
+
+  [dir="rtl"] {
+    .flex-row-adaptive {
+      @apply flex-row-reverse;
+    }
+
+    input, textarea {
+      @apply text-right;
+      padding-inline: 1rem;
+    }
+
+    .text-adaptive {
+      @apply text-right;
+    }
+  }
+
+  [dir="ltr"] {
+    .flex-row-adaptive {
+      @apply flex-row;
+    }
+
+    input, textarea {
+      @apply text-left;
+      padding-inline: 1rem;
+    }
+
+    .text-adaptive {
+      @apply text-left;
+    }
+  }
+
   body {
     @apply bg-primary-purple uppercase;
   }

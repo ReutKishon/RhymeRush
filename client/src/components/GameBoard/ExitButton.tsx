@@ -20,12 +20,12 @@ const ExitButton = () => {
     <>
       <button
         onClick={handleExit}
-        className="absolute top-4 right-4 bg-red-500 hover:bg-red-600 w-auto p-2 rounded-full flex items-cen"
+        className="w-auto flex items-center gap-2 p-3 rounded-full    bg-red-500 hover:bg-red-600"
       >
-        <IoExitOutline className="text-white text-xl" />
-        <span className="max-w-0 overflow-hidden whitespace-nowrap group-hover:max-w-[80px] transition-all duration-300 text-white">
+        <IoExitOutline className="text-primary-yellow text-xl" />
+        <p className="text-primary-yellow">
           {t.common.exit}
-        </span>
+        </p>
       </button>
 
       <Modal

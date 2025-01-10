@@ -94,6 +94,8 @@ const LanguageSelector = () => {
                   key={code}
                   onClick={() => {
                     setLanguage(code as 'en' | 'he');
+                    document.documentElement.dir = code === 'he' ? 'rtl' : 'ltr';
+                    document.documentElement.lang = code;
                     setIsOpen(false);
                   }}
                   

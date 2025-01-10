@@ -105,11 +105,8 @@ const GameBoard = () => {
               <h3 className="text-center">{t.game.shareCode}</h3>
               <div className="bg-primary-yellow rounded-xl py-4 px-8 flex items-center gap-4">
                 <span className="text-2xl font-bold">{game.code}</span>
-                <i 
-                  onClick={handleCodeCopy} 
-                  className="material-icons cursor-pointer hover:text-primary-pink transition-colors"
-                >
-                  {isCopied ? t.common.copied : t.common.copy}
+                <i onClick={handleCodeCopy} className="material-icons cursor-pointer">
+                  {isCopied ? 'check' : 'content_copy'}
                 </i>
               </div>
             </div>
@@ -124,14 +121,14 @@ const GameBoard = () => {
       {/* Input Section */}
       <div className="p-4">
         {!game.isActive && username === game.gameCreatorName && (
-          <button 
+          <button
             onClick={onStartGamePress}
             className="bg-primary-yellow w-full py-3 rounded-xl"
           >
             {t.game.startGame}
           </button>
         )}
-        
+
         {game.isActive && (
           <div className="space-y-2">
             <div className="flex gap-2">
@@ -153,8 +150,8 @@ const GameBoard = () => {
                 }}
                 disabled={!game.isActive || game.currentPlayerName !== username || !sentenceInput.trim()}
                 className={`bg-primary-green rounded-lg w-24
-                  ${(!game.isActive || game.currentPlayerName !== username || !sentenceInput.trim()) 
-                    ? 'opacity-50 cursor-not-allowed' 
+                  ${(!game.isActive || game.currentPlayerName !== username || !sentenceInput.trim())
+                    ? 'opacity-50 cursor-not-allowed'
                     : 'hover:bg-primary-pink transition-colors'
                   }`}
               >
