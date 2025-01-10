@@ -10,7 +10,7 @@ const redisClient = createClient({
   },
 });
 
-redisClient.connect()
+redisClient.connect();
 
 redisClient.on("error", (err: Error) => {
   console.error("Redis error:", err);
