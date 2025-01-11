@@ -4,6 +4,7 @@
   "description": "",
   "main": "./src/app.ts",
   "scripts": {
+    "build": "tsc --outDir dist",
     "start": "ts-node src/server.ts",
     "test": "jest"
   },

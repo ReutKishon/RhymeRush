@@ -1,6 +1,5 @@
 import express, { NextFunction, Request, Response } from "express";
 import morgan from "morgan";
-import helmet from "helmet";
 import mongoSanitize from "express-mongo-sanitize";
 import cors from "cors";
 import userRouter from "./routes/userRoutes";
@@ -8,13 +7,11 @@ import gameRouter from "./routes/gameRoutes";
 import globalErrorHandler from "./controllers/errorController";
 import http from "http";
 import { Server } from "socket.io";
-import { AppError } from "../../shared/utils/appError";
 import { socketHandler } from "./socket";
 
 const app = express();
 
 app.use(cors())
-
 
 const server = http.createServer(app);
 

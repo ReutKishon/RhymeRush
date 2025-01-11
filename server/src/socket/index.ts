@@ -18,19 +18,6 @@ export const socketHandler = (io: Server) => {
       }
     );
 
-    socket.on("leaveGame", async () => {
-      try {
-        if (!(socket.id in playerSocketMap)) {
-          console.error(`No player data found for socket ID: ${socket.id}`);
-          return;
-        }
-        const { playerId, gameCode } = playerSocketMap[socket.id];
-        await leaveGame(gameCode, playerId);
-        removeSocketFromGameRoom(gameCode);
-        io.to(gameCode).emit("playerLeft", playerId);
-      } catch (err) {}
-    });
-
     socket.on(
       "playerJoined",
       async (gameCode: string, playerJoined: Player) => {
@@ -39,8 +26,14 @@ export const socketHandler = (io: Server) => {
       }
     );
 
+
+
     socket.on("startGame", async () => {
       try {
+        if (!(socket.id in playerSocketMap)) {
+          console.error(`No player data found for socket ID: ${socket.id}`);
+          return;
+        }
         const { gameCode } = playerSocketMap[socket.id];
         await startGame(gameCode);
         io.to(gameCode).emit("gameStarted");
@@ -59,6 +52,19 @@ export const socketHandler = (io: Server) => {
         const message = "Failed to send sentence. Please try again.";
         io.to(socket.id).emit("errorAddingSentence", message);
       }
+    });
+
+    socket.on("leaveGame", async () => {
+      try {
+        if (!(socket.id in playerSocketMap)) {
+          console.error(`No player data found for socket ID: ${socket.id}`);
+          return;
+        }
+        const { playerId, gameCode } = playerSocketMap[socket.id];
+        await leaveGame(gameCode, playerId);
+        removeSocketFromGameRoom(gameCode);
+        io.to(gameCode).emit("playerLeft", playerId);
+      } catch (err) {}
     });
 
     socket.on("disconnect", async (reason) => {

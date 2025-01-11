@@ -6,15 +6,24 @@
 app = 'real-time-song-game'
 primary_region = 'fra'
 
+[env]
+PORT = '3000'
+
 [http_service]
-  internal_port = 8080
+  internal_port = 3000
   force_https = true
-  auto_stop_machines = 'stop'
+  auto_stop_machines = 'stop' 
   auto_start_machines = true
+
   min_machines_running = 0
+  max_machines_running = 1
   processes = ['app']
 
 [[vm]]
   memory = '1gb'
   cpu_kind = 'shared'
   cpus = 1
+
+[scale]
+  max = 1  # Maximum number of machines
+  min = 1  # Minimum number of machines

@@ -25,5 +25,7 @@ WORKDIR /app/server
 # Expose the port the app runs on
 EXPOSE 3000
 
+RUN pnpm run build
+
 # Start the app
-CMD ["pnpm", "start"]
+CMD ["node", "dist/server/src/server.js"]
