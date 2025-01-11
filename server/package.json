@@ -1,7 +1,7 @@
 {
-  "name": "real-time-song-game",
+  "name": "rhymerush",
   "version": "1.0.0",
-  "description": "",
+  "description": "A real-time song game",
   "main": "./src/app.ts",
   "scripts": {
     "build": "tsc --outDir dist",
@@ -9,7 +9,7 @@
     "test": "jest"
   },
   "keywords": [],
-  "author": "",
+  "author": "Reut Kishon",
   "license": "ISC",
   "dependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.25.9",

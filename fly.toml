@@ -1,29 +1,22 @@
-# fly.toml app configuration file generated for real-time-song-game on 2025-01-10T21:51:41+02:00
+# fly.toml app configuration file generated for rhymerush on 2025-01-11T08:46:13-06:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'real-time-song-game'
+app = 'rhymerush'
 primary_region = 'fra'
 
-[env]
-PORT = '3000'
+[build]
 
 [http_service]
   internal_port = 3000
   force_https = true
-  auto_stop_machines = 'stop' 
+  auto_stop_machines = 'stop'
   auto_start_machines = true
-
   min_machines_running = 0
-  max_machines_running = 1
   processes = ['app']
 
 [[vm]]
   memory = '1gb'
   cpu_kind = 'shared'
   cpus = 1
-
-[scale]
-  max = 1  # Maximum number of machines
-  min = 1  # Minimum number of machines
