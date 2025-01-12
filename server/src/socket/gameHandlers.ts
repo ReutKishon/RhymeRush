@@ -7,7 +7,7 @@ import {
 } from "../../../shared/types/gameTypes";
 import { io } from "../app";
 import { Game } from "types/gameTypes";
-import { evaluateSentence } from "../utils/sentencValidation";
+import { evaluateSentence } from "../utils/evaluateSentence";
 
 const timerMap = new Map<string, NodeJS.Timeout>();
 
@@ -49,9 +49,7 @@ export const handleAddSentenceSubmit = async (
     throw new Error("Player doesn't exist!");
   }
 
- 
   // throw new Error("It's not your turn!");
-
 
   const sentenceScores = await getSentenceScores(game, sentence);
   player.score += sentenceScores.generalScore;
@@ -78,10 +76,13 @@ const getSentenceScores = async (
   game: Game,
   sentence: string
 ): Promise<SentenceScores> => {
-  // const res = await evaluateSentence(game, sentence);
-  // const res = await getExampleSentenceScores(game, sentence);
-  // const assistantResponse = JSON.parse(res.choices[0].message.content);
-
+  const res = await evaluateSentence(
+    sentence,
+    game.lyrics.map((s) => s.content),
+    game.topic
+  );
+  const responseData = JSON.parse(res.choices[0].message.content);
+  console.log(responseData);
   // Get the final score
   const finalScore = 1; //assistantResponse.finalScore;
   const rhymeScore = 1; // assistantResponse.rhymeScore;
