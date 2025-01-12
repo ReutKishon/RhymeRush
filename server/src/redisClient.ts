@@ -1,7 +1,7 @@
 import { createClient } from "redis";
 
 const redisClient = createClient({
-  url: process.env.REDIS_URL,
+  url: 'redis://localhost:6379', //process.env.REDIS_URL,
   socket: {
     reconnectStrategy(retries, cause) {
       console.log(`Redis reconnecting... Attempt ${retries}.`);

@@ -38,7 +38,7 @@ export interface GameBase {
 export interface Sentence {
   content: string;
   player: Player;
-  scores: SentenceScores;
+  // scores: SentenceScores;
 }
 
 export interface SentenceScores {

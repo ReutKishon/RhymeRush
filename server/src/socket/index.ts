@@ -26,8 +26,6 @@ export const socketHandler = (io: Server) => {
       }
     );
 
-
-
     socket.on("startGame", async () => {
       try {
         if (!(socket.id in playerSocketMap)) {
@@ -48,7 +46,7 @@ export const socketHandler = (io: Server) => {
         const { gameCode, playerId } = playerSocketMap[socket.id];
         await handleAddSentenceSubmit(gameCode, playerId, sentence);
       } catch (err) {
-        console.log("err");
+        console.log(err);
         const message = "Failed to send sentence. Please try again.";
         io.to(socket.id).emit("errorAddingSentence", message);
       }

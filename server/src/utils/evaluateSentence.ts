@@ -15,11 +15,15 @@ You are a creative writing and poetry expert tasked with evaluating sentences ba
 Here is your task:
 1. **Rhyme Quality**: Evaluate how well the last word of the given sentence rhymes with the last word of the previous sentence.
    - Score: 0-10 (0 = no rhyme, 10 = perfect rhyme).
+   - Only consider this criterion for sentences with an even index (e.g., 2nd, 4th, etc.).
 2. **Flow Relevance**: Assess how well the given sentence flows and relates to the context of the previous sentences.
    - Score: 0-10 (0 = completely unrelated, 10 = seamlessly connected).
+   - Do not consider this criterion for the first sentence.
 3. **Topic Relevance**: Evaluate how well the given sentence adheres to the given topic.
    - Score: 0-10 (0 = completely off-topic, 10 = highly relevant).
-4. **General Score**: Combine the above three criteria into a single overall score. Use an average to calculate the score (sum of all scores divided by 3). 
+4. **General Score**: Combine the applicable criteria into a single overall score:
+   - For the first sentence, use only "Topic Relevance" in the score.
+   - For other sentences, calculate the score based on the applicable criteria (sum of valid scores divided by the number of applicable criteria).
 
 **Input Details**:
 - **Given Sentence**: "${sentence}"
@@ -37,7 +41,9 @@ Provide a JSON response in this format:
 }
 
 Now evaluate the given sentence using this approach.
-  `;
+`;
+
+  console.log(process.env.OPEN_AI_KEY);
   const openai = new OpenAI({
     apiKey: process.env.OPEN_AI_KEY,
   });
@@ -51,6 +57,7 @@ Now evaluate the given sentence using this approach.
       ],
       max_tokens: 300,
     });
+    console.log("response: ", response.choices[0].message.content);
     return response;
   } catch (error) {
     console.error(error);

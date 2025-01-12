@@ -49,13 +49,13 @@ export const handleAddSentenceSubmit = async (
     throw new Error("Player doesn't exist!");
   }
 
-  // throw new Error("It's not your turn!");
+  await addSentenceToSong(game, player, sentence);
 
   const sentenceScores = await getSentenceScores(game, sentence);
+
   player.score += sentenceScores.generalScore;
   io.to(game.code).emit("updatePlayerScore", playerName, player.score);
 
-  await addSentenceToSong(game, player, sentence, sentenceScores);
 
   await moveNextTurn(game);
 
@@ -81,16 +81,15 @@ const getSentenceScores = async (
     game.lyrics.map((s) => s.content),
     game.topic
   );
+  console.log("res: ", res);
   const responseData = JSON.parse(res.choices[0].message.content);
-  console.log(responseData);
-  // Get the final score
-  const finalScore = 1; //assistantResponse.finalScore;
-  const rhymeScore = 1; // assistantResponse.rhymeScore;
+
+  const finalScore = responseData.general_score;
+  const rhymeScore = responseData.rhyme_quality;
   const scores: SentenceScores = {
     generalScore: finalScore,
     rhymeScore: rhymeScore,
   };
-  // console.log(assistantResponse);
 
   return scores;
 };
@@ -99,12 +98,10 @@ const addSentenceToSong = async (
   game: Game,
   player: Player,
   sentence: string,
-  scores: SentenceScores
 ) => {
   const sentenceData: Sentence = {
     content: sentence,
     player,
-    scores,
   };
 
   game.lyrics.push(sentenceData);
