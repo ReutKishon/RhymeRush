@@ -14,7 +14,6 @@ import LanguageSelector from '../common/LanguageSelector';
 import { useTranslations } from "hooks/useTranslations";
 
 const Home = () => {
-  const navigate = useNavigate();
   const [showCreateGameModal, setShowCreateGameModal] = useState(false);
   const [showJoinGameModal, setShowJoinGameModal] = useState(false);
   const { connectionStatus } = useAppStore((state) => state);

@@ -72,7 +72,7 @@ const GameBoard = () => {
   };
 
   return (
-    <div className="relative flex flex-col min-h-screen bg-primary-purple">
+    <div className="relative flex flex-col h-screen bg-primary-purple">
       {/* Header Section */}
       <div className="flex justify-between items-center p-4">
         <GameTimer />
@@ -95,7 +95,7 @@ const GameBoard = () => {
         />
 
         {/* Center Content - Game Code or Lyrics */}
-        <div className="flex-1  overflow-y-scroll scrollbar-hide">
+        <div className="flex-1 overflow-y-scroll scrollbar-hide">
           {!game.isActive ? (
             <div className="flex flex-col items-center justify-center gap-4 h-full">
               <h3 className="text-center">{t.game.shareCode}</h3>

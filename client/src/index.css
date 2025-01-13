@@ -2,51 +2,69 @@
 @tailwind components;
 @tailwind utilities;
 @import 'pixel-retroui/dist/index.css';
-@import url('https://fonts.googleapis.com/css2?family=Satisfy&display=swap'); 
+@import url('https://fonts.googleapis.com/css2?family=Satisfy&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inconsolata:wght@200..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@100..900&family=Inconsolata:wght@200..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Oswald:wght@200..700&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap');.scrollbar-hidden::-webkit-scrollbar {
-    display: none;
-  }
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@100..900&family=Inconsolata:wght@200..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Oswald:wght@200..700&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&display=swap');
+
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none;
+}
 
 
-  
 
-  @keyframes spin-border {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(360deg);
-    }
-  }
-  
-  .animate-spin-slow {
-    animation: spin-border linear infinite;
+
+@keyframes spin-border {
+  0% {
+    transform: rotate(0deg);
   }
 
-  @keyframes growShrink {
-    0% {
-      transform: scale(2);
-    }
-    50% {
-      transform: scale(2.1); /* Grow the avatar */
-    }
-    100% {
-      transform: scale(2); /* Shrink back */
-    }
+  100% {
+    transform: rotate(360deg);
   }
-  
-  body {
-    background-color: #f3f8f6; /* Replace with your desired color */
-    margin: 0;                /* Removes default margins */
-    padding: 0;               /* Removes default paddings */
-    
+}
+
+.animate-spin-slow {
+  animation: spin-border linear infinite;
+}
+
+@keyframes growShrink {
+  0% {
+    transform: scale(2);
+  }
+
+  50% {
+    transform: scale(2.1);
+    /* Grow the avatar */
+  }
+
+  100% {
+    transform: scale(2);
+    /* Shrink back */
+  }
+}
+
+body {
+  background-color: #f3f8f6;
+  /* Replace with your desired color */
+  margin: 0;
+  /* Removes default margins */
+  padding: 0;
+  /* Removes default paddings */
+
+}
+
+@supports (-webkit-touch-callout: none) {
+  .h-screen {
+    height: 100vh;
+    min-height: -webkit-fill-available !important;
+    max-height: -webkit-fill-available !important;
+  }
 }
 
 .modal-size {
   width: 400px;
   height: 300px;
-  
+
 }
 
 .scrollbar-hide::-webkit-scrollbar {
@@ -54,8 +72,10 @@
 }
 
 .scrollbar-hide {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 @layer base {
@@ -65,7 +85,8 @@
       @apply flex-row-reverse;
     }
 
-    input, textarea {
+    input,
+    textarea {
       @apply text-right;
       padding-inline: 1rem;
     }
@@ -80,7 +101,8 @@
       @apply flex-row;
     }
 
-    input, textarea {
+    input,
+    textarea {
       @apply text-left;
       padding-inline: 1rem;
     }
@@ -90,9 +112,12 @@
     }
   }
 
-  html, body {
-    @apply bg-primary-purple uppercase;
-  
+  html,
+  body {
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior: none;
+    @apply uppercase;
+
   }
 
   /* Typography */
@@ -120,7 +145,7 @@
   span {
     @apply text-gray-800 uppercase text-sm
   }
-  
+
   input {
     @apply w-full border-none rounded-xl py-3 pl-4 focus:ring-4 focus:outline-none uppercase;
   }
@@ -130,15 +155,15 @@
     @apply uppercase;
   }
 
-  label{
+  label {
     @apply text-black uppercase
   }
 
-  input{
+  input {
     @apply w-full border-none rounded-xl py-3 pl-4 focus:ring-4 focus:outline-none bg-primary-yellow
   }
 
-  button{
+  button {
     @apply w-full rounded-full px-4 py-2 h-14;
     @apply hover:scale-105 transition-all duration-200 transform;
     @apply bg-primary-yellow;
@@ -153,12 +178,12 @@
 }
 
 @layer components {
-  button.secondary{
+  button.secondary {
     @apply bg-primary-green
   }
 
-  .err{
-    @apply text-red-600 font-regular 
+  .err {
+    @apply text-red-600 font-regular
   }
 
 }
