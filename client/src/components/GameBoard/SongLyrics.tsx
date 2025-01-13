@@ -2,18 +2,31 @@ import { memo, useEffect, useRef } from "react";
 import { TypeAnimation } from "react-type-animation";
 import { Sentence } from "../../../../shared/types/gameTypes";
 
-const SongLyrics = memo(({ lyrics }: { lyrics: Sentence[] }) => {
-  const scrollRef = useRef<HTMLDivElement>(null);
+
+function ScrollableDiv({ children }: { children: React.ReactNode }) {
+  const scrollableContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    const container = scrollableContainerRef.current;
+    if (container) {
+      container.scrollTop = container.scrollHeight;
     }
-  }, [lyrics]);
+  }, [children]); // Scrolls to the bottom whenever children change
 
   return (
-    <div className="flex flex-col h-full w-full items-center px-2">
-      <div ref={scrollRef} className="overflow-y-auto scrollbar-hide w-full ">
+    <div
+      ref={scrollableContainerRef}
+      className="w-full h-full overflow-y-auto scrollbar-hide flex flex-col"
+    >
+      {children}
+    </div>
+  );
+}
+
+const SongLyrics = memo(({ lyrics }: { lyrics: Sentence[] }) => {
+
+  return (
+    <ScrollableDiv>
         {lyrics.map((sentence, index) => {
           return (
             <div className="flex items-center space-x-4 pb-4" key={index}>
@@ -35,8 +48,7 @@ const SongLyrics = memo(({ lyrics }: { lyrics: Sentence[] }) => {
             </div>
           );
         })}
-      </div>
-    </div>
+    </ScrollableDiv>
   );
 });
 

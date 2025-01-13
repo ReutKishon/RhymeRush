@@ -28,7 +28,6 @@ const GameResultsModal = ({ showModal }: GameResultsModalProps) => {
       isOpen={showModal} 
       onClose={onClose}
       title={t.game.gameOver}
-      width="max-w-md"
     >
       <div className="flex flex-col gap-4">
         <ul className="space-y-3">

@@ -85,7 +85,7 @@ const GameBoard = () => {
       </div>
 
       {/* Main Content Section - Using grid for desktop */}
-      <div className="flex-1 flex flex-col gap-4 p-4">
+      <div className="flex-1 flex flex-col gap-4 p-4 overflow-hidden">
 
         {/* Players Section - Row on mobile, Column on desktop */}
         <Players
@@ -95,7 +95,7 @@ const GameBoard = () => {
         />
 
         {/* Center Content - Game Code or Lyrics */}
-        <div className="flex-1 lg:col-span-1">
+        <div className="flex-1  overflow-y-scroll scrollbar-hide">
           {!game.isActive ? (
             <div className="flex flex-col items-center justify-center gap-4 h-full">
               <h3 className="text-center">{t.game.shareCode}</h3>
@@ -107,7 +107,7 @@ const GameBoard = () => {
               </div>
             </div>
           ) : (
-            <div className="overflow-y-auto w-full">
+            <div className="h-full w-full">
               <SongLyrics lyrics={game.lyrics} />
             </div>
           )}
@@ -115,7 +115,7 @@ const GameBoard = () => {
       </div>
 
       {/* Input Section */}
-      <div className="p-4">
+      <div className="p-4 ">
         {!game.isActive && username === game.gameCreatorName && (
           <button
             onClick={onStartGamePress}
@@ -126,7 +126,7 @@ const GameBoard = () => {
         )}
 
         {game.isActive && (
-          <div className="space-y-2">
+          <div className="p-2">
             <div className="flex gap-2">
               <input
                 className="bg-primary-yellow rounded-xl py-3 px-4"
