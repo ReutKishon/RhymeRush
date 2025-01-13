@@ -72,7 +72,7 @@ const GameBoard = () => {
   };
 
   return (
-    <div className="relative flex flex-col h-screen bg-primary-purple">
+    <div className="relative flex flex-col min-h-screen bg-primary-purple">
       {/* Header Section */}
       <div className="flex justify-between items-center p-4">
         <GameTimer />
