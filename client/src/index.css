@@ -138,11 +138,15 @@
   }
 
   button{
-    @apply w-full rounded-full px-4 py-2 hover:scale-105 transform transition-all duration-200;
+    @apply w-full rounded-full px-4 py-2 h-14;
+    @apply hover:scale-105 transition-all duration-200 transform;
     @apply bg-primary-yellow;
     @apply text-black uppercase
   }
 
+  button:disabled {
+    @apply hover:scale-100;
+  }
 
 
 }

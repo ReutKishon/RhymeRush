@@ -7,7 +7,7 @@ interface GameTimerSelectorProps{
 const GameTimerSelector = ({gameTimer, setGameTimer}: GameTimerSelectorProps) => {
   const t = useTranslations();
   const options = [
-      { value: 0.1, label: t.timer.min1 },
+      // { value: 0.1, label: t.timer.min1 },
       { value: 3, label: t.timer.min3 },
       { value: 5, label: t.timer.min5 },
       { value: 10, label: t.timer.min10 },

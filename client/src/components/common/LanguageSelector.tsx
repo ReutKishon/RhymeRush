@@ -62,7 +62,7 @@ const LanguageSelector = () => {
   const Flag = currentLang.flag;
 
   return (
-    <div className="fixed top-4 left-4 z-50" ref={dropdownRef}>
+    <div className="absolute top-4 left-4 z-50" ref={dropdownRef}>
       <div className="relative">
         <button
           onClick={() => setIsOpen(!isOpen)}

@@ -43,22 +43,14 @@ function App() {
   }, []);
 
   return (
-    <div className="min-h-screen">
-      <div className="mx-auto max-w-md min-h-screen shadow-lg">
+      <div className="mx-auto max-w-md overflow-hidden h-screen shadow-lg font-regular">
         <BrowserRouter>
-          <div className="font-regular">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/game/:gameCode" element={<GameBoard />} />
             </Routes>
-
-          </div>
-          {process.env.NODE_ENV === 'development' && (
-            <p>{JSON.stringify(state, null, 2)}</p>
-          )}
         </BrowserRouter>
       </div>
-    </div>
   );
 }
 

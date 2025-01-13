@@ -34,7 +34,7 @@ const Home = () => {
 
   return (
     <div
-      className="flex h-screen flex-col items-center justify-center gap-6 p-4"
+      className="relative flex h-screen flex-col items-center justify-center gap-6 p-4"
       style={connectionStatus ? {} : areaDisabledStyle}
     >
       <LanguageSelector />
@@ -45,15 +45,12 @@ const Home = () => {
 
       {/* Button Container */}
       <div className="flex flex-col items-center w-3/4 max-w-md gap-6">
-        {/* Create Game Button */}
         <button
-          className="w-full h-12 bg-[#fefcd0] shadow-lg"
           onClick={handleCreateGame}
         >
           <p>{t.common.createGame}</p>
         </button>
 
-        {/* Join Game Button */}
         <button
           className="secondary"
           onClick={handleJoinGame}

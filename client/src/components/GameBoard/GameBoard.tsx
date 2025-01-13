@@ -85,18 +85,14 @@ const GameBoard = () => {
       </div>
 
       {/* Main Content Section - Using grid for desktop */}
-      <div className="flex-1 flex flex-col lg:grid lg:grid-cols-3 gap-4 p-4 overflow-hidden">
-        {/* Empty First Column on Desktop */}
-        <div className="hidden lg:block"></div>
+      <div className="flex-1 flex flex-col gap-4 p-4">
 
         {/* Players Section - Row on mobile, Column on desktop */}
-        <div className="lg:order-last lg:col-span-1">
-          <Players
-            players={game.players}
-            gameIsActive={game.isActive}
-            currentPlayerName={game.currentPlayerName}
-          />
-        </div>
+        <Players
+          players={game.players}
+          gameIsActive={game.isActive}
+          currentPlayerName={game.currentPlayerName}
+        />
 
         {/* Center Content - Game Code or Lyrics */}
         <div className="flex-1 lg:col-span-1">
