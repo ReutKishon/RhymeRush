@@ -72,7 +72,7 @@ const GameBoard = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-primary-purple">
+    <div className="relative flex flex-col h-screen bg-primary-purple">
       {/* Header Section */}
       <div className="flex justify-between items-center p-4">
         <GameTimer />
@@ -126,7 +126,7 @@ const GameBoard = () => {
         )}
 
         {game.isActive && (
-          <div className="p-2">
+          <div className="flex flex-col gap-2">
             <div className="flex gap-2">
               <input
                 className="bg-primary-yellow rounded-xl py-3 px-4"
@@ -155,9 +155,7 @@ const GameBoard = () => {
                 {document.documentElement.dir === 'rtl' ? '←' : '→'}
               </button>
             </div>
-            {addSentenceError && (
-              <p className="text-red-500 text-sm">{addSentenceError}</p>
-            )}
+            
           </div>
         )}
       </div>
