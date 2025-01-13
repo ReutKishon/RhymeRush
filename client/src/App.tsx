@@ -43,7 +43,7 @@ function App() {
   }, []);
 
   return (
-      <div className="mx-auto max-w-md overflow-hidden h-screen shadow-lg font-regular">
+      <div className="mx-auto max-w-md overflow-hidden min-h-screen shadow-lg font-regular">
         <BrowserRouter>
             <Routes>
               <Route path="/" element={<Home />} />
