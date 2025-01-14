@@ -11,11 +11,14 @@ import ExitButton from "./ExitButton";
 import { useTranslations } from "../../hooks/useTranslations";
 
 const GameBoard = () => {
-  const navigate = useNavigate();
+  const t = useTranslations();
   const { gameCode } = useParams<{ gameCode: string }>();
   const [sentenceInput, setSentenceInput] = useState<string>("");
   const [addSentenceError, setAddSentenceError] = useState<string>("");
   const [isCopied, setIsCopied] = useState(false);
+  const [aiPlayerButtonText, setAIPlayerButtonText] = useState(
+    t.game.createAIPlayer
+  );
 
   const { setGame, setGameCode, resetGame } = useAppStore((state) => state);
   const {
@@ -23,8 +26,6 @@ const GameBoard = () => {
     user: { username },
   } = useAppStore((state) => state);
   const [showResultsModal, setShowResultsModal] = useState<boolean>(false);
-
-  const t = useTranslations();
 
   useEffect(() => {
     const fetchGame = async () => {
@@ -48,7 +49,9 @@ const GameBoard = () => {
     socket.emit("startGame");
   };
 
-  const handleSentenceSubmit = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleSentenceSubmit = (
+    event: React.KeyboardEvent<HTMLInputElement>
+  ) => {
     if (event.key !== "Enter") return;
     const trimmedSentence = sentenceInput.trim();
     if (trimmedSentence === "") {
@@ -71,6 +74,16 @@ const GameBoard = () => {
     );
   };
 
+  const handleAIPlayerButton = () => {
+    if (aiPlayerButtonText == t.game.createAIPlayer) {
+      socket.emit("addAIPlayer");
+      setAIPlayerButtonText(t.game.RemoveAIPlayer);
+    } else {
+      socket.emit("removeAIPlayer");
+      setAIPlayerButtonText(t.game.createAIPlayer);
+    }
+  };
+
   return (
     <div className="relative flex flex-col h-screen bg-primary-purple">
       {/* Header Section */}
@@ -86,7 +99,6 @@ const GameBoard = () => {
 
       {/* Main Content Section - Using grid for desktop */}
       <div className="flex-1 flex flex-col gap-4 p-4 overflow-hidden">
-
         {/* Players Section - Row on mobile, Column on desktop */}
         <Players
           players={game.players}
@@ -101,10 +113,24 @@ const GameBoard = () => {
               <h3 className="text-center">{t.game.shareCode}</h3>
               <div className="bg-primary-yellow rounded-xl py-4 px-8 flex items-center gap-4">
                 <span className="text-2xl font-bold">{game.code}</span>
-                <i onClick={handleCodeCopy} className="material-icons cursor-pointer">
-                  {isCopied ? 'check' : 'content_copy'}
+                <i
+                  onClick={handleCodeCopy}
+                  className="material-icons cursor-pointer"
+                >
+                  {isCopied ? "check" : "content_copy"}
                 </i>
               </div>
+              {username === game.gameCreatorName && (
+                <div className="flex flex-col gap-4">
+                  <h3 className="text-center">{t.game.addAIPlayerTitle}</h3>
+                  <button
+                    onClick={handleAIPlayerButton}
+                    className="bg-white rounded-xl py-4 px-8 flex items-center gap-4"
+                  >
+                    <p className="text-xl">{aiPlayerButtonText}</p>
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
             <div className="h-full w-full">
@@ -144,18 +170,24 @@ const GameBoard = () => {
                     setAddSentenceError("");
                   }
                 }}
-                disabled={!game.isActive || game.currentPlayerName !== username || !sentenceInput.trim()}
+                disabled={
+                  !game.isActive ||
+                  game.currentPlayerName !== username ||
+                  !sentenceInput.trim()
+                }
                 className={`bg-primary-green rounded-lg w-24
-                  ${(!game.isActive || game.currentPlayerName !== username || !sentenceInput.trim())
-                    ? 'opacity-50 cursor-not-allowed'
-                    : 'hover:bg-primary-pink transition-colors'
+                  ${
+                    !game.isActive ||
+                    game.currentPlayerName !== username ||
+                    !sentenceInput.trim()
+                      ? "opacity-50 cursor-not-allowed"
+                      : "hover:bg-primary-pink transition-colors"
                   }`}
               >
                 {/* if rtl */}
-                {document.documentElement.dir === 'rtl' ? '←' : '→'}
+                {document.documentElement.dir === "rtl" ? "←" : "→"}
               </button>
             </div>
-            
           </div>
         )}
       </div>

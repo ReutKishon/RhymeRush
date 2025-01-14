@@ -13,12 +13,15 @@ export const en = {
     copied: "Copied",
   },
   game: {
-    score: 'Score',
+    score: "Score",
     createNewGame: "Create a New Game",
     gameCreated: "Game Created",
     enterUsername: "Enter your username",
     enterGameCode: "Enter a game code",
     shareCode: "Share this code with your friends to join:",
+    addAIPlayerTitle: "You can add an AI player:",
+    createAIPlayer: "Create AI player",
+    RemoveAIPlayer: "Remove AI player",
     startGame: "Start Game",
     typeLine: "Type your line and press Enter",
     pleaseEnterSomething: "Please enter something!",
@@ -26,12 +29,13 @@ export const en = {
     gameOver: "Game Over",
     points: "pts",
     waitingPlayers: "Waiting for players...",
-    errorCannotJoin: "Could not join game, try again with a different game code"
+    errorCannotJoin:
+      "Could not join game, try again with a different game code",
   },
   timer: {
     min1: "1 MIN",
     min3: "3 MIN",
     min5: "5 MIN",
-    min10: "10 MIN"
-  }
+    min10: "10 MIN",
+  },
 };

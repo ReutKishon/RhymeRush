@@ -1,6 +1,8 @@
 import { Server, Socket } from "socket.io";
 import { handleAddSentenceSubmit, leaveGame, startGame } from "./gameHandlers";
 import { Player } from "../../../shared/types/gameTypes";
+import { createPlayer, getGameFromRedis } from "../controllers/gameController";
+import redisClient from "../redisClient";
 
 export const playerSocketMap: Record<
   string,
@@ -51,7 +53,29 @@ export const socketHandler = (io: Server) => {
         io.to(socket.id).emit("errorAddingSentence", message);
       }
     });
-
+    socket.on("addAIPlayer", async () => {
+      try {
+        const { gameCode } = playerSocketMap[socket.id];
+        const game = await getGameFromRedis(gameCode);
+        const AIPlayer = await createPlayer("AI");
+        game.players.push(AIPlayer);
+        await redisClient.set(`game:${game.code}`, JSON.stringify(game));
+        io.to(gameCode).emit("playerJoined", AIPlayer);
+      } catch (err) {
+        console.log(err);
+      }
+    });
+    socket.on("removeAIPlayer", async () => {
+      try {
+        const { gameCode } = playerSocketMap[socket.id];
+        await leaveGame(gameCode, "AI");
+        io.to(gameCode).emit("playerLeft", "AI");
+      } catch (err) {
+        console.log(err);
+        const message = "Failed to send sentence. Please try again.";
+        io.to(socket.id).emit("errorAddingSentence", message);
+      }
+    });
     socket.on("leaveGame", async () => {
       try {
         if (!(socket.id in playerSocketMap)) {

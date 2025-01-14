@@ -1,5 +1,5 @@
 import OpenAI from "openai";
-import { evaluateSentence } from "./evaluateSentence";
+import { evaluateSentence } from "./openAI";
 import { Sentence } from "../../../shared/types/gameTypes";
 
 describe("evaluateSentence", () => {

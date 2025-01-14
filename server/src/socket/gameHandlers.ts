@@ -7,7 +7,7 @@ import {
 } from "../../../shared/types/gameTypes";
 import { io } from "../app";
 import { Game } from "types/gameTypes";
-import { evaluateSentence } from "../utils/evaluateSentence";
+import { evaluateSentence, generateSentence } from "../utils/openAI";
 import { v4 as uuidv4 } from "uuid";
 
 const timerMap = new Map<string, NodeJS.Timeout>();
@@ -68,16 +68,6 @@ export const handleAddSentenceSubmit = async (
   await redisClient.set(`game:${game.code}`, JSON.stringify(game));
 };
 
-const getExampleEvaluateSentence = async (
-  game: Game,
-  sentence: string
-): Promise<SentenceScores> => {
-  return {
-    generalScore: 10,
-    rhymeScore: 10,
-  };
-};
-
 const getSentenceScores = async (
   game: Game,
   sentence: string
@@ -125,15 +115,31 @@ const getPlayer = (game: Game, playerName: string) => {
 
 export const moveNextTurn = async (game: Game): Promise<void> => {
   game.currentTurnIndex = (game.currentTurnIndex + 1) % game.players.length;
-
-  io.to(game.code).emit(
-    "updateCurrentPlayer",
-    game.players[game.currentTurnIndex].name
-  );
+  const currentTurnPlayer = game.players[game.currentTurnIndex];
+  io.to(game.code).emit("updateCurrentPlayer", currentTurnPlayer.name);
 
   startTimer(game);
 
+  if (currentTurnPlayer.name === "AI") {
+    setTimeout(async () => {
+      const AI_sentence = await generateAIPlayerSentence(game);
+      handleAddSentenceSubmit(game.code, "AI", AI_sentence);
+    }, 3 * 1000);
+  }
+
   await redisClient.set(`game:${game.code}`, JSON.stringify(game));
+};
+
+const generateAIPlayerSentence = async (game: Game): Promise<string> => {
+  console.log("generateAIPlayerSentence");
+  const res = await generateSentence(
+    game.lyrics.map((s) => s.content),
+    game.topic
+  );
+  console.log("res_sentence: ", res);
+  const responseData = JSON.parse(res.choices[0].message.content);
+  return responseData.sentence;
+  // return "AI response";
 };
 
 const startTimer = (game: Game) => {
