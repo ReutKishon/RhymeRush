@@ -8,6 +8,7 @@ import {
 import { io } from "../app";
 import { Game } from "types/gameTypes";
 import { evaluateSentence } from "../utils/evaluateSentence";
+import { v4 as uuidv4 } from "uuid";
 
 const timerMap = new Map<string, NodeJS.Timeout>();
 
@@ -49,13 +50,18 @@ export const handleAddSentenceSubmit = async (
     throw new Error("Player doesn't exist!");
   }
 
-  await addSentenceToSong(game, player, sentence);
+  const sentenceId = await addSentenceToSong(game, player, sentence);
 
   const sentenceScores = await getSentenceScores(game, sentence);
 
+  io.to(game.code).emit(
+    "updateSentenceScore",
+    sentenceId,
+    sentenceScores.generalScore
+  );
+
   player.score += sentenceScores.generalScore;
   io.to(game.code).emit("updatePlayerScore", playerName, player.score);
-
 
   await moveNextTurn(game);
 
@@ -76,16 +82,16 @@ const getSentenceScores = async (
   game: Game,
   sentence: string
 ): Promise<SentenceScores> => {
-  const res = await evaluateSentence(
-    sentence,
-    game.lyrics.map((s) => s.content),
-    game.topic
-  );
-  console.log("res: ", res);
-  const responseData = JSON.parse(res.choices[0].message.content);
+  // const res = await evaluateSentence(
+  //   sentence,
+  //   game.lyrics.map((s) => s.content),
+  //   game.topic
+  // );
+  // console.log("res: ", res);
+  // const responseData = JSON.parse(res.choices[0].message.content);
 
-  const finalScore = responseData.general_score;
-  const rhymeScore = responseData.rhyme_quality;
+  const finalScore = 1; //responseData.general_score;
+  const rhymeScore = 1; //responseData.rhyme_quality;
   const scores: SentenceScores = {
     generalScore: finalScore,
     rhymeScore: rhymeScore,
@@ -97,15 +103,20 @@ const getSentenceScores = async (
 const addSentenceToSong = async (
   game: Game,
   player: Player,
-  sentence: string,
+  sentence: string
 ) => {
+  const sentenceId = uuidv4();
+
   const sentenceData: Sentence = {
+    id: sentenceId,
     content: sentence,
     player,
+    score: null,
   };
 
   game.lyrics.push(sentenceData);
   io.to(game.code).emit("lyricsUpdated", sentenceData);
+  return sentenceId;
 };
 
 const getPlayer = (game: Game, playerName: string) => {

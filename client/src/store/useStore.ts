@@ -16,14 +16,15 @@ interface AppState {
   addPlayer: (player: Player) => void;
   removePlayer: (playerId: string) => void;
   setPlayerScore: (playerName: string, score: number) => void;
+  setSentenceScore: (sentenceId: string, score: number) => void;
   addSentence: (sentence: Sentence) => void;
   setCurrentPlayerName: (playerName: string) => void;
   setGameIsActive: (isActive: boolean) => void;
   setGameCode: (gameCode: string) => void;
   resetGame: () => void;
   setConnectionStatus: (status: boolean) => void;
-  language: 'en' | 'he';
-  setLanguage: (lang: 'en' | 'he') => void;
+  language: "en" | "he";
+  setLanguage: (lang: "en" | "he") => void;
 }
 
 const initialGameState: GameBase = {
@@ -89,6 +90,15 @@ const useAppStore = create<AppState>((set) => ({
         ),
       },
     })),
+  setSentenceScore: (sentenceId: string, score: number) =>
+    set((state) => ({
+      game: {
+        ...state.game,
+        lyrics: state.game.lyrics.map((sentence: Sentence) =>
+          sentence.id === sentenceId ? { ...sentence, score } : sentence
+        ),
+      },
+    })),
   setGame: (game: GameBase) => set(() => ({ game })),
   setGameCode: (gameCode: string) =>
     set((state) => ({ game: { ...state.game, code: gameCode } })),
@@ -98,8 +108,8 @@ const useAppStore = create<AppState>((set) => ({
     }),
   setConnectionStatus: (status: boolean) =>
     set(() => ({ connectionStatus: status })),
-  language: 'en',
-  setLanguage: (lang: 'en' | 'he') => set(() => ({ language: lang })),
+  language: "en",
+  setLanguage: (lang: "en" | "he") => set(() => ({ language: lang })),
 }));
 
 export default useAppStore;

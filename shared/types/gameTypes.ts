@@ -32,13 +32,14 @@ export interface GameBase {
   winnerPlayerName: string;
   gameCreatorName: string;
   songId: string;
-  timerInMinutes:number
+  timerInMinutes: number;
 }
 
 export interface Sentence {
+  id: string;
   content: string;
   player: Player;
-  // scores: SentenceScores;
+  score: number;
 }
 
 export interface SentenceScores {
