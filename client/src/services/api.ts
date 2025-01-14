@@ -7,7 +7,7 @@ import {
 import socket from "./socket";
 
 const api = axios.create({
-  baseURL: process.env.APP_URL + '/api/v1',
+  baseURL: process.env.REACT_APP_URL + '/api/v1',
 });
 
 // Attach a request interceptor to add the token before every request

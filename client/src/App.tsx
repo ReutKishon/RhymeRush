@@ -1,14 +1,9 @@
 // src/App
-import React, { useEffect } from "react";
-import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
-import CreateGameModal from "./components/home/CreateGameModal";
+import { useEffect } from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import GameBoard from "./components/GameBoard/GameBoard";
 import Home from "./components/home/Home";
-import JoinGameModal from "./components/home/JoinGameModal";
 import socket from "./services/socket";
-import Welcome from "./components/auth/Welcome";
-import SignUp from "./components/auth/SignUp";
-import SignIn from "./components/auth/SignIn";
 import "./index.css";
 import useAppStore from "./store/useStore";
 
@@ -31,6 +26,7 @@ function App() {
       console.log('Already connected');
       setConnectionStatus(true);
     } else {
+      console.log("URL: ",process.env.REACT_APP_URL);
       console.log('Connecting to the server...');
       socket.connect(); // Connect only if not already connected
     }
