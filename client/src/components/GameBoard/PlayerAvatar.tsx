@@ -55,9 +55,11 @@ const PlayerAvatar = ({ player, isPlayerTurn }: PlayerProps) => {
         )}
         {/* Avatar Content */}
         <div className="text-center">
-          <p className="font-bold truncate ">{player.name}</p>
+          <p className={`font-bold truncate`}>
+            {player.name}
+          </p>
           <p>
-            {t.game.score}:  {player.score} 
+            {t.game.score}: {player.score}
           </p>
         </div>
       </div>

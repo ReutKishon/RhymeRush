@@ -46,6 +46,7 @@ const GameBoard = () => {
   useSocketEvents({ setShowResultsModal, setAddSentenceError });
 
   const onStartGamePress = () => {
+    if (game.players.length == 1) return;
     socket.emit("startGame");
   };
 
@@ -131,7 +132,7 @@ const GameBoard = () => {
                   </button>
                 </div>
               ) : (
-                <p className="text-red-500">waiting for {game.gameCreatorName} to start the game ...</p>
+                <p className="text-red-500">{t.game.waitingPlayers}</p>
               )}
             </div>
           ) : (
