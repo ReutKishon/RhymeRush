@@ -29,6 +29,7 @@ export const en = {
     gameOver: "Game Over",
     points: "pts",
     waitingPlayers: "Waiting for players...",
+    scoreComments: "Score Comments",
     errorCannotJoinCode:
       "Could not join game, try again with a different game code",
     errorCannotJoinName:

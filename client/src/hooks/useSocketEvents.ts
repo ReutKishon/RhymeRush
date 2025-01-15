@@ -23,7 +23,7 @@ const useSocketEvents = ({
     setCurrentPlayerName: setCurrentPlayerId,
     setPlayerScore,
     setGameIsActive,
-    setSentenceScore
+    setSentenceScoreData,
   } = useStore((state) => state);
 
   useEffect(() => {
@@ -43,9 +43,12 @@ const useSocketEvents = ({
     socket.on("updatePlayerScore", (playerName: string, score: number) => {
       setPlayerScore(playerName, score);
     });
-    socket.on("updateSentenceScore", (sentenceId: string, score: number) => {
-      setSentenceScore(sentenceId, score);
-    });
+    socket.on(
+      "updateSentenceScoreData",
+      (sentenceId: string, score: number, comments) => {
+        setSentenceScoreData(sentenceId, score, comments);
+      }
+    );
 
     socket.on("lyricsUpdated", (sentence: Sentence) => {
       addSentence(sentence);
@@ -76,6 +79,7 @@ const useSocketEvents = ({
       socket.off("updatePlayerScore");
       socket.off("UpdateCurrentPlayer");
       socket.off("errorAddingSentence");
+      socket.off("updateSentenceScore");
     };
   }, [code]);
 };

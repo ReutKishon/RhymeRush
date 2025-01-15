@@ -29,6 +29,7 @@ export const he = {
     gameOver: "המשחק נגמר",
     points: "נקודות",
     waitingPlayers: "ממתין לשחקנים...",
+    scoreComments: "תיאור ניקוד",
     errorCannotJoinCode: "לא ניתן להצטרף למשחק, נסה שוב עם קוד משחק שונה",
     errorCannotJoinName: "לא ניתן להצטרף למשחק, נסה שוב עם שם אחר",
     errorCannotJoinGameStart: "לא ניתן להצטרף למשחק, המשחק התחיל",

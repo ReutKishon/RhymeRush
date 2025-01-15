@@ -3,7 +3,7 @@ import redisClient from "../redisClient";
 import {
   Player,
   Sentence,
-  SentenceScores,
+  SentenceScoreData,
 } from "../../../shared/types/gameTypes";
 import { io } from "../app";
 import { Game } from "types/gameTypes";
@@ -52,15 +52,16 @@ export const handleAddSentenceSubmit = async (
 
   const sentenceId = await addSentenceToSong(game, player, sentence);
 
-  const sentenceScores = await getSentenceScores(game, sentence);
+  const sentenceScoreData = await getSentenceScores(game, sentence);
 
   io.to(game.code).emit(
-    "updateSentenceScore",
+    "updateSentenceScoreData",
     sentenceId,
-    sentenceScores.generalScore
+    sentenceScoreData.generalScore,
+    sentenceScoreData.comments
   );
 
-  player.score += sentenceScores.generalScore;
+  player.score += sentenceScoreData.generalScore;
   io.to(game.code).emit("updatePlayerScore", playerName, player.score);
 
   await moveNextTurn(game);
@@ -71,7 +72,7 @@ export const handleAddSentenceSubmit = async (
 const getSentenceScores = async (
   game: Game,
   sentence: string
-): Promise<SentenceScores> => {
+): Promise<SentenceScoreData> => {
   // const res = await evaluateSentence(
   //   sentence,
   //   game.lyrics.map((s) => s.content),
@@ -80,14 +81,15 @@ const getSentenceScores = async (
   // console.log("res: ", res);
   // const responseData = JSON.parse(res.choices[0].message.content);
 
-  const finalScore = 1; //responseData.general_score;
-  const rhymeScore = 1; //responseData.rhyme_quality;
-  const scores: SentenceScores = {
-    generalScore: finalScore,
-    rhymeScore: rhymeScore,
+  const generalScore = Math.floor(Math.random() * 10) + 1; //responseData.general_score;
+  const comments =
+    "very good sentence.very good sentence.very good sentence.very good sentence.very good sentence."; //responseData.comments;
+  const scoreData: SentenceScoreData = {
+    generalScore,
+    comments,
   };
 
-  return scores;
+  return scoreData;
 };
 
 const addSentenceToSong = async (
@@ -102,6 +104,7 @@ const addSentenceToSong = async (
     content: sentence,
     player,
     score: null,
+    scoreComments: null,
   };
 
   game.lyrics.push(sentenceData);

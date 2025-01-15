@@ -16,7 +16,11 @@ interface AppState {
   addPlayer: (player: Player) => void;
   removePlayer: (playerId: string) => void;
   setPlayerScore: (playerName: string, score: number) => void;
-  setSentenceScore: (sentenceId: string, score: number) => void;
+  setSentenceScoreData: (
+    sentenceId: string,
+    score: number,
+    comments: string
+  ) => void;
   addSentence: (sentence: Sentence) => void;
   setCurrentPlayerName: (playerName: string) => void;
   setGameIsActive: (isActive: boolean) => void;
@@ -90,12 +94,14 @@ const useAppStore = create<AppState>((set) => ({
         ),
       },
     })),
-  setSentenceScore: (sentenceId: string, score: number) =>
+  setSentenceScoreData: (sentenceId: string, score: number, comments: string) =>
     set((state) => ({
       game: {
         ...state.game,
         lyrics: state.game.lyrics.map((sentence: Sentence) =>
-          sentence.id === sentenceId ? { ...sentence, score } : sentence
+          sentence.id === sentenceId
+            ? { ...sentence, score, scoreComments: comments }
+            : sentence
         ),
       },
     })),

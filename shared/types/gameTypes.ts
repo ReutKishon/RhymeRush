@@ -40,11 +40,12 @@ export interface Sentence {
   content: string;
   player: Player;
   score: number;
+  scoreComments: string;
 }
 
-export interface SentenceScores {
+export interface SentenceScoreData {
   generalScore: number;
-  rhymeScore: number;
+  comments: string;
 }
 
 type UserInput = Omit<User, "_id">;
