@@ -73,17 +73,16 @@ const getSentenceScores = async (
   game: Game,
   sentence: string
 ): Promise<SentenceScoreData> => {
-  // const res = await evaluateSentence(
-  //   sentence,
-  //   game.lyrics.map((s) => s.content),
-  //   game.topic
-  // );
+  const res = await evaluateSentence(
+    sentence,
+    game.lyrics.map((s) => s.content),
+    game.topic
+  );
   // console.log("res: ", res);
-  // const responseData = JSON.parse(res.choices[0].message.content);
+  const responseData = JSON.parse(res.choices[0].message.content);
 
-  const generalScore = Math.floor(Math.random() * 10) + 1; //responseData.general_score;
-  const comments =
-    "very good sentence.very good sentence.very good sentence.very good sentence.very good sentence."; //responseData.comments;
+  const generalScore = responseData.general_score; //Math.floor(Math.random() * 10) + 1;
+  const comments = responseData.comments;
   const scoreData: SentenceScoreData = {
     generalScore,
     comments,
@@ -134,15 +133,13 @@ export const moveNextTurn = async (game: Game): Promise<void> => {
 };
 
 const generateAIPlayerSentence = async (game: Game): Promise<string> => {
-  console.log("generateAIPlayerSentence");
   const res = await generateSentence(
     game.lyrics.map((s) => s.content),
     game.topic
   );
-  console.log("res_sentence: ", res);
+  // console.log("res_sentence: ", res);
   const responseData = JSON.parse(res.choices[0].message.content);
   return responseData.sentence;
-  // return "AI response";
 };
 
 const startTimer = (game: Game) => {

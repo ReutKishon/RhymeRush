@@ -82,11 +82,8 @@ export const evaluateSentence = async (
   **Output Format**:
   Provide a JSON response in this format:
   {
-    "rhyme_quality": <score>,
-    "flow_relevance": <score>,
-    "topic_relevance": <score>,
-    "general_score": <score>,
-    "comments": "<brief analysis of the evaluation>"
+    "general_score": <int>,
+    "comments": "<string>"  (brief analysis of the evaluation)
   }
   
   Now evaluate the given sentence using this approach.

@@ -53,21 +53,23 @@ const SongLyrics = memo(({ lyrics }: { lyrics: Sentence[] }) => {
       <ScrollableDiv>
         {lyrics.map((sentence, index) => {
           return (
-            <div className="flex flex-col space-y-1 pb-4">
-              <div
-                className={`flex w-20 mb-2 justify-center rounded-full ${scoreClass(
-                  sentence.score
-                )}`}
-              >
-                <p
-                  onClick={() =>
-                    onScoreClick(sentence.score, sentence.scoreComments)
-                  }
-                  className="text-md font-bold text-white"
+            <div key={sentence.id} className="flex flex-col space-y-1 pb-4">
+              {sentence.score && (
+                <div
+                  className={`flex w-20 mb-2 justify-center rounded-full ${scoreClass(
+                    sentence.score
+                  )}`}
                 >
-                  {sentence.score} points
-                </p>
-              </div>
+                  <p
+                    onClick={() =>
+                      onScoreClick(sentence.score, sentence.scoreComments)
+                    }
+                    className="text-md font-bold text-white"
+                  >
+                    {sentence.score} points
+                  </p>
+                </div>
+              )}
 
               <div className="flex space-between gap-3 items-center">
                 <PlayerAvatarMini name={sentence.player.name} />
