@@ -120,7 +120,7 @@ const GameBoard = () => {
                   {isCopied ? "check" : "content_copy"}
                 </i>
               </div>
-              {username === game.gameCreatorName && (
+              {username === game.gameCreatorName ? (
                 <div className="flex flex-col gap-4">
                   <h3 className="text-center">{t.game.addAIPlayerTitle}</h3>
                   <button
@@ -130,6 +130,8 @@ const GameBoard = () => {
                     <p className="text-xl">{aiPlayerButtonText}</p>
                   </button>
                 </div>
+              ) : (
+                <p className="text-red-500">waiting for {game.gameCreatorName} to start the game ...</p>
               )}
             </div>
           ) : (

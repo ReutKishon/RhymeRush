@@ -29,7 +29,7 @@ export const createPlayer = async (playerName: string): Promise<Player> => {
 
 export const createGame = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const { uniqueCode, userName ,gameTimerInMinutes} = req.body;
+    const { uniqueCode, userName, gameTimerInMinutes } = req.body;
 
     if (!userName) {
       return next(new AppError("a game must be created by a player!", 401));
@@ -49,7 +49,7 @@ export const createGame = catchAsync(
       gameCreatorName: gameCreator.name,
       songId: uniqueCode,
       isTurnChanging: false,
-      timerInMinutes: gameTimerInMinutes
+      timerInMinutes: gameTimerInMinutes,
     };
     await redisClient.set(`game:${game.code}`, JSON.stringify(game));
     res.status(201).json({
@@ -66,12 +66,16 @@ export const joinGame = catchAsync(
     const game = await getGameFromRedis(gameCode);
     if (!game) {
       return next(
-        new AppError("Invalid game code or the game does not exist.", 404)
+        new AppError("INVALID_GAME_CODE", 404) // Add error type
       );
     }
 
+    if (game.isActive) {
+      return next(new AppError("GAME_STARTED", 404));
+    }
+
     if (game.players.find((p) => p.name === userName)) {
-      return next(new AppError(`${userName} is already taken!`, 401));
+      return next(new AppError("NAME_ALREADY_TAKEN", 401));
     }
 
     const joinedPlayer = await createPlayer(userName);

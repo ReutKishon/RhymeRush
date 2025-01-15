@@ -18,33 +18,27 @@ const JoinGameModal = ({ showModal, setShowModal }: JoinGameModalProps) => {
   const { setUserName } = useAppStore((state) => state);
   const navigate = useNavigate();
   const t = useTranslations();
-  const {
-    values,
-    errors,
-    isValid,
-    handleChange,
-    handleBlur,
-    validateForm
-  } = useFormValidation({
-    username: {
-      value: "",
-      validations: [
-        validations.required,
-        validations.minLength(3),
-        validations.maxLength(20)
-      ]
-    },
-    gameCode: {
-      value: "",
-      validations: [
-        validations.required,
-        // {
-        //   validate: (value: string) => value.length === 36,
-        //   message: "Invalid game code format"
-        // }
-      ]
-    }
-  });
+  const { values, errors, isValid, handleChange, handleBlur, validateForm } =
+    useFormValidation({
+      username: {
+        value: "",
+        validations: [
+          validations.required,
+          validations.minLength(3),
+          validations.maxLength(20),
+        ],
+      },
+      gameCode: {
+        value: "",
+        validations: [
+          validations.required,
+          // {
+          //   validate: (value: string) => value.length === 36,
+          //   message: "Invalid game code format"
+          // }
+        ],
+      },
+    });
 
   const handleEnterGame = async () => {
     if (!validateForm()) {
@@ -55,8 +49,15 @@ const JoinGameModal = ({ showModal, setShowModal }: JoinGameModalProps) => {
       await api.joinGame(values.gameCode, values.username);
       setUserName(values.username);
       navigate(`/game/${values.gameCode}`);
-    } catch (err : any) {
-      setServerError(t.game.errorCannotJoin)
+    } catch (err: any) {
+      console.log("err joining: ", err);
+      if (err.response.data.message === "INVALID_GAME_CODE") {
+        setServerError(t.game.errorCannotJoinCode);
+      } else if (err.response.data.message === "NAME_ALREADY_TAKEN") {
+        setServerError(t.game.errorCannotJoinName);
+      } else {
+        setServerError(t.game.errorCannotJoinGameStart);
+      }
     }
   };
 
@@ -73,20 +74,20 @@ const JoinGameModal = ({ showModal, setShowModal }: JoinGameModalProps) => {
           placeholder={t.game.enterUsername}
           type="text"
           value={values.username}
-          onChange={(e) => handleChange('username', e.target.value)}
-          onBlur={() => handleBlur('username')}
+          onChange={(e) => handleChange("username", e.target.value)}
+          onBlur={() => handleBlur("username")}
           validations={[
             validations.required,
             validations.minLength(3),
-            validations.maxLength(20)
+            validations.maxLength(20),
           ]}
         />
         <CustomInput
           placeholder={t.game.enterGameCode}
           type="text"
           value={values.gameCode}
-          onChange={(e) => handleChange('gameCode', e.target.value)}
-          onBlur={() => handleBlur('gameCode')}
+          onChange={(e) => handleChange("gameCode", e.target.value)}
+          onBlur={() => handleBlur("gameCode")}
           validations={[
             validations.required,
             // {
@@ -95,12 +96,12 @@ const JoinGameModal = ({ showModal, setShowModal }: JoinGameModalProps) => {
             // }
           ]}
         />
-        {serverError && (
-          <p className="err">{serverError}</p>
-        )}
+        {serverError && <p className="err">{serverError}</p>}
         <button
           onClick={handleEnterGame}
-          className={`bg-primary-yellow ${!isValid ? 'opacity-50 cursor-not-allowed' : ''}`}
+          className={`bg-primary-yellow ${
+            !isValid ? "opacity-50 cursor-not-allowed" : ""
+          }`}
           disabled={!isValid}
         >
           <p>{t.common.enterGame}</p>

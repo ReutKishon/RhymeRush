@@ -50,7 +50,6 @@ export const joinGame = async (
   userName: string
 ): Promise<void> => {
   try {
-    console.log("Joining game");
     const response = await api.patch(`/game/${gameCode}/${userName}`, {
       userName,
       gameCode,

@@ -13,15 +13,15 @@ export const he = {
     copied: "הועתק",
   },
   game: {
-    score: 'נק',
+    score: "נק",
     createNewGame: "צור משחק חדש",
     gameCreated: "המשחק נוצר",
     enterUsername: "הכנס שם משתמש",
     enterGameCode: "הכנס קוד משחק",
     shareCode: "שתף את הקוד הזה עם חבריך להצטרפות:",
-    addAIPlayerTitle:"AI הוסף שחקן",
-    createAIPlayer:"AI צור שחקן",
-    RemoveAIPlayer:"AI מחק שחקן",
+    addAIPlayerTitle: "AI הוסף שחקן",
+    createAIPlayer: "AI צור שחקן",
+    RemoveAIPlayer: "AI מחק שחקן",
     startGame: "התחל משחק",
     typeLine: "הקלד את השורה שלך ולחץ Enter",
     pleaseEnterSomething: "אנא הכנס משהו!",
@@ -29,12 +29,14 @@ export const he = {
     gameOver: "המשחק נגמר",
     points: "נקודות",
     waitingPlayers: "ממתין לשחקנים...",
-    errorCannotJoin: "לא ניתן להצטרף למשחק, נסה שוב עם קוד משחק שונה"
+    errorCannotJoinCode: "לא ניתן להצטרף למשחק, נסה שוב עם קוד משחק שונה",
+    errorCannotJoinName: "לא ניתן להצטרף למשחק, נסה שוב עם שם אחר",
+    errorCannotJoinGameStart: "לא ניתן להצטרף למשחק, המשחק התחיל",
   },
   timer: {
     min1: "דקה 1",
     min3: "3 דקות",
     min5: "5 דקות",
-    min10: "10 דקות"
-  }
+    min10: "10 דקות",
+  },
 };

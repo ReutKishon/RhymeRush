@@ -37,7 +37,7 @@ const CreateGameModal = ({ showModal, setShowModal }: CreateGameModalProps) => {
       validations: [
         validations.required,
         validations.minLength(3),
-        validations.maxLength(20)
+        validations.maxLength(10)
       ]
     }
   });

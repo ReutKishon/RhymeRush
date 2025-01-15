@@ -29,8 +29,12 @@ export const en = {
     gameOver: "Game Over",
     points: "pts",
     waitingPlayers: "Waiting for players...",
-    errorCannotJoin:
+    errorCannotJoinCode:
       "Could not join game, try again with a different game code",
+    errorCannotJoinName:
+      "Could not join game, try again with a different username",
+    errorCannotJoinGameStart:
+      "Could not join game, the game is started",
   },
   timer: {
     min1: "1 MIN",
